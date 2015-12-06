@@ -9,7 +9,7 @@ namespace DesisionTrees
 {
     public class SQLManagerForTrees: SQLManager
     {
-        private const string PATH_DB = "../../../SII.db";
+        private const string PATH_DB = "SII.db";
 
         private SQLiteConnection conn;
         private SQLiteTransaction trans;
