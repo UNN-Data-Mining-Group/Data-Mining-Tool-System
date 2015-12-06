@@ -8,7 +8,7 @@ namespace SII
 {
     public class SQLManager
     {
-        private const string PATH_DB = "../../../SII.db";
+        private const string PATH_DB = "SII.db";
 
         private SQLiteConnection conn;
         private SQLiteTransaction trans;

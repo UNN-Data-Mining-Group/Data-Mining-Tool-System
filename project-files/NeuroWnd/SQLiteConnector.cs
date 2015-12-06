@@ -10,7 +10,7 @@ namespace NeuroWnd
     public class SQLiteConnector
     {
         public SQLiteConnection connection;
-        public string dbPath = "../../../SII.db";
+        public string dbPath = "SII.db";
 
         public void ConnectToDB()
         {
