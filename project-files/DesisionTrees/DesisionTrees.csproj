@@ -35,10 +35,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\bin\SQLite\x64\System.Data.SQLite.dll</HintPath>
+      <HintPath>..\..\bin\DMTS\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6">
+      <HintPath>..\..\bin\DMTS\System.Data.SQLite.EF6.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite.Linq">
-      <HintPath>..\..\bin\SQLite\x64\System.Data.SQLite.Linq.dll</HintPath>
+      <HintPath>..\..\bin\DMTS\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
