@@ -3,22 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:dms"
         xmlns:gui="clr-namespace:dms.gui"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-        x:Class="dms.MainWindow"
+        xmlns:ad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        x:Class="dms.gui.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800" Background="#FF333333">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <gui:TaskDirectoryPage />
-        <TabControl Grid.Column="1" Margin="0,10,10,10">
-            <TabItem Header="111" />
-            <TabItem Header="222" />
-        </TabControl>
-    </Grid>
+        Title="MainWindow" Height="500" Width="800">
+    <ad:DockingManager>
+        <ad:LayoutRoot>
+            <ad:LayoutPanel>
+                <ad:LayoutAnchorablePane DockWidth="300">
+                    <ad:LayoutAnchorable Title="Панель Задач">
+                        <gui:TaskDirectoryPage BorderThickness="0"/>
+                    </ad:LayoutAnchorable>
+                </ad:LayoutAnchorablePane>
+                <ad:LayoutDocumentPane x:Name="documentPane"/>
+            </ad:LayoutPanel>
+        </ad:LayoutRoot>
+    </ad:DockingManager>
 </Window>

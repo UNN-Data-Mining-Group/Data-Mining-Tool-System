@@ -7,30 +7,41 @@ using System.Collections.ObjectModel;
 
 namespace dms.view_models
 {
-    public class Task
+    public class Node
     {
         public string Name { get; set; }
-        public string Dataset { get; set; }
-        public string[] NeuroNets { get; set; }
+        public Node[] Children { get; set; }
 
-        public Task(string name, string dataset, string[] neuronets = null)
+        public Node(string name, Node[] children = null)
         {
             Name = name;
-            Dataset = dataset;
-            NeuroNets = neuronets;
+            Children = children;
         }
     }
-
     public class TaskTreeViewModel
     {
         public TaskTreeViewModel()
         {
-            Tasks = new ObservableCollection<Task>{
-                new Task("Task1", "set1", new string[]{ "net1", "net2"}),
-                new Task("Task2", "set2")
-            };
+            Node task1 = new Node("Ирис", new Node[] {
+                new Node("Выборки", new Node[] { new Node("Выборка 1"), new Node("Выборка 2")}),
+                new Node("Решатели", new Node[] 
+                {
+                    new Node("Персептрон", new Node[] { new Node("п1") }),
+                    new Node("Деревья решений", new Node[] { new Node("др1"), new Node("др2") })
+                })
+            });
+            Node task2 = new Node("Морское ушко", new Node[] {
+                new Node("Выборки", new Node[] { new Node("Выборка 1")}),
+                new Node("Решатели", new Node[]
+                {
+                    new Node("Персептрон", new Node[] { new Node("п2"), new Node("п3") }),
+                    new Node("Деревья решений", new Node[] { new Node("др1") }),
+                    new Node("Ограниченная машина Больцмана", new Node[] { new Node("б1") })
+                })
+            });
+            Tasks = new ObservableCollection<Node> { task1, task2 };
         }
 
-        public ObservableCollection<Task> Tasks { get; set; }
+        public ObservableCollection<Node> Tasks { get; set; }
     }
 }
