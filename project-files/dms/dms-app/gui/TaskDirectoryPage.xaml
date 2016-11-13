@@ -5,33 +5,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:dms.gui"
       xmlns:vm="clr-namespace:dms.view_models"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
-      Background="DimGray"
       >
-    <UserControl.Resources>
-        
-    </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Label Content="Задачи" Grid.Row="0" FontSize="20" HorizontalAlignment="Center"/>
-        <TreeView Grid.Row="1" ItemsSource="{Binding Tasks}">
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type vm:Task}">
-                    <TreeView BorderThickness="0">
-                        <TreeViewItem Header="{Binding Name}">
-                            <TreeViewItem Header="Исходный файл данных">
-                                <TreeViewItem Header="{Binding Dataset}"/>
-                            </TreeViewItem>
-                            <TreeViewItem Header="Нейронные сети">
-                            </TreeViewItem>
-                        </TreeViewItem>
-                    </TreeView>
-                </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>
-    </Grid>
+    <TreeView Grid.Row="1" ItemsSource="{Binding Tasks}">
+        <TreeView.ItemTemplate>
+            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                <TextBlock Text="{Binding Name}"/>
+            </HierarchicalDataTemplate>
+        </TreeView.ItemTemplate>
+    </TreeView>
 </UserControl>

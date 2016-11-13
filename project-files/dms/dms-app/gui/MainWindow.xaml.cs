@@ -12,8 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.AvalonDock.Controls;
+using Xceed.Wpf.AvalonDock.Layout;
 
-namespace dms
+namespace dms.gui
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,6 +25,14 @@ namespace dms
         public MainWindow()
         {
             InitializeComponent();
+            LayoutDocument[] l = new LayoutDocument[] { new LayoutDocument(), new LayoutDocument() };
+            l[0].Title = "Doc 1";
+            l[1].Title = "Doc 2";
+            documentPane.Children.Add(l[0]);
+            documentPane.Children.Add(l[1]);
+
+            TaskCreationWindow wnd = new TaskCreationWindow();
+            wnd.Show();
         }
     }
 }
