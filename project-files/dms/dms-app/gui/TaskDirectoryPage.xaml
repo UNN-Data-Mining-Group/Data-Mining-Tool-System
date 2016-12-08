@@ -9,11 +9,42 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       >
-    <TreeView Grid.Row="1" ItemsSource="{Binding Tasks}">
-        <TreeView.ItemTemplate>
-            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                <TextBlock Text="{Binding Name}"/>
-            </HierarchicalDataTemplate>
-        </TreeView.ItemTemplate>
-    </TreeView>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="1" Margin="0,5,0,5" Content="+ Создать задачу" Command="{Binding ShowCreateTaskDialogCommand}" HorizontalAlignment="Left" Width="110" />
+        <TreeView Grid.Row="0" ItemsSource="{Binding Tasks}">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type vm:TaskTree}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Удалить" Command="{Binding DeleteCommand}" />
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:SolutionsTree}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:SolverTree}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:SelectionTree}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:PerceptronTree}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:DecisionTreesTree}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:TreeSection}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}" FontStyle="Italic"/>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+    </Grid>
 </UserControl>
