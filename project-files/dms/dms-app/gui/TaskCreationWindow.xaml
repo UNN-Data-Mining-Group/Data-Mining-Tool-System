@@ -10,8 +10,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
-            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -19,9 +20,35 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Label Content="Название задачи" HorizontalAlignment="Center" Margin="8"/>
-            <exToolkit:WatermarkTextBox Grid.Column="1" Margin="8" Watermark="Введите название задачи" Text="{Binding TaskName, Mode=TwoWay}"/>
+            <exToolkit:WatermarkTextBox Grid.Column="1" Margin="8" Watermark="Введите название задачи" Text="{Binding TaskName, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
-        <CheckBox Grid.Row="1" Content="Преобразование существующей задачи" Margin="12,8"/>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="358,122,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Выборки:" Grid.Row="0" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            <Border Grid.Row="1" Margin="8" BorderBrush="Gray" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding Selections}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <local:SelectionAddPane/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Grid Height="35">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="+" Command="{Binding AddSelectionCommand}" Margin="5"/>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        <Button Content="Создать задачу" Command="{Binding CreateCommand}"  IsEnabled="{Binding CreateCommand.CanExecute}" Grid.Row="3" Margin="8,5,0,5" HorizontalAlignment="Left" Width="120" />
+        <Button Content="Отмена" Command="{Binding CancelCommand}" Grid.Row="3" Margin="141,5,0,5" HorizontalAlignment="Left" Width="135"/>
     </Grid>
 </Window>

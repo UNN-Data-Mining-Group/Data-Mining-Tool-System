@@ -28,6 +28,13 @@ namespace dms.gui
             InitializeComponent();
 
             this.DataContext = taskVM;
+            taskVM.requestTaskCreation += TaskVM_requestTaskCreation;
+        }
+
+        private void TaskVM_requestTaskCreation(object sender, EventArgs<TaskCreationViewModel> e)
+        {
+            TaskCreationWindow t = new TaskCreationWindow(e.Data);
+            t.ShowDialog();
         }
     }
 }

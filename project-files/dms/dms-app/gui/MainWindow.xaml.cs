@@ -30,9 +30,6 @@ namespace dms.gui
             l[1].Title = "Doc 2";
             documentPane.Children.Add(l[0]);
             documentPane.Children.Add(l[1]);
-
-            TaskCreationWindow wnd = new TaskCreationWindow();
-            wnd.Show();
         }
     }
 }

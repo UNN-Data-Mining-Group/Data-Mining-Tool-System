@@ -10,29 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-using dms.view_models;
 
 namespace dms.gui
 {
     /// <summary>
-    /// Interaction logic for TaskCreation.xaml
+    /// Interaction logic for SelectionAddPane.xaml
     /// </summary>
-    public partial class TaskCreationWindow : Window
+    public partial class SelectionAddPane : UserControl
     {
-        TaskCreationViewModel viewModel;
-        public TaskCreationWindow(TaskCreationViewModel vm)
+        public SelectionAddPane()
         {
             InitializeComponent();
-
-            viewModel = vm;
-            DataContext = viewModel;
-            viewModel.OnCreatingSelection += (s, e) => CreateSelectionAddPane(e.Data);
-        }
-
-        public void CreateSelectionAddPane(SelectionCreationViewModel vm)
-        {
-
         }
     }
 }
