@@ -73,10 +73,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="gui\SelectionAddPane.xaml.cs">
+      <DependentUpon>SelectionAddPane.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\TaskCreationWindow.xaml.cs">
       <DependentUpon>TaskCreationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="view-models\ActionHandler.cs" />
+    <Compile Include="view-models\EventArgs.cs" />
+    <Compile Include="view-models\TaskCreationViewModel.cs" />
     <Compile Include="view-models\TaskTreeViewModel.cs" />
+    <Compile Include="view-models\ViewmodelBase.cs" />
     <Page Include="gui\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -89,6 +96,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="gui\SelectionAddPane.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="gui\TaskCreationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
