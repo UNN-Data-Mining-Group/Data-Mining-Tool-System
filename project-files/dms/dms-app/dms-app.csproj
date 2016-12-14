@@ -37,6 +37,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\lib\sqlite\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6">
+      <HintPath>..\..\lib\sqlite\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq">
+      <HintPath>..\..\lib\sqlite\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -103,6 +112,13 @@
     <Compile Include="view-models\tree-section\SelectionTree.cs" />
     <Compile Include="view-models\tree-section\SolutionsTree.cs" />
     <Compile Include="view-models\tree-section\SolverTree.cs" />
+    <Compile Include="models\Entity.cs" />
+    <Compile Include="models\Query.cs" />
+    <Compile Include="models\Task.cs" />
+    <Compile Include="models\TaskTemplate.cs" />
+    <Compile Include="services\DatabaseManager.cs" />
+    <Compile Include="view-models\ActionHandler.cs" />
+    <Compile Include="view-models\EventArgs.cs" />
     <Compile Include="view-models\TaskCreationViewModel.cs" />
     <Compile Include="view-models\tree-section\TaskTree.cs" />
     <Compile Include="view-models\TaskTreeViewModel.cs" />
@@ -170,6 +186,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Resource Include="Properties\dms">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
