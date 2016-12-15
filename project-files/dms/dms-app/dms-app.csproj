@@ -113,9 +113,13 @@
     <Compile Include="view-models\tree-section\SolutionsTree.cs" />
     <Compile Include="view-models\tree-section\SolverTree.cs" />
     <Compile Include="models\Entity.cs" />
+    <Compile Include="models\Parameter.cs" />
     <Compile Include="models\Query.cs" />
+    <Compile Include="models\Selection.cs" />
+    <Compile Include="models\SelectionRow.cs" />
     <Compile Include="models\Task.cs" />
     <Compile Include="models\TaskTemplate.cs" />
+    <Compile Include="models\ValueParameter.cs" />
     <Compile Include="services\DatabaseManager.cs" />
     <Compile Include="view-models\ActionHandler.cs" />
     <Compile Include="view-models\EventArgs.cs" />

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-
-    interface PreprocessingParameters
+    interface IPreprocessingParameters
     {
         void testMethod();
     }
@@ -20,7 +19,7 @@ namespace dms.models
     }
 
     [Serializable()]
-    public class Test1 : PreprocessingParameters
+    public class Test1 : IPreprocessingParameters
     {
         public Test test = new Test();
         public string name = "b";
@@ -62,8 +61,8 @@ namespace dms.models
             }
         }
 
-        private PreprocessingParameters preprocessingParameters;
-        public PreprocessingParameters PreprocessingParameters
+        private IPreprocessingParameters preprocessingParameters;
+        public IPreprocessingParameters PreprocessingParameters
         {
             get
             {
@@ -84,7 +83,7 @@ namespace dms.models
         public override Dictionary<string, Type> serializationParameters()
         {
             Dictionary<string, Type> serializationParameters = new Dictionary<string, Type>();
-            serializationParameters.Add("PreprocessingParameters", typeof(PreprocessingParameters));
+            serializationParameters.Add("PreprocessingParameters", typeof(IPreprocessingParameters));
             base.serializationParameters().ToList().ForEach(x => serializationParameters.Add(x.Key, x.Value));
             return serializationParameters;
         }
