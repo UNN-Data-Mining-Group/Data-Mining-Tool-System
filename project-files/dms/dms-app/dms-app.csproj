@@ -113,11 +113,14 @@
     <Compile Include="view-models\tree-section\SolutionsTree.cs" />
     <Compile Include="view-models\tree-section\SolverTree.cs" />
     <Compile Include="models\Entity.cs" />
+    <Compile Include="models\LearnedSolver.cs" />
+    <Compile Include="models\LearningScenario.cs" />
     <Compile Include="models\Parameter.cs" />
     <Compile Include="models\Query.cs" />
     <Compile Include="models\Selection.cs" />
     <Compile Include="models\SelectionRow.cs" />
     <Compile Include="models\Task.cs" />
+    <Compile Include="models\TaskSolver.cs" />
     <Compile Include="models\TaskTemplate.cs" />
     <Compile Include="models\ValueParameter.cs" />
     <Compile Include="services\DatabaseManager.cs" />
@@ -190,9 +193,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="Properties\dms">
+    <None Include="dms">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
