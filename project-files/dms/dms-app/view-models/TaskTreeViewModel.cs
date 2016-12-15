@@ -5,89 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
+using dms.tools;
 
 namespace dms.view_models
 {
-    public class TreeSection : ViewmodelBase
-    {
-        private string title;
-
-        public string Title
-        {
-            get { return title; }
-            set { title = value; NotifyPropertyChanged(); }
-        }
-        public TreeSection[] Content { get; set; }
-        public TreeSection() { Title = ""; Content = null; }
-        public TreeSection(string title) : this() { Title = title; }
-        public TreeSection(string title, string[] content)
-        {
-            Title = title;
-            Content = new TreeSection[content.Length];
-            for(int i = 0; i < content.Length; i++)
-            {
-                Content[i] = new TreeSection(content[i]);
-            }
-        }
-    }
-    public class SelectionTree : TreeSection
-    {
-        public SelectionTree(string[] selections) : base("Выборки", selections) { }
-    }
-    public class PerceptronTree : TreeSection
-    {
-        public PerceptronTree(string[] perceptrons) : base("Персептроны", perceptrons) { }
-    }
-    public class DecisionTreesTree : TreeSection
-    {
-        public DecisionTreesTree(string[] trees) : base("Деревья решений", trees) { }
-    }
-    public class SolverTree  : TreeSection
-    {
-        public SolverTree(string[] per, string[] des) : base("Решатели")
-        {
-            Content = new TreeSection[] { new PerceptronTree(per), new DecisionTreesTree(des) };
-        }
-    }
-    public class SolutionsTree : TreeSection
-    {
-        public SolutionsTree(string[] solutions) : base("Решения", solutions) { }
-    }
-    public class TaskTree : TreeSection
-    {
-        private ICommand _deleteCommand;
-        private Action<TaskTree> _onDelete;
-
-        public TaskTree(string Name, 
-            string[] sel, string[] per, string[] des, string[] solv, 
-            Action<TaskTree> onDelete)
-        {
-            Title = Name;
-            Content = new TreeSection[] { new SelectionTree(sel), new SolverTree(per, des), new SolutionsTree(solv) };
-            _onDelete = onDelete;
-        }
-
-        public ICommand DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand ?? (_deleteCommand = new ActionHandler(() => Delete(), (e) => true));
-            }
-        }
-
-        public void Delete()
-        {
-            Title += "-deleted";
-            _onDelete(this);
-        }
-    }
-
     public class TaskTreeViewModel : ViewmodelBase
     {
         private ObservableCollection<TaskTree> tasks;
         private ActionHandler createTask;
 
         public event EventHandler<EventArgs<TaskCreationViewModel>> requestTaskCreation;
+        public event EventHandler<EventArgs<SelectionCreationViewModel>> requestSelectionCreation;
+        public event EventHandler<EventArgs<TaskInfoViewModel>> requestTaskInfoShow;
+        public event EventHandler<EventArgs<SelectionInfoViewModel>> requestSelectionInfoShow;
 
         public TaskTreeViewModel()
         {
@@ -98,13 +28,13 @@ namespace dms.view_models
                     new string[] { "Персептрон 1", "Персептрон 2" },
                     new string[] { "Дерево 1", },
                     new string[] { }, 
-                    Delete), 
+                    this), 
                 new TaskTree("Морское ушко", 
                     new string[] {"Выборка 1"}, 
                     new string[] { "П_му1"}, 
                     new string[] { }, 
                     new string[] { "Решение 1"},
-                    Delete)
+                    this)
                 };
 
             createTask = new ActionHandler(ShowCreateTaskDialog, e => true);
@@ -121,18 +51,70 @@ namespace dms.view_models
             get { return createTask; }
         }
 
-        public void Delete(TaskTree t)
+        public void DeleteTask(string taskName)
         {
-            if (Tasks.Contains(t))
+            TaskTree t = null;
+            foreach(TaskTree item in Tasks)
+            {
+                if (item.Title.Equals(taskName))
+                {
+                    t = item;
+                    break;
+                }
+            }
+            if (t != null)
+            {
                 Tasks.Remove(t);
+            }
         }
 
         public void ShowCreateTaskDialog()
         {
             TaskCreationViewModel t = new TaskCreationViewModel();
+            requestTaskCreation?.Invoke(this, new EventArgs<TaskCreationViewModel>(t));
+        }
 
-            if (requestTaskCreation != null)
-                requestTaskCreation(this, new EventArgs<TaskCreationViewModel>(t));
+        public void ShowTaskInfoDialog(string taskName)
+        {
+            TaskInfoViewModel t = new TaskInfoViewModel(taskName);
+            requestTaskInfoShow?.Invoke(this, new EventArgs<TaskInfoViewModel>(t));
+        }
+
+        public void ShowSelectionInfoDialog(string taskName, string selectionName)
+        {
+            SelectionInfoViewModel t = new SelectionInfoViewModel(taskName, selectionName);
+            requestSelectionInfoShow?.Invoke(this, new EventArgs<SelectionInfoViewModel>(t));
+        }
+
+        public void ShowCreateSelectionDialog(string taskName)
+        {
+            SelectionCreationViewModel t = new SelectionCreationViewModel(taskName);
+            requestSelectionCreation?.Invoke(this, new EventArgs<SelectionCreationViewModel>(t));
+        }
+
+        public void DeleteSelection(string task, string selection)
+        {
+            foreach(TaskTree t in Tasks)
+            {
+                if(t.Title.Equals(task))
+                {
+                    SelectionTree st = t.Content[0] as SelectionTree;
+                    SelectionLeaf toDelete = null;
+                    foreach (SelectionLeaf s in st.Content)
+                    {
+                        if(s.Title.Equals(selection))
+                        {
+                            toDelete = s;
+                            break;
+                        }
+                    }
+                    if (toDelete != null)
+                    {
+                        st.Content.Remove(toDelete);
+                        return;
+                    }
+                }
+            }
         }
     }
 }

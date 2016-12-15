@@ -21,9 +21,13 @@
                     <TextBlock Text="{Binding Title}">
                         <TextBlock.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="Информация" Command="{Binding ShowTaskInfoDialogCommand}" />
                                 <MenuItem Header="Удалить" Command="{Binding DeleteCommand}" />
                             </ContextMenu>
                         </TextBlock.ContextMenu>
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ShowTaskInfoDialogCommand}"/>
+                        </TextBlock.InputBindings>
                     </TextBlock>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type vm:SolutionsTree}" ItemsSource="{Binding Content}">
@@ -33,7 +37,13 @@
                     <TextBlock Text="{Binding Title}"/>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type vm:SelectionTree}" ItemsSource="{Binding Content}">
-                    <TextBlock Text="{Binding Title}"/>
+                    <TextBlock Text="{Binding Title}">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Создать" Command="{Binding ShowCreateSelectionDialogCommand}"/>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type vm:PerceptronTree}" ItemsSource="{Binding Content}">
                     <TextBlock Text="{Binding Title}"/>
@@ -43,6 +53,19 @@
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type vm:TreeSection}" ItemsSource="{Binding Content}">
                     <TextBlock Text="{Binding Title}" FontStyle="Italic"/>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type vm:SelectionLeaf}" ItemsSource="{Binding Content}">
+                    <TextBlock Text="{Binding Title}" FontStyle="Italic">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Информация" Command="{Binding ShowSelectionInfoDialog}" />
+                                <MenuItem Header="Удалить" Command="{Binding DeleteCommand}"/>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                        <TextBlock.InputBindings>
+                            <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ShowSelectionInfoDialog}"/>
+                        </TextBlock.InputBindings>
+                    </TextBlock>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
         </TreeView>

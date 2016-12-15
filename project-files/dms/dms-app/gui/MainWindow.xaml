@@ -8,13 +8,12 @@
         xmlns:ad="http://schemas.xceed.com/wpf/xaml/avalondock"
         x:Class="dms.gui.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="Инструментальная система интеллектуального анализа данных" Height="680" Width="1024">
     <ad:DockingManager>
         <ad:LayoutRoot>
             <ad:LayoutPanel>
                 <ad:LayoutAnchorablePane DockWidth="300">
-                    <ad:LayoutAnchorable Title="Панель Задач">
-                        <gui:TaskDirectoryPage BorderThickness="0"/>
+                    <ad:LayoutAnchorable Title="Панель Задач" x:Name="taskPanel">
                     </ad:LayoutAnchorable>
                 </ad:LayoutAnchorablePane>
                 <ad:LayoutDocumentPane x:Name="documentPane"/>

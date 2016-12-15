@@ -18,21 +18,15 @@ namespace dms.gui
     /// <summary>
     /// Interaction logic for TaskCreation.xaml
     /// </summary>
-    public partial class TaskCreationWindow : Window
+    public partial class TaskCreationPage : UserControl
     {
         TaskCreationViewModel viewModel;
-        public TaskCreationWindow(TaskCreationViewModel vm)
+        public TaskCreationPage(TaskCreationViewModel vm)
         {
             InitializeComponent();
 
             viewModel = vm;
             DataContext = viewModel;
-            viewModel.OnCreatingSelection += (s, e) => CreateSelectionAddPane(e.Data);
-        }
-
-        public void CreateSelectionAddPane(SelectionCreationViewModel vm)
-        {
-
         }
     }
 }
