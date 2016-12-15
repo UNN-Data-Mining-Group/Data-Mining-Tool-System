@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="dms.gui.SelectionInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding SelectionName}"/>
+                <Label Content="{Binding CountRows}" ContentStringFormat="Объем выборки: {0}" />
+            </StackPanel>
+            <Label Content="{Binding TaskName}" ContentStringFormat="Задача: {0}"/>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Тип представления:"/>
+                <ComboBox ItemsSource="{Binding PreprocessingList}" SelectedItem="{Binding SelectedPreprocessing}"/>
+            </StackPanel>
+            <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

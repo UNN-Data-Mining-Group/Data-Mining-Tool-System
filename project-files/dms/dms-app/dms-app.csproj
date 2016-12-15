@@ -73,17 +73,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="gui\CreateSelectionPage.xaml.cs">
+      <DependentUpon>CreateSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\ParameterAddPane.xaml.cs">
+      <DependentUpon>ParameterAddPane.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\SelectionAddPane.xaml.cs">
       <DependentUpon>SelectionAddPane.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\TaskCreationWindow.xaml.cs">
-      <DependentUpon>TaskCreationWindow.xaml</DependentUpon>
+    <Compile Include="gui\SelectionInfoPage.xaml.cs">
+      <DependentUpon>SelectionInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="view-models\ActionHandler.cs" />
-    <Compile Include="view-models\EventArgs.cs" />
+    <Compile Include="gui\TaskCreationPage.xaml.cs">
+      <DependentUpon>TaskCreationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\TaskInfoPage.xaml.cs">
+      <DependentUpon>TaskInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="tools\ActionHandler.cs" />
+    <Compile Include="tools\EventArgs.cs" />
+    <Compile Include="view-models\ParameterCreationViewModel.cs" />
+    <Compile Include="view-models\SelectionCreationViewModel.cs" />
+    <Compile Include="view-models\SelectionInfoViewModel.cs" />
+    <Compile Include="view-models\TaskInfoViewModel.cs" />
+    <Compile Include="view-models\tree-section\DecisionTreesTree.cs" />
+    <Compile Include="view-models\tree-section\leaf-section\SelectionLeaf.cs" />
+    <Compile Include="view-models\tree-section\PerseptronTree.cs" />
+    <Compile Include="view-models\tree-section\SelectionTree.cs" />
+    <Compile Include="view-models\tree-section\SolutionsTree.cs" />
+    <Compile Include="view-models\tree-section\SolverTree.cs" />
     <Compile Include="view-models\TaskCreationViewModel.cs" />
+    <Compile Include="view-models\tree-section\TaskTree.cs" />
     <Compile Include="view-models\TaskTreeViewModel.cs" />
+    <Compile Include="view-models\tree-section\TreeSection.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
+    <Page Include="gui\CreateSelectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="gui\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -96,15 +124,27 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="gui\ParameterAddPane.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="gui\SelectionAddPane.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\TaskCreationWindow.xaml">
+    <Page Include="gui\SelectionInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\TaskCreationPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\TaskDirectoryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\TaskInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

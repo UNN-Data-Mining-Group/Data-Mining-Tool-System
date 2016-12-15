@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace dms.view_models
+namespace dms.tools
 {
     public class ActionHandler : ICommand
     {
@@ -23,6 +23,11 @@ namespace dms.view_models
         public bool CanExecute(object parameter)
         {
             return _canExecute(parameter);
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, new EventArgs());
         }
 
         public void Execute(object parameter)

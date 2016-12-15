@@ -12,21 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Xceed.Wpf.AvalonDock.Controls;
-using Xceed.Wpf.AvalonDock.Layout;
 
 namespace dms.gui
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ParameterAddPane.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ParameterAddPane : UserControl
     {
-        public MainWindow()
+        public ParameterAddPane()
         {
             InitializeComponent();
-
-            taskPanel.Content = new TaskDirectoryPage(documentPane);
         }
     }
 }

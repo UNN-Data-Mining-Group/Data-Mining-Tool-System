@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace dms.view_models
+namespace dms.tools
 {
     public class EventArgs<T>
     {

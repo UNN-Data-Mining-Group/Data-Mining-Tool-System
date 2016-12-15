@@ -15,18 +15,18 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
-        <exToolkit:WatermarkTextBox Grid.Column="0" Watermark="Имя" Margin="5"/>
+        <exToolkit:WatermarkTextBox Text="{Binding SelectionName}" Grid.Column="0" Watermark="Имя" Margin="5"/>
         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="90"/>
                 <ColumnDefinition Width="40"/>
             </Grid.ColumnDefinitions>
             <Label Content="Разделитель:" Grid.Column="0" Margin="5"/>
-            <ComboBox Grid.Column="1" Margin="5"/>
+            <ComboBox Grid.Column="1" ItemsSource="{Binding DelimiterList}" SelectedItem="{Binding Delimiter}" Margin="5"/>
         </Grid>
-        <CheckBox Grid.Column="2" Content="Заголовок" Margin="5" VerticalAlignment="Center"/>
-        <Label Content="Объем" Grid.Column="3" Margin="5"/>
-        <Label Content="Файл" Grid.Column="4" Margin="5"/>
-        <Button Content="x" Command="{Binding DataContext.DeleteSelectionCommand}" Grid.Column="5" Margin="5"/>
+        <CheckBox Grid.Column="2" Content="Заголовок" IsChecked="{Binding HasHeader}" Margin="5" VerticalAlignment="Center"/>
+        <Label Content="{Binding CountRows}" ContentStringFormat="{}Объем: {0}" Grid.Column="3" Margin="5"/>
+        <Label Content="{Binding  FilePath}" Grid.Column="4" Margin="5"/>
+        <Button Content="..." Command="{Binding BrowseFileCommand}" Grid.Column="5" Margin="5" />
     </Grid>
 </UserControl>
