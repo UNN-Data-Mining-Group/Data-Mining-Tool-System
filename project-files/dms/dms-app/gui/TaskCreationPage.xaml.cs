@@ -32,8 +32,6 @@ namespace dms.gui
         {
             InitializeComponent();
 
-            createBinaryOnLoad();
-
             viewModel = vm;
             DataContext = viewModel;
         }

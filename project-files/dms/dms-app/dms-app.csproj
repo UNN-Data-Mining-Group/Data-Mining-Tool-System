@@ -124,8 +124,6 @@
     <Compile Include="models\TaskTemplate.cs" />
     <Compile Include="models\ValueParameter.cs" />
     <Compile Include="services\DatabaseManager.cs" />
-    <Compile Include="view-models\ActionHandler.cs" />
-    <Compile Include="view-models\EventArgs.cs" />
     <Compile Include="view-models\TaskCreationViewModel.cs" />
     <Compile Include="view-models\tree-section\TaskTree.cs" />
     <Compile Include="view-models\TaskTreeViewModel.cs" />
