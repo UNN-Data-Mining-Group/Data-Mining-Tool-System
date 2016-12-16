@@ -11,10 +11,17 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+
+using System.Runtime.Serialization.Formatters.Binary;
+
 using dms.view_models;
+using dms.models;
+using System.IO;
+using System.IO.Compression;
 
 namespace dms.gui
 {
+
     /// <summary>
     /// Interaction logic for TaskCreation.xaml
     /// </summary>
