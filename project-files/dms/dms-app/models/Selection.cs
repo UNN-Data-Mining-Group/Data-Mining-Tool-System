@@ -22,17 +22,17 @@ namespace dms.models
             }
         }
 
-        private int taskID;
-        public int TaskID
+        private int taskTemplateID;
+        public int TaskTemplateID
         {
             get
             {
-                return taskID;
+                return taskTemplateID;
             }
 
             set
             {
-                taskID = value;
+                taskTemplateID = value;
             }
         }
 
@@ -75,7 +75,7 @@ namespace dms.models
             mappingTable.Add("Name", "Name");
             mappingTable.Add("RowCount", "RowCount");
             mappingTable.Add("Type", "Type");
-            mappingTable.Add("TaskID", "TaskID");
+            mappingTable.Add("TaskTemplateID", "TaskTemplateID");
             base.mappingTable().ToList().ForEach(x => mappingTable.Add(x.Key, x.Value));
             return mappingTable;
         }
