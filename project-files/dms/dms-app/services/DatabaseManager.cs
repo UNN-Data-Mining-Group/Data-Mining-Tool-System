@@ -85,6 +85,23 @@ namespace dms.services
             }
         }
 
+        public void insertMultipleEntities(List<Entity> list)
+        {
+            startTransaction();
+            foreach (Entity entity in list)
+            {
+                saveEntity(entity);
+            }
+            endTransaction(true);
+            int lastId = lastInsertId();
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                Entity entity = list[i];
+                entity.ID = lastId;
+                lastId--;
+            }
+        }
+
         public void deleteEntity(Entity entity)
         {
             if (entity.ID == -1)
@@ -133,6 +150,7 @@ namespace dms.services
             int insertId = 0;
             SQLiteCommand cmd = new SQLiteCommand(connection);
             cmd.CommandText = query.StatementForDatabase();
+            cmd.Transaction = transaction;
             foreach (object obj in binaryObjects)
             {
                 SQLiteParameter parameter = new SQLiteParameter("@data" + binaryObjects.IndexOf(obj).ToString(), System.Data.DbType.Binary);
@@ -142,9 +160,12 @@ namespace dms.services
             try
             {
                 cmd.ExecuteNonQuery();
-                string sql = @"select last_insert_rowid()";
-                cmd.CommandText = sql;
-                insertId = (int)(long)cmd.ExecuteScalar();
+                if (transaction == null)
+                {
+                    string sql = @"select last_insert_rowid()";
+                    cmd.CommandText = sql;
+                    insertId = (int)(long)cmd.ExecuteScalar();
+                }                
             }
             catch (SQLiteException ex)
             {
@@ -223,6 +244,46 @@ namespace dms.services
                 return null;
             }
             return res;
+        }
+
+        private int lastInsertId()
+        {
+            SQLiteCommand cmd = new SQLiteCommand(connection);
+            string sql = @"select last_insert_rowid()";
+            cmd.CommandText = sql;
+            int key = -1;
+            try
+            {
+                key = (int)(long)cmd.ExecuteScalar();
+            }
+            catch (SQLiteException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return 0;
+            }
+            return key;
+        }
+
+        private void startTransaction()
+        {
+            transaction = null;
+            transaction = connection.BeginTransaction();
+        }
+
+        private void endTransaction(bool commit)
+        {
+            if (transaction == null)
+                return;
+
+            if (commit)
+            {
+                transaction.Commit();
+            }
+            else
+            {
+                transaction.Rollback();
+            }
+            transaction = null;
         }
     }
 }
