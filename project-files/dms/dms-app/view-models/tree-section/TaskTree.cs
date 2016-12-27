@@ -13,9 +13,7 @@ namespace dms.view_models
     {
         private ActionHandler deleteCommand;
         private ActionHandler showInfoDialogCommand;
-
-        private Action<string> onDelete;
-        private Action<string> showInfoDialog;
+        private ActionHandler showPreprocessingCreationHandler;
 
         public TaskTree(string Name,
             string[] sel, string[] per, string[] des, string[] solv, 
@@ -25,27 +23,24 @@ namespace dms.view_models
             Content = new ObservableCollection<TreeSection>
             {
                 new SelectionTree(Title, sel, vm),
-                new SolverTree(per, des, vm),
-                new SolutionsTree(solv, vm)
+                new SolverTree(Title, per, des, vm),
+                new SolutionsTree(Title, solv, vm)
             };
-            onDelete = vm.DeleteTask;
-            showInfoDialog = vm.ShowTaskInfoDialog;
+            deleteCommand = new ActionHandler(() => vm.UpdateTaskTree(), e => true);
+            showInfoDialogCommand = new ActionHandler(() => 
+            {
+                TaskInfoViewModel t = new TaskInfoViewModel(Title);
+                vm.SendRequestCreateView(t);
+            }, e => true);
+            showPreprocessingCreationHandler = new ActionHandler(() =>
+            {
+                PreprocessingViewModel t = new PreprocessingViewModel(Title);
+                vm.SendRequestCreateView(t);
+            }, e => true);
         }
 
-        public ICommand ShowTaskInfoDialogCommand
-        {
-            get
-            {
-                return showInfoDialogCommand ?? (showInfoDialogCommand = new ActionHandler(() => showInfoDialog(Title), e => true));
-            }
-        }
-
-        public ICommand DeleteCommand
-        {
-            get
-            {
-                return deleteCommand ?? (deleteCommand = new ActionHandler(() => onDelete(Title), (e) => true));
-            }
-        }
+        public ICommand ShowTaskInfoDialogCommand { get { return showInfoDialogCommand; } }
+        public ICommand ShowPreprocessingCreationCommand { get { return showPreprocessingCreationHandler; } }
+        public ICommand DeleteCommand { get { return deleteCommand; } }
     }
 }

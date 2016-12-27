@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="dms.gui.SolvePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             xmlns:exToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d">
+    <StackPanel>
+        <DataGrid SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding LearningList}" SelectedItem="{Binding SelectedLearning}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Выборка" Binding="{Binding SelectionName}" Width="*"/>
+                <DataGridTextColumn Header="Сценарий обучения" Binding="{Binding LearningScenarioName}" Width="*"/>
+                <DataGridTextColumn Header="Преобразование" Binding="{Binding PreprocessingName}" Width="*"/>
+                <DataGridTextColumn Header="Ошибка train" Binding="{Binding TrainMistake}" Width="*"/>
+                <DataGridTextColumn Header="Ошибка test" Binding="{Binding TestMistake}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Label Content="Решения:"/>
+        <ItemsControl ItemsSource="{Binding SolvingList}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl ItemsSource="{Binding X}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Height="35"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <exToolkit:WatermarkTextBox Margin="5" MinWidth="50" Watermark="{Binding ParameterDescription}" Text="{Binding Value}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <ItemsControl ItemsSource="{Binding Y}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Height="35"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Margin="5" Content="{Binding}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="x" Command="{Binding DeleteSolvingInstance}" Width="25" Margin="5"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Button Content="+" Command="{Binding AddSolvingInstance}" Width="25" HorizontalAlignment="Left" Margin="5"/>
+        <Button Content="Решить" Command="{Binding SolveCommand}" Width="100" HorizontalAlignment="Left" Margin="5"/>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Сохранить в" Command="{Binding SaveCommand}" Width="100" HorizontalAlignment="Left" Margin="5"/>
+            <ComboBox ItemsSource="{Binding Solutions}" SelectedItem="{Binding SelectedSolution}" Margin="5"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

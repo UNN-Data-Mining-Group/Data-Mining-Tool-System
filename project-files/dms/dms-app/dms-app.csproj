@@ -82,32 +82,97 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="gui\CreateSelectionPage.xaml.cs">
-      <DependentUpon>CreateSelectionPage.xaml</DependentUpon>
+    <Compile Include="gui\solution view\CreateSolutionPage.xaml.cs">
+      <DependentUpon>CreateSolutionPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\ParameterAddPane.xaml.cs">
+    <Compile Include="gui\scenario view\CreateLearningScenarioPage.xaml.cs">
+      <DependentUpon>CreateLearningScenarioPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\scenario view\LearningScenarioInfoPage.xaml.cs">
+      <DependentUpon>LearningScenarioInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\scenario view\LearningScenarioManagerPage.xaml.cs">
+      <DependentUpon>LearningScenarioManagerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\preprocessing view\PreprocessingCreationPage.xaml.cs">
+      <DependentUpon>PreprocessingCreationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\selection view\SelectionLearnStatisticsPage.xaml.cs">
+      <DependentUpon>SelectionLearnStatisticsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\LearnSolverPage.xaml.cs">
+      <DependentUpon>LearnSolverPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\decision tree view\DecisionTreeInfoPage.xaml.cs">
+      <DependentUpon>DecisionTreeInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\selection view\SelectionPageCreation.xaml.cs">
+      <DependentUpon>SelectionPageCreation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\decision tree view\DecisionTreeParameterPage.xaml.cs">
+      <DependentUpon>DecisionTreeParameterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\selection view\ParameterAddPane.xaml.cs">
       <DependentUpon>ParameterAddPane.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\SelectionAddPane.xaml.cs">
+    <Compile Include="gui\solver view\perceptron view\PerceprtonParametersPage.xaml.cs">
+      <DependentUpon>PerceprtonParametersPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\perceptron view\PerceptronInfoPage.xaml.cs">
+      <DependentUpon>PerceptronInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\preprocessing view\PreprocessingInfoPage.xaml.cs">
+      <DependentUpon>PreprocessingInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\selection view\SelectionAddPane.xaml.cs">
       <DependentUpon>SelectionAddPane.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\SelectionInfoPage.xaml.cs">
+    <Compile Include="gui\selection view\SelectionInfoPage.xaml.cs">
       <DependentUpon>SelectionInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\TaskCreationPage.xaml.cs">
+    <Compile Include="gui\solver view\SolvePage.xaml.cs">
+      <DependentUpon>SolvePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\SolverCreationPage.xaml.cs">
+      <DependentUpon>SolverCreationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solution view\SolveStatisticPage.xaml.cs">
+      <DependentUpon>SolveStatisticPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\task view\TaskCreationPage.xaml.cs">
       <DependentUpon>TaskCreationPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\TaskInfoPage.xaml.cs">
+    <Compile Include="gui\task view\TaskInfoPage.xaml.cs">
       <DependentUpon>TaskInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\preprocessing view\TemplateInfoPage.xaml.cs">
+      <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="tools\ActionHandler.cs" />
     <Compile Include="tools\EventArgs.cs" />
-    <Compile Include="view-models\ParameterCreationViewModel.cs" />
-    <Compile Include="view-models\SelectionCreationViewModel.cs" />
-    <Compile Include="view-models\SelectionInfoViewModel.cs" />
-    <Compile Include="view-models\TaskInfoViewModel.cs" />
+    <Compile Include="tools\IDocumentContent.cs" />
+    <Compile Include="view-models\solution view models\CreateSolutionViewModel.cs" />
+    <Compile Include="view-models\scenario view model\LearningScenarioManagerViewModel.cs" />
+    <Compile Include="view-models\selection view models\SelectionLearnStatisticViewModel.cs" />
+    <Compile Include="view-models\solver view models\LearnSolverViewModel.cs" />
+    <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeInfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\perceptron view models\PerceptronInfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\perceptron view models\PerceptronParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\SolverCreationViewModel.cs" />
+    <Compile Include="view-models\MainWindowViewModel.cs" />
+    <Compile Include="view-models\selection view models\ParameterCreationViewModel.cs" />
+    <Compile Include="view-models\preprocessing view models\PreprocessingViewModel.cs" />
+    <Compile Include="view-models\selection view models\SelectionCreationViewModel.cs" />
+    <Compile Include="view-models\selection view models\SelectionInfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\SolveViewModel.cs" />
+    <Compile Include="view-models\solution view models\SolveStatisticViewModel.cs" />
+    <Compile Include="view-models\task view models\TaskInfoViewModel.cs" />
+    <Compile Include="view-models\preprocessing view models\TemplateViewModel.cs" />
     <Compile Include="view-models\tree-section\DecisionTreesTree.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SelectionLeaf.cs" />
+    <Compile Include="view-models\tree-section\leaf-section\SolutionLeaf.cs" />
+    <Compile Include="view-models\tree-section\leaf-section\SolverLeaf.cs" />
     <Compile Include="view-models\tree-section\PerseptronTree.cs" />
     <Compile Include="view-models\tree-section\SelectionTree.cs" />
     <Compile Include="view-models\tree-section\SolutionsTree.cs" />
@@ -124,12 +189,48 @@
     <Compile Include="models\TaskTemplate.cs" />
     <Compile Include="models\ValueParameter.cs" />
     <Compile Include="services\DatabaseManager.cs" />
-    <Compile Include="view-models\TaskCreationViewModel.cs" />
+    <Compile Include="view-models\task view models\TaskCreationViewModel.cs" />
     <Compile Include="view-models\tree-section\TaskTree.cs" />
     <Compile Include="view-models\TaskTreeViewModel.cs" />
     <Compile Include="view-models\tree-section\TreeSection.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
-    <Page Include="gui\CreateSelectionPage.xaml">
+    <Page Include="gui\solution view\CreateSolutionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\CreateLearningScenarioPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\LearningScenarioInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\LearningScenarioManagerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\preprocessing view\PreprocessingCreationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\selection view\SelectionLearnStatisticsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\LearnSolverPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\decision tree view\DecisionTreeInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\selection view\SelectionPageCreation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\decision tree view\DecisionTreeParameterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -145,19 +246,43 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="gui\ParameterAddPane.xaml">
+    <Page Include="gui\selection view\ParameterAddPane.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\SelectionAddPane.xaml">
+    <Page Include="gui\solver view\perceptron view\PerceprtonParametersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\SelectionInfoPage.xaml">
+    <Page Include="gui\solver view\perceptron view\PerceptronInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\TaskCreationPage.xaml">
+    <Page Include="gui\preprocessing view\PreprocessingInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\selection view\SelectionAddPane.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\selection view\SelectionInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\SolvePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\SolverCreationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solution view\SolveStatisticPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\task view\TaskCreationPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -165,7 +290,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\TaskInfoPage.xaml">
+    <Page Include="gui\task view\TaskInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\preprocessing view\TemplateInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

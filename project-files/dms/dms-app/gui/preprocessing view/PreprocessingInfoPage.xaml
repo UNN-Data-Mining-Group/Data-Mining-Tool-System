@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="dms.gui.PreprocessingInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d" >
+    <StackPanel>
+        <Label Content="{Binding PreprocessingName}" ContentStringFormat="Название преобразования: {0}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <Label Content="{Binding BaseTemplate}" ContentStringFormat="Базовый шаблон: {0}"/>
+                <local:TemplateInfoPage DataContext="{Binding BaseTemplateViewModel}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1">
+                <Label Content="{Binding PerformedTemplate}" ContentStringFormat="Порожденный шаблон: {0}"/>
+                <local:TemplateInfoPage DataContext="{Binding PerformedTemplateViewModel}"/>
+            </StackPanel>
+        </Grid>
+        <Label Content="Описание преобразования:"/>
+        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding PreprocessingParameters}" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название параметра"  Binding="{Binding ParameterName}" Width="*"/>
+                <DataGridTextColumn Header="Преобразование" Binding="{Binding Type}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </StackPanel>
+</UserControl>

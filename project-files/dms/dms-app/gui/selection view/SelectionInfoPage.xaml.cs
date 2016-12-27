@@ -13,14 +13,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Xceed.Wpf.AvalonDock.Layout;
+
 using dms.view_models;
+using dms.tools;
 
 namespace dms.gui
 {
     /// <summary>
     /// Interaction logic for SelectionInfoPage.xaml
     /// </summary>
-    public partial class SelectionInfoPage : UserControl
+    public partial class SelectionInfoPage : UserControl, IDocumentContent
     {
         private SelectionInfoViewModel vm;
         public SelectionInfoPage(SelectionInfoViewModel vm)
@@ -33,6 +36,8 @@ namespace dms.gui
 
             calculateColumns();
         }
+
+        public LayoutDocument ParentDocument { get; set; }
 
         private void calculateColumns()
         {

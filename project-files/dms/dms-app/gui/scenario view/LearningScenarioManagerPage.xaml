@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="dms.gui.LearningScenarioManagerPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d">
+    <StackPanel>
+        <DataGrid AutoGenerateColumns="False" SelectionMode="Single" IsReadOnly="True" ItemsSource="{Binding ScenarioList}" SelectedItem="{Binding SelectedScenario}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Алгоритм обучения" Binding="{Binding TeacherType}" Width="*"/>
+                <DataGridTextColumn Header="Разделение выборки" Binding="{Binding SelectionType}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Подробнее" Command="{Binding PropertiesCommand}" Margin="5" Width="100"/>
+            <Button Content="Удалить" Command="{Binding DeleteCommand}" Margin="5" Width="100"/>
+        </StackPanel>
+        <Button Content="Создать новый" Command="{Binding CreateCommand}" Margin="5" Width="100" HorizontalAlignment="Left"/>
+    </StackPanel>
+</UserControl>

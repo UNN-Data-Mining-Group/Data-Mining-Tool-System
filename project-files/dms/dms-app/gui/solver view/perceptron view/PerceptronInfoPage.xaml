@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="dms.gui.PerceptronInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d">
+    <StackPanel>
+        <Label Content="{Binding Name}" ContentStringFormat="Название персептрона: {0}"/>
+        <Label Content="{Binding CountInputNeurons}" ContentStringFormat="Количество входных нейронов: {0}"/>
+        <DataGrid ItemsSource="{Binding Layers}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Номер слоя" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Количество нейронов" Binding="{Binding NeuronsCount}"  Width="*"/>
+                <DataGridTextColumn Header="Активационная функция" Binding="{Binding ActivateFunction}"  Width="*"/>
+                <DataGridTextColumn Header="w0" Binding="{Binding HasW0}"  Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </StackPanel>
+</UserControl>

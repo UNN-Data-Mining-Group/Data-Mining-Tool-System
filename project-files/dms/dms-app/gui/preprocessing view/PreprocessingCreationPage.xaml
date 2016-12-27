@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="dms.gui.PreprocessingCreationPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d">
+    <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Название преобразования:" Grid.Row="0" Grid.Column="0"/>
+            <TextBox Text="{Binding PreprocessingName}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+            <Label Content="Базовый шаблон:" Grid.Row="1" Grid.Column="0"/>
+            <ComboBox ItemsSource="{Binding BaseTemplateList}" SelectedItem="{Binding BaseTemplate}" Margin="5,5,10,5" Grid.Row="1" Grid.Column="1"/>
+        </Grid>
+        <GroupBox Header="Порожденный шаблон">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Content="Использовать существующий" IsChecked="{Binding IsUsingExitingTemplate}" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding PerformedTemplateList}" SelectedItem="{Binding PerformedTemplate}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                <Label Content="Создать новый:" Grid.Row="1" Grid.Column="0"/>
+                <TextBox Text="{Binding NewTemplateName}" Grid.Row="1" Grid.Column="1" Margin="5"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Преобразование параметров:">
+            <ItemsControl ItemsSource="{Binding PreprocessingParameters}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Label Content="{Binding ParameterName}"/>
+                            <ComboBox ItemsSource="{Binding TypesList}" SelectedItem="{Binding Type}" Margin="5,0" Width="120"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Создать" Margin="5" Width="100"/>
+            <Button Content="Отмена" Margin="5" Width="100"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
