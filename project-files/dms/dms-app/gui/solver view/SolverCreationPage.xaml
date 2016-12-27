@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="dms.gui.SolverCreationPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             xmlns:vm="clr-namespace:dms.view_models"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:exToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" >
+    <UserControl.Resources>
+        <DataTemplate x:Key="perceptronTemplate">
+            <local:PerceprtonParametersPage/>
+        </DataTemplate>
+        <DataTemplate x:Key="decisionTreeTemplate">
+            <local:DecisionTreeParameterPage/>
+        </DataTemplate>
+    </UserControl.Resources>
+    <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+            </Grid.RowDefinitions>
+            <Label Content="Название решателя:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+            <exToolkit:WatermarkTextBox Watermark="Введите название решателя" Text="{Binding SolverName}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+            <Label Content="Тип решателя:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SolverTypes}" SelectedItem="{Binding SelectedType}" Margin="5"/>
+        </Grid>
+        <ContentControl Content="{Binding Parameters}">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedType}" Value="Персептрон">
+                            <Setter Property="ContentTemplate" Value="{StaticResource perceptronTemplate}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений">
+                            <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeTemplate}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Создать решатель" Command="{Binding Create}" Width="120" Height="30" Margin="5"/>
+            <Button Content="Отмена" Width="120" Command="{Binding Cancel}" Height="30" Margin="5"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

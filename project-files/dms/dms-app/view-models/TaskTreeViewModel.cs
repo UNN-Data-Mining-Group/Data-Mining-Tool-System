@@ -12,12 +12,6 @@ namespace dms.view_models
     public class TaskTreeViewModel : ViewmodelBase
     {
         private ObservableCollection<TaskTree> tasks;
-        private ActionHandler createTask;
-
-        public event EventHandler<EventArgs<TaskCreationViewModel>> requestTaskCreation;
-        public event EventHandler<EventArgs<SelectionCreationViewModel>> requestSelectionCreation;
-        public event EventHandler<EventArgs<TaskInfoViewModel>> requestTaskInfoShow;
-        public event EventHandler<EventArgs<SelectionInfoViewModel>> requestSelectionInfoShow;
 
         public TaskTreeViewModel()
         {
@@ -36,9 +30,9 @@ namespace dms.view_models
                     new string[] { "Решение 1"},
                     this)
                 };
-
-            createTask = new ActionHandler(ShowCreateTaskDialog, e => true);
         }
+
+        public event Action<ViewmodelBase> requestViewCreation;
 
         public ObservableCollection<TaskTree> Tasks
         {
@@ -46,75 +40,14 @@ namespace dms.view_models
             set { tasks = value; NotifyPropertyChanged(); }
         }
 
-        public ICommand ShowCreateTaskDialogCommand
+        public void SendRequestCreateView(ViewmodelBase vm)
         {
-            get { return createTask; }
+            requestViewCreation?.Invoke(vm);
         }
 
-        public void DeleteTask(string taskName)
+        public void UpdateTaskTree()
         {
-            TaskTree t = null;
-            foreach(TaskTree item in Tasks)
-            {
-                if (item.Title.Equals(taskName))
-                {
-                    t = item;
-                    break;
-                }
-            }
-            if (t != null)
-            {
-                Tasks.Remove(t);
-            }
-        }
 
-        public void ShowCreateTaskDialog()
-        {
-            TaskCreationViewModel t = new TaskCreationViewModel();
-            requestTaskCreation?.Invoke(this, new EventArgs<TaskCreationViewModel>(t));
-        }
-
-        public void ShowTaskInfoDialog(string taskName)
-        {
-            TaskInfoViewModel t = new TaskInfoViewModel(taskName);
-            requestTaskInfoShow?.Invoke(this, new EventArgs<TaskInfoViewModel>(t));
-        }
-
-        public void ShowSelectionInfoDialog(string taskName, string selectionName)
-        {
-            SelectionInfoViewModel t = new SelectionInfoViewModel(taskName, selectionName);
-            requestSelectionInfoShow?.Invoke(this, new EventArgs<SelectionInfoViewModel>(t));
-        }
-
-        public void ShowCreateSelectionDialog(string taskName)
-        {
-            SelectionCreationViewModel t = new SelectionCreationViewModel(taskName);
-            requestSelectionCreation?.Invoke(this, new EventArgs<SelectionCreationViewModel>(t));
-        }
-
-        public void DeleteSelection(string task, string selection)
-        {
-            foreach(TaskTree t in Tasks)
-            {
-                if(t.Title.Equals(task))
-                {
-                    SelectionTree st = t.Content[0] as SelectionTree;
-                    SelectionLeaf toDelete = null;
-                    foreach (SelectionLeaf s in st.Content)
-                    {
-                        if(s.Title.Equals(selection))
-                        {
-                            toDelete = s;
-                            break;
-                        }
-                    }
-                    if (toDelete != null)
-                    {
-                        st.Content.Remove(toDelete);
-                        return;
-                    }
-                }
-            }
         }
     }
 }

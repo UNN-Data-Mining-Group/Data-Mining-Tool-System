@@ -12,13 +12,16 @@ namespace dms.view_models
     public class SelectionTree : TreeSection
     {
         private ActionHandler createSelection;
-        private ActionHandler deleteSelection;
 
         public SelectionTree(string taskName, string[] selections, 
             TaskTreeViewModel vm) : base("Выборки")
         {
-            this.createSelection = new ActionHandler(() => vm.ShowCreateSelectionDialog(taskName), e => true);
-            this.deleteSelection = new ActionHandler(() => vm.DeleteSelection(taskName, Title), e => true);
+            createSelection = new ActionHandler(() => 
+            {
+                SelectionCreationViewModel t = new SelectionCreationViewModel(taskName);
+                vm.SendRequestCreateView(t);
+            }, e => true);
+
             ParentTask = taskName;
             Content = new ObservableCollection<TreeSection>();
             for(int i = 0; i < selections.Length; i++)

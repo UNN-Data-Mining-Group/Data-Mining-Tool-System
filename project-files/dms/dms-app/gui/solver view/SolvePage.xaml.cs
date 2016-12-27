@@ -10,30 +10,22 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using System.Runtime.Serialization.Formatters.Binary;
-
 using dms.view_models;
-using dms.models;
-using System.IO;
-using System.IO.Compression;
 
 namespace dms.gui
 {
-
     /// <summary>
-    /// Interaction logic for TaskCreation.xaml
+    /// Interaction logic for SolvePage.xaml
     /// </summary>
-    public partial class TaskCreationPage : UserControl
+    public partial class SolvePage : UserControl
     {
-        TaskCreationViewModel viewModel;
-        public TaskCreationPage(TaskCreationViewModel vm)
+        public SolvePage(SolveViewModel vm)
         {
             InitializeComponent();
-
-            viewModel = vm;
-            DataContext = viewModel;
+            DataContext = vm;
         }
     }
 }

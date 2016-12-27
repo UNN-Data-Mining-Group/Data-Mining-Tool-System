@@ -22,70 +22,121 @@ namespace dms.gui
     /// <summary>
     /// Interaction logic for TaskDirectoryPage.xaml
     /// </summary>
-    public partial class TaskDirectoryPage : UserControl
+    public partial class TaskDirectoryPage : UserControl, IDocumentContent
     {
         private TaskTreeViewModel taskVM = new TaskTreeViewModel();
-        private LayoutDocumentPane parentArea;
 
-        public TaskDirectoryPage(LayoutDocumentPane parentArea)
+        public LayoutDocument ParentDocument { get; set; }
+
+        public event Action<string, UserControl> OnShowPage;
+
+        public TaskDirectoryPage()
         {
             InitializeComponent();
 
-            this.parentArea = parentArea;
             DataContext = taskVM;
-
-            taskVM.requestTaskCreation += TaskVM_requestTaskCreation;
-            taskVM.requestSelectionCreation += TaskVM_requestSelectionCreation;
-            taskVM.requestTaskInfoShow += TaskVM_requestTaskInfoShow;
-            taskVM.requestSelectionInfoShow += TaskVM_requestSelectionInfoShow;
+            taskVM.requestViewCreation += CreateView;
         }
 
-        private void TaskVM_requestSelectionInfoShow(object sender, EventArgs<SelectionInfoViewModel> e)
+        private void CreateView(ViewmodelBase vm)
         {
-            SelectionInfoPage t = new SelectionInfoPage(e.Data);
-
-            LayoutDocument d = new LayoutDocument();
-            d.Title = e.Data.TaskName + "/" + e.Data.SelectionName + "/Информация";
-            d.Content = t;
-
-            parentArea.Children.Add(d);
-            d.IsActive = true;
+            if (vm is SolverCreationViewModel)
+                CreateSolverCreationPage(vm as SolverCreationViewModel);
+            else if (vm is SelectionInfoViewModel)
+                CreateSelectionInfoPage(vm as SelectionInfoViewModel);
+            else if (vm is TaskInfoViewModel)
+                CreateTaskInfoPage(vm as TaskInfoViewModel);
+            else if (vm is SelectionCreationViewModel)
+                CreateSelectionCreationPage(vm as SelectionCreationViewModel);
+            else if (vm is PerceptronInfoViewModel)
+                CreatePerceptronInfoPage(vm as PerceptronInfoViewModel);
+            else if (vm is DecisionTreeInfoViewModel)
+                CreateDecisionTreeInfoPage(vm as DecisionTreeInfoViewModel);
+            else if (vm is SolveViewModel)
+                CreateSolvePage(vm as SolveViewModel);
+            else if (vm is LearnSolverViewModel)
+                CreateLearnSolverPage(vm as LearnSolverViewModel);
+            else if (vm is SelectionLearnStatisticViewModel)
+                CreateSelectionLearnStatisticPage(vm as SelectionLearnStatisticViewModel);
+            else if (vm is PreprocessingViewModel)
+                CreatePreprocessingCreationPage(vm as PreprocessingViewModel);
+            else if (vm is CreateSolutionViewModel)
+                CreateSolutionCreationPage(vm as CreateSolutionViewModel);
+            else if (vm is SolveStatisticViewModel)
+                CreateSolveStatisticPage(vm as SolveStatisticViewModel);
         }
 
-        private void TaskVM_requestTaskInfoShow(object sender, EventArgs<TaskInfoViewModel> e)
+        private void CreateSolverCreationPage(SolverCreationViewModel obj)
         {
-            TaskInfoPage t = new TaskInfoPage(e.Data);
-
-            LayoutDocument d = new LayoutDocument();
-            d.Title = e.Data.TaskName + "/Информация";
-            d.Content = t;
-
-            parentArea.Children.Add(d);
-            d.IsActive = true;
+            SolverCreationPage t = new SolverCreationPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/Создание решателя", t);
         }
 
-        private void TaskVM_requestSelectionCreation(object sender, EventArgs<SelectionCreationViewModel> e)
+        private void CreateSelectionInfoPage(SelectionInfoViewModel obj)
         {
-            CreateSelectionPage t = new CreateSelectionPage(e.Data);
-
-            LayoutDocument d = new LayoutDocument();
-            d.Title = e.Data.ParentTask + "/Создание выборки";
-            d.Content = t;
-
-            parentArea.Children.Add(d);
-            d.IsActive = true;
+            SelectionInfoPage t = new SelectionInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.SelectionName + "/Информация", t);
         }
 
-        private void TaskVM_requestTaskCreation(object sender, EventArgs<TaskCreationViewModel> e)
+        private void CreateTaskInfoPage(TaskInfoViewModel obj)
         {
-            TaskCreationPage t = new TaskCreationPage(e.Data);
+            TaskInfoPage t = new TaskInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/Информация", t);
+            obj.OnShowPreprocessingDetails += (p) => OnShowPage?.Invoke(obj.TaskName + "/" + p.PreprocessingName, new PreprocessingInfoPage(p));
+        }
 
-            LayoutDocument d = new LayoutDocument();
-            d.Title = "Создание задачи";
-            d.Content = t;
+        private void CreateSelectionCreationPage(SelectionCreationViewModel obj)
+        {
+            CreateSelectionPage t = new CreateSelectionPage(obj);
+            OnShowPage?.Invoke(obj.ParentTask + "/Создание выборки", t);
+        }
 
-            parentArea.Children.Add(d);
-            d.IsActive = true;
+        private void CreatePerceptronInfoPage(PerceptronInfoViewModel obj)
+        {
+            PerceptronInfoPage t = new PerceptronInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
+        }
+
+        private void CreateDecisionTreeInfoPage(DecisionTreeInfoViewModel obj)
+        {
+            DecisionTreeInfoPage t = new DecisionTreeInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
+        }
+
+        private void CreateSolvePage(SolveViewModel obj)
+        {
+            SolvePage t = new SolvePage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.SolverName + "/Решение", t);
+        }
+
+        private void CreateLearnSolverPage(LearnSolverViewModel obj)
+        {
+            LearnSolverPage t = new LearnSolverPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.SolverName + "/Обучение", t);
+        }
+
+        private void CreateSelectionLearnStatisticPage(SelectionLearnStatisticViewModel obj)
+        {
+            SelectionLearnStatisticsPage t = new SelectionLearnStatisticsPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.SelectionName + "/Качество обучения", t);
+        }
+
+        private void CreatePreprocessingCreationPage(PreprocessingViewModel obj)
+        {
+            PreprocessingCreationPage t = new PreprocessingCreationPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/Создание преобразования", t);
+        }
+
+        public void CreateSolutionCreationPage(CreateSolutionViewModel obj)
+        {
+            CreateSolutionPage t = new CreateSolutionPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/Создание решения", t);
+        }
+
+        public void CreateSolveStatisticPage(SolveStatisticViewModel obj)
+        {
+            SolveStatisticPage t = new SolveStatisticPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name, t);
         }
     }
 }

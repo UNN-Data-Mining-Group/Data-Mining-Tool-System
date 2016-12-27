@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="dms.gui.SelectionLearnStatisticsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d">
+    <StackPanel>
+        <GroupBox Header="Статистика обучения решателей" Margin="5">
+            <ItemsControl ItemsSource="{Binding LearnedSolvers}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Border HorizontalAlignment="Left" BorderBrush="Black" BorderThickness="1" MinWidth="100" Height="130" Margin="5">
+                                <Label Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding PreprocessingList}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border HorizontalAlignment="Left" BorderBrush="Black" BorderThickness="1" Height="130" Margin="5">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Label Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="0"/>
+                                                    <ItemsControl ItemsSource="{Binding LearningStatistics}" Grid.Row="1">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Border HorizontalAlignment="Left" BorderBrush="Black" BorderThickness="1" Height="80" Margin="5">
+                                                                    <StackPanel>
+                                                                        <Label Content="{Binding LearningScenarioName}"/>
+                                                                        <Label Content="{Binding MisstakeTrain}" ContentStringFormat="Train = {0}"/>
+                                                                        <Label Content="{Binding MisstakeTest}" ContentStringFormat="Test = {0}"/>
+                                                                    </StackPanel>
+                                                                </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Grid>
+                                            </Border>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+        <GroupBox Header="Обучение" Margin="5">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding SolversToLearn}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="5">
+                                        <ComboBox ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName}"/>
+                                        <Button Content="x" Margin="5,0" Width="25" Command="{Binding DeleteCommand}"/>
+                                    </StackPanel>
+                                    <ItemsControl Margin="30, 0" ItemsSource="{Binding LearningDetails}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                                    <ComboBox ItemsSource="{Binding LearningScenarios}" SelectedItem="{Binding SelectedScenario}"/>
+                                                    <ComboBox ItemsSource="{Binding Preprocessings}" SelectedItem="{Binding SelectedPreprocessing}" Margin="5,0"/>
+                                                    <Button Content="x" Width="25" Command="{Binding DeleteCommand}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Button Content="+" Margin="30,5,0,0" Width="25" HorizontalAlignment="Left" Command="{Binding AddCommand}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Content="+" Margin="5" Width="25" HorizontalAlignment="Left" Command="{Binding AddCommand}"/>
+                    <Button Content="Обучить" Margin="5" Width="100" HorizontalAlignment="Left" Command="{Binding LearnCommand}"/>
+                </StackPanel>
+            </ScrollViewer>
+        </GroupBox>
+    </StackPanel>
+</UserControl>

@@ -12,16 +12,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.AvalonDock.Layout;
+
+using dms.tools;
 using dms.view_models;
 
 namespace dms.gui
 {
     /// <summary>
-    /// Interaction logic for CreateSelectionPage.xaml
+    /// Interaction logic for PreprocessingInfoPage.xaml
     /// </summary>
-    public partial class CreateSelectionPage : UserControl
+    public partial class PreprocessingInfoPage : UserControl
     {
-        public CreateSelectionPage(SelectionCreationViewModel vm)
+        public PreprocessingInfoPage(PreprocessingViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
