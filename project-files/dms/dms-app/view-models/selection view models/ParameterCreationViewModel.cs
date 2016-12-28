@@ -20,11 +20,11 @@ namespace dms.view_models
         public string Comment { get { return comment; } set { comment = value; NotifyPropertyChanged(); } }
         public string KindOfParameter { get { return isOutput ? "Выходной" : "Входной"; } set { isOutput = value.Equals("Выходной"); NotifyPropertyChanged(); } }
 
-        public List<string> AvaliableTypes { get { return new List<string> { "int", "float", "enum" }; } }
+        public List<string> AvaliableTypes { get { return new List<string> { "int(5)", "float(5)", "enum(5)" }; } }
         public List<string> ParameterKinds { get { return new List<string> { "Входной", "Выходной" }; } }
 
         public ParameterCreationViewModel(int index = -1,
-            string name = "Parameter 1", string type = "float", bool output = false)
+            string name = "Parameter 1", string type = "float(5)", bool output = false)
         {
             Index = index;
             Name = name;
