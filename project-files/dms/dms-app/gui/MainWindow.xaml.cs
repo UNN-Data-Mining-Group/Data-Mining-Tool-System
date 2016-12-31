@@ -32,24 +32,37 @@ namespace dms.gui
             var vm = new MainWindowViewModel();
             DataContext = vm;
             vm.requestTaskCreation += (s, e) => { var p = new TaskCreationPage(e.Data); ShowPage("Создание задачи", p); };
-            vm.requestTaskTreeShow += (visible) =>
-            {
-                if (visible && taskPanel.Parent == null)
-                {
-                    windowPanel.Children.Insert(0, taskPanelPane);
-                    taskPanelPane.Children.Add(taskPanel);
-                    taskPanel.Show();
-                }
-                else if (!visible && taskPanel.Parent != null)
-                {
-                    taskPanel.Close();
-                }
-            };
+            vm.requestTaskTreeShow += (v) => SetPropertyWindowVisibility(v, taskPanel, taskPanelPane);
+            vm.requestLearnPaneShow += (v) => SetPropertyWindowVisibility(v, learnPanel, learnPanelPane);
             vm.requestLSShow += (e) => { var p = new LearningScenarioManagerPage(e); p.OnShowPage += ShowPage; ShowPage("Сценарии обучения", p); };
 
             TaskDirectoryPage t = new TaskDirectoryPage();
             t.OnShowPage += ShowPage;
             taskPanel.Content = t;
+
+            LearnProcessPage k = new LearnProcessPage();
+            learnPanel.Content = k;
+        }
+
+        private void SetPropertyWindowVisibility(bool isVisible, 
+            LayoutAnchorable window, LayoutAnchorablePane container)
+        {
+            if (isVisible && window.Parent == null)
+            {
+                if (propertyWindowGroup.Parent == null)
+                    windowPanel.Children.Insert(0, propertyWindowGroup);
+
+                if (window == taskPanel)
+                    propertyWindowGroup.Children.Insert(0,container);
+                else
+                    propertyWindowGroup.Children.Add(container);
+                container.Children.Add(window);
+                window.Show();
+            }
+            else if (!isVisible && window.Parent != null)
+            {
+                window.Close();
+            }
         }
 
         private void ShowPage(string title, UserControl control)

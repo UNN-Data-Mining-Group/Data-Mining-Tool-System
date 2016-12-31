@@ -82,6 +82,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="gui\LearnProcessPage.xaml.cs">
+      <DependentUpon>LearnProcessPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solution view\CreateSolutionPage.xaml.cs">
       <DependentUpon>CreateSolutionPage.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,7 @@
     <Compile Include="tools\ActionHandler.cs" />
     <Compile Include="tools\EventArgs.cs" />
     <Compile Include="tools\IDocumentContent.cs" />
+    <Compile Include="view-models\LearningProcessViewModel.cs" />
     <Compile Include="view-models\solution view models\CreateSolutionViewModel.cs" />
     <Compile Include="view-models\scenario view model\LearningScenarioManagerViewModel.cs" />
     <Compile Include="view-models\selection view models\SelectionLearnStatisticViewModel.cs" />
@@ -194,6 +198,10 @@
     <Compile Include="view-models\TaskTreeViewModel.cs" />
     <Compile Include="view-models\tree-section\TreeSection.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
+    <Page Include="gui\LearnProcessPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="gui\solution view\CreateSolutionPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

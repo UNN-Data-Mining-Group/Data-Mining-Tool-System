@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="dms.gui.LearnProcessPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d">
+    <ListBox ItemsSource="{Binding LearningProcessList}">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Border BorderBrush="Black" BorderThickness="1" Margin="0,0,0,5">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <Label Content="{Binding SolverName}"/>
+                                <Label Content="{Binding ScenarioName}"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding TaskName}"/>
+                                    <Label Content="{Binding SelectionName}"/>
+                                    <Label Content="{Binding PreprocessingName}" ContentStringFormat="({0})"/>
+                                </StackPanel>
+                                <Label Content="{Binding Progress}" ContentStringFormat="Прогресс обучения: {0} %"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{Binding TrainErr}" ContentStringFormat="Train: {0}"/>
+                                    <Label Content="{Binding TestErr}" ContentStringFormat="Test: {0}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel>
+                                <Button Content="v" IsEnabled="{Binding CanWriteResults}" Height="55" Width="25" Margin="5"/>
+                                <Button Content="x" Height="55" Width="25" Margin="5"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>

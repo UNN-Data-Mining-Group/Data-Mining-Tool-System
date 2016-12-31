@@ -14,12 +14,14 @@ namespace dms.view_models
         public MainWindowViewModel()
         {
             IsTaskTreeVisible = true;
+            IsLearnPaneVisible = true;
             createTask = new ActionHandler(ShowCreateTaskDialog, e => true);
             showScenarios = new ActionHandler(ShowLearningScenariosManager, e => true);
         }
 
         public event EventHandler<EventArgs<TaskCreationViewModel>> requestTaskCreation;
         public event Action<bool> requestTaskTreeShow;
+        public event Action<bool> requestLearnPaneShow;
         public event Action<LearningScenarioManagerViewModel> requestLSShow;
 
         public bool IsTaskTreeVisible
@@ -35,6 +37,21 @@ namespace dms.view_models
                 }
             }
         }
+
+        public bool IsLearnPaneVisible
+        {
+            get { return isLearnPaneVisible; }
+            set
+            {
+                if (value != IsLearnPaneVisible)
+                {
+                    requestLearnPaneShow?.Invoke(value);
+                    isLearnPaneVisible = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
         public ICommand ShowCreateTaskDialogCommand
         {
             get { return createTask; }
@@ -59,5 +76,6 @@ namespace dms.view_models
         private ActionHandler showScenarios;
         private ActionHandler createTask;
         private bool isTaskTreeVisible;
+        private bool isLearnPaneVisible;
     }
 }
