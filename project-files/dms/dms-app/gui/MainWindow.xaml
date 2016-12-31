@@ -28,18 +28,25 @@
                 </StackPanel>
             </TabItem>
             <TabItem Header="Вид">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical">
                     <CheckBox Content="Панель задач" Margin="5" IsChecked="{Binding IsTaskTreeVisible}"/>
+                    <CheckBox Content="Панель обучения" Margin="5" IsChecked="{Binding IsLearnPaneVisible}"/>
                 </StackPanel>
             </TabItem>
         </TabControl>
         <ad:DockingManager x:Name="dockManager" Grid.Row="1" Margin="5" DocumentClosed="CleanDocumentArea">
             <ad:LayoutRoot x:Name="root">
                 <ad:LayoutPanel x:Name="windowPanel">
-                    <ad:LayoutAnchorablePane DockWidth="300" x:Name="taskPanelPane">
-                        <ad:LayoutAnchorable Title="Панель Задач" x:Name="taskPanel" CanHide="False">
-                        </ad:LayoutAnchorable>
-                    </ad:LayoutAnchorablePane>
+                    <ad:LayoutAnchorablePaneGroup x:Name="propertyWindowGroup" DockWidth="300" Orientation="Vertical">
+                        <ad:LayoutAnchorablePane x:Name="taskPanelPane" DockWidth="300">
+                            <ad:LayoutAnchorable Title="Панель Задач" x:Name="taskPanel" CanHide="False">
+                            </ad:LayoutAnchorable>
+                        </ad:LayoutAnchorablePane>
+                        <ad:LayoutAnchorablePane x:Name="learnPanelPane" DockWidth="300">
+                            <ad:LayoutAnchorable Title="Панель обучения" x:Name="learnPanel" CanHide="False">
+                            </ad:LayoutAnchorable>
+                        </ad:LayoutAnchorablePane>
+                    </ad:LayoutAnchorablePaneGroup>
                     <ad:LayoutDocumentPane x:Name="documentPane" ShowHeader="False">
                         <ad:LayoutAnchorable CanClose="False" CanFloat="False">
                             <Border Background="DarkGray">

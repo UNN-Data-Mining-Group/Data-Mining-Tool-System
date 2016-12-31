@@ -76,6 +76,7 @@ namespace dms.view_models
         public string SelectedTemplate { get { return selectedTemplate; } set { selectedTemplate = value; NotifyPropertyChanged(); } }
         public ObservableCollection<string> TemplateList { get { return templateList; } set { templateList = value; NotifyPropertyChanged(); } }
         public string NewTemplateName { get { return newTemplateName; } set { newTemplateName = value; NotifyPropertyChanged(); } }
+        public float EnumPercent { get; set; }
 
         public ObservableCollection<ParameterCreationViewModel> Parameters { get; set; }
 
@@ -88,6 +89,7 @@ namespace dms.view_models
             CountRows = 0;
             FilePath = "";
             Delimiter = ",";
+            EnumPercent = 5;
 
             browseFileCommandHandler = new ActionHandler(BrowseFile, (o) => true);
             cancelHandler = new ActionHandler(Cancel, o => true);
@@ -123,7 +125,7 @@ namespace dms.view_models
 
             Parameters.Clear();
             Parameters.Add(new ParameterCreationViewModel(1));
-            Parameters.Add(new ParameterCreationViewModel(2, "Parameter 2", "enum", true));
+            Parameters.Add(new ParameterCreationViewModel(2, "Parameter 2", "enum(5)", true));
 
             TemplateList.Clear();
             TemplateList.Add("шаблон 1");
