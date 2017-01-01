@@ -6,9 +6,7 @@
       xmlns:local="clr-namespace:dms.gui"
       xmlns:vm="clr-namespace:dms.view_models"
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
-      mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
-      >
+      mc:Ignorable="d" >
     <TreeView Grid.Row="0" ItemsSource="{Binding Tasks}">
         <TreeView.Resources>
             <HierarchicalDataTemplate DataType="{x:Type vm:TaskTree}" ItemsSource="{Binding Content}">

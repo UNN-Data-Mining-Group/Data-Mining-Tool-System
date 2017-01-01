@@ -4,16 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using dms.solvers;
+
 namespace dms.models
 {
-    interface ISolver
-    {
-        float[] solve(float[] parameters);
-        int getInputsCount();
-        int getOutputsCount();
-        List<string> getAttributes();
-    }
-
     class LearnedSolver : Entity
     {
         private int selectionID;
