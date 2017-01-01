@@ -340,6 +340,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dms-solvers\dms-solvers.vcxproj">
+      <Project>{aa5667b0-8a83-4e4d-941c-62ed5cabd487}</Project>
+      <Name>dms-solvers</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
