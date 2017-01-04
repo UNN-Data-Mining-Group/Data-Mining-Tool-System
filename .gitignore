@@ -3,6 +3,7 @@
 
 # Visual Paradigm temp files
 *.vpp~*
+*.vpp.*
 
 # User-specific files
 *.suo
@@ -82,6 +83,7 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
+*.VC.db
 
 # Visual Studio profiler
 *.psess
