@@ -133,12 +133,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DelayCell.h" />
+    <ClInclude Include="ICell.h" />
+    <ClInclude Include="INeuron.h" />
+    <ClInclude Include="InputCell.h" />
     <ClInclude Include="ISolver.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="DelayCell.cpp" />
+    <ClCompile Include="INeuron.cpp" />
+    <ClCompile Include="InputCell.cpp" />
     <ClCompile Include="ISolver.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
