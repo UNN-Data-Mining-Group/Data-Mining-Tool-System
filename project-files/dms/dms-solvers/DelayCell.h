@@ -12,6 +12,7 @@ namespace dms::solvers::neural_nets
 		void addConnection(INeuron^ n);
 		array<INeuron^>^ getConnections();
 		bool isConnected(INeuron^ n);
+		virtual float getOutput();
 	private:
 		List<INeuron^> delayedNeurons;
 	};

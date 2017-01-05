@@ -17,4 +17,8 @@ namespace dms::solvers::neural_nets
 	{
 		return delayedNeurons.Contains(n);
 	}
+	float DelayCell::getOutput()
+	{
+		return 1.0f;
+	}
 }

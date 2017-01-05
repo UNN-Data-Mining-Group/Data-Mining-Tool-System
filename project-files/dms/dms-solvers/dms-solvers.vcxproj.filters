@@ -48,6 +48,30 @@
     <ClInclude Include="INeuron.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IActivateFunction.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ISoftAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IdentityAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryStepAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogisticAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TanhAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftplusAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BentIdentityAF.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -67,6 +91,24 @@
     </ClCompile>
     <ClCompile Include="INeuron.cpp">
       <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IdentityAF.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryStepAF.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogisticAF.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TanhAF.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftplusAF.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BentIdentityAF.cpp">
+      <Filter>Common\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
