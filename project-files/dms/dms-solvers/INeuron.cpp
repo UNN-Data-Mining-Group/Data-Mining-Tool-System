@@ -31,4 +31,10 @@ namespace dms::solvers::neural_nets
 		weights_src = nullptr;
 		weights_src_size = 0;
 	}
+
+	int INeuron::getWeightsPointer(float* &dest)
+	{
+		dest = weights_src;
+		return weights_src_size;
+	}
 }

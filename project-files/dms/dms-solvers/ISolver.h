@@ -15,7 +15,7 @@ namespace dms::solvers
 		{}
 	};
 
-	public ref class ISolver
+	public ref class ISolver abstract
 	{
 	public:
 		ISolver(Int32 inputs, Int32 outputs);

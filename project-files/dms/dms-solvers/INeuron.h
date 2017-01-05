@@ -4,7 +4,7 @@
 
 namespace dms::solvers::neural_nets
 {
-	public ref class INeuron
+	public ref class INeuron abstract
 	{
 	public:
 		INeuron()
@@ -18,15 +18,18 @@ namespace dms::solvers::neural_nets
 		}
 
 		//Установления указателя на массив, где лежат веса нейрона
-		virtual void setWeigthsSource(float* src, int wcount);
+		void setWeigthsSource(float* src, int wcount);
 
 		//Установка весов нейрона. Если перед вызовом данного метода
 		//источник весов не был установлен, веса не будут выставлены
-	    virtual void setWeights(array<float>^ w);
+	    void setWeights(array<float>^ w);
 
-		virtual array<float>^ getWeights();
+		array<float>^ getWeights();
+
 		virtual float getResult(array<float>^ x) = 0;
 		virtual float getWeightedSum() = 0;
+	protected:
+		int getWeightsPointer(float* &dest);
 	private:
 		float* weights_src;
 		int weights_src_size;

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ISoftAF.h"
 
 namespace dms::solvers::neural_nets

@@ -8,7 +8,7 @@ namespace dms::solvers::neural_nets
 	public:
 		InputCell(float input);
 		void setInput(float input);
-		virtual float getOutput() override;
+		virtual float getOutput();
 	private:
 		float input;
 	};

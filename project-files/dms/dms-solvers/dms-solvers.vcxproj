@@ -102,6 +102,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -144,6 +145,7 @@
     <ClInclude Include="ISoftAF.h" />
     <ClInclude Include="ISolver.h" />
     <ClInclude Include="LogisticAF.h" />
+    <ClInclude Include="RegularNeuron.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SoftplusAF.h" />
     <ClInclude Include="Stdafx.h" />
@@ -159,6 +161,7 @@
     <ClCompile Include="InputCell.cpp" />
     <ClCompile Include="ISolver.cpp" />
     <ClCompile Include="LogisticAF.cpp" />
+    <ClCompile Include="RegularNeuron.cpp" />
     <ClCompile Include="SoftplusAF.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

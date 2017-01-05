@@ -72,6 +72,9 @@
     <ClInclude Include="BentIdentityAF.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RegularNeuron.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -109,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="BentIdentityAF.cpp">
       <Filter>Common\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegularNeuron.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
