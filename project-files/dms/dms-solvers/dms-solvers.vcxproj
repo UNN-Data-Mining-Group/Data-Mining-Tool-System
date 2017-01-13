@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\nn-native\Perceptron.h" />
+    <ClInclude Include="ActivateFunctionsFactory.h" />
     <ClInclude Include="BentIdentityAF.h" />
     <ClInclude Include="BinaryStepAF.h" />
     <ClInclude Include="IActivateFunction.h" />
@@ -152,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\nn-native\Perceptron.cpp" />
+    <ClCompile Include="ActivateFunctionsFactory.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="BentIdentityAF.cpp" />
     <ClCompile Include="BinaryStepAF.cpp" />

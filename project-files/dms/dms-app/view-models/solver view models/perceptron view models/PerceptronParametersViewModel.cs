@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
+using dms.solvers.neural_nets;
 using dms.tools;
+using dms.models;
 
 namespace dms.view_models
 {
@@ -20,7 +22,7 @@ namespace dms.view_models
             deleteHandler = new ActionHandler(()=>delete(this), o => true);
             Number = number;
             NeuronsCount = 1;
-            ActivateFunctions = new string[] { "Сигмоидальная", "Пороговая" };
+            ActivateFunctions = ActivateFunctionsFactory.GetAllTypeNames();
             SelectedAF = ActivateFunctions[0];
             IsUsingW0 = true;
         }
@@ -32,6 +34,7 @@ namespace dms.view_models
         public bool IsUsingW0 { get; set; }
         public ICommand Delete { get { return deleteHandler; } }
     }
+
     public class PerceptronParametersViewModel : ISolverParameterViewModel
     {
         private ActionHandler addLayerHandler;
@@ -69,12 +72,39 @@ namespace dms.view_models
 
         public void CreateSolver(string name, string taskName)
         {
-            
+            int layers = 2 + HiddenLayers.Count;
+            int[] neurons = new int[layers];
+            bool[] delays = new bool[layers - 1];
+            IActivateFunction[] afs = new IActivateFunction[layers - 1];
+
+            neurons[0] = InputNeuronsCount;
+            for (int i = 1; i < layers - 1; i++)
+                neurons[i] = HiddenLayers[i-1].NeuronsCount;
+            neurons[layers - 1] = OutputLayer.NeuronsCount;
+
+            for(int i = 0; i < layers - 2; i++)
+            {
+                delays[i] = HiddenLayers[i].IsUsingW0;
+                afs[i] = ActivateFunctionsFactory.CreateActivateFunction(HiddenLayers[i].SelectedAF);
+            }
+            delays[layers - 2] = OutputLayer.IsUsingW0;
+            afs[layers - 2] = ActivateFunctionsFactory.CreateActivateFunction(OutputLayer.SelectedAF);
+
+            PerceptronTopology t = new PerceptronTopology(layers, neurons, delays, afs);
+            TaskSolver ts = new TaskSolver()
+            {
+                Name = name,
+                TypeName = "Perceptron",
+                TaskID = -1, //WTF?
+                Description = t
+            };
+
+            ts.save();
         }
 
         public bool CanCreateSolver(string name, string taskName)
         {
-            return HiddenLayers.Count > 0;
+            return true;
         }
     }
 }

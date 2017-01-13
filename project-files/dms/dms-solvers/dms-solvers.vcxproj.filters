@@ -87,6 +87,9 @@
     <ClInclude Include="PerceptronManaged.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ActivateFunctionsFactory.h">
+      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="PerceptronManaged.cpp">
       <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActivateFunctionsFactory.cpp">
+      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
