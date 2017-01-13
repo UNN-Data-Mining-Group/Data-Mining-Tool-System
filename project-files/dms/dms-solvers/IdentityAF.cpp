@@ -1,4 +1,3 @@
-#include "Stdafx.h"
 #include "IdentityAF.h"
 
 namespace dms::solvers::neural_nets

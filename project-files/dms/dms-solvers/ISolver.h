@@ -20,9 +20,9 @@ namespace dms::solvers
 	public:
 		ISolver(Int32 inputs, Int32 outputs);
 
-		virtual array<Single>^ solve(array<Single>^ x) = 0;
-		virtual Int32 getInputsCount();
-		virtual Int32 getOutputsCount();
+		virtual array<Single>^ Solve(array<Single>^ x) = 0;
+		virtual Int32 GetInputsCount();
+		virtual Int32 GetOutputsCount();
 		virtual std::vector<std::string> getAttributes();
 		virtual std::vector<LearningOperation> getOperations();
 

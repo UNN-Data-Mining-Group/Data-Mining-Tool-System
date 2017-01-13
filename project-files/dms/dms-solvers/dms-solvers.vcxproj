@@ -101,7 +101,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -122,7 +122,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -134,45 +135,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\nn-native\Perceptron.h" />
     <ClInclude Include="BentIdentityAF.h" />
     <ClInclude Include="BinaryStepAF.h" />
-    <ClInclude Include="DelayCell.h" />
     <ClInclude Include="IActivateFunction.h" />
-    <ClInclude Include="ICell.h" />
     <ClInclude Include="IdentityAF.h" />
-    <ClInclude Include="INeuron.h" />
-    <ClInclude Include="InputCell.h" />
+    <ClInclude Include="PerceptronManaged.h" />
     <ClInclude Include="PerceptronTopology.h" />
     <ClInclude Include="ISoftAF.h" />
     <ClInclude Include="ISolver.h" />
     <ClInclude Include="ISolverDescription.h" />
-    <ClInclude Include="ITopology.h" />
     <ClInclude Include="LogisticAF.h" />
-    <ClInclude Include="RegularNeuron.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SoftplusAF.h" />
-    <ClInclude Include="Stdafx.h" />
     <ClInclude Include="TanhAF.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\nn-native\Perceptron.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="BentIdentityAF.cpp" />
     <ClCompile Include="BinaryStepAF.cpp" />
-    <ClCompile Include="DelayCell.cpp" />
     <ClCompile Include="IdentityAF.cpp" />
-    <ClCompile Include="INeuron.cpp" />
-    <ClCompile Include="InputCell.cpp" />
+    <ClCompile Include="PerceptronManaged.cpp" />
     <ClCompile Include="PerceptronTopology.cpp" />
     <ClCompile Include="ISolver.cpp" />
     <ClCompile Include="LogisticAF.cpp" />
-    <ClCompile Include="RegularNeuron.cpp" />
     <ClCompile Include="SoftplusAF.cpp" />
-    <ClCompile Include="Stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="TanhAF.cpp" />
   </ItemGroup>
   <ItemGroup>

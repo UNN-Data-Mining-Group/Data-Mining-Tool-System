@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ISolver.h"
 
 namespace dms::solvers
@@ -9,12 +8,12 @@ namespace dms::solvers
 		outputsCount = outputs;
 	}
 
-	int ISolver::getInputsCount()
+	int ISolver::GetInputsCount()
 	{
 		return inputsCount;
 	}
 
-	int ISolver::getOutputsCount()
+	int ISolver::GetOutputsCount()
 	{
 		return outputsCount;
 	}

@@ -1,4 +1,3 @@
-#include "Stdafx.h"
 #include "BinaryStepAF.h"
 
 namespace dms::solvers::neural_nets

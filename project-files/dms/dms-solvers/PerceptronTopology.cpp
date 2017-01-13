@@ -1,45 +1,57 @@
-#include "stdafx.h"
 #include "PerceptronTopology.h"
 
 namespace dms::solvers::neural_nets
 {
-	PerceptronTopology::PerceptronTopology(array<ICell^, 2>^ cells) : PerceptronTopology(cells, nullptr)
+	PerceptronTopology::PerceptronTopology(int layers, array<int>^ neurons,
+		array<bool>^ delays, array<IActivateFunction^>^ afs)
 	{
+		layersCount = layers;
+		if ((neurons->Length != layers) ||
+			(delays->Length != (layers - 1)) ||
+			(afs->Length != (layers - 1)) ||
+			(layersCount < 2))
+		{
+			throw gcnew System::ArgumentException();
+		}
+
+		neuronsInLayers = gcnew array<int>(layers);
+		hasLayerDelay = gcnew array<bool>(layers - 1);
+		this->afs = gcnew array<IActivateFunction^>(layers - 1);
+
+		for (int i = 0; i < layers; i++)
+		{
+			neuronsInLayers[i] = neurons[i];
+		}
+
+		for (int i = 0; i < layers - 1; i++)
+		{
+			hasLayerDelay[i] = delays[i];
+			this->afs[i] = afs[i];
+		}
 	}
 
-	PerceptronTopology::PerceptronTopology(array<ICell^, 2>^ cells, DelayCell^ delayCell)
+	int PerceptronTopology::GetLayersCount()
 	{
+		return layersCount;
 	}
-
-	bool PerceptronTopology::isConnectionExists(int index_cell1, int index_cell2)
+	array<int>^ PerceptronTopology::GetNeuronsInLayersCount()
 	{
-		return false;
+		return neuronsInLayers;
 	}
-
-	ICell^ PerceptronTopology::getCell(int index)
+	array<bool>^ PerceptronTopology::HasLayersDelayWeight()
 	{
-		throw gcnew System::NotImplementedException();
-		// TODO: insert return statement here
+		return hasLayerDelay;
 	}
-
-	int PerceptronTopology::getIndexOf(ICell ^ cell)
+	array<IActivateFunction^>^ PerceptronTopology::GetLayersActivateFunctions()
 	{
-		return 0;
+		return afs;
 	}
-
-	int PerceptronTopology::getCellsCount()
+	int PerceptronTopology::GetInputsCount()
 	{
-		return 0;
+		return neuronsInLayers[0];
 	}
-
-	int PerceptronTopology::getCellConnectionsCount(int index)
+	int PerceptronTopology::GetOutputsCount()
 	{
-		return 0;
-	}
-
-	array<int>^ PerceptronTopology::getCellConnections(int index)
-	{
-		throw gcnew System::NotImplementedException();
-		// TODO: insert return statement here
+		return neuronsInLayers[layersCount - 1];
 	}
 }

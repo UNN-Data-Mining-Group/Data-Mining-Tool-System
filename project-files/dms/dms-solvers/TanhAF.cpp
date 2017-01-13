@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "TanhAF.h"
 #include <cmath>
 
