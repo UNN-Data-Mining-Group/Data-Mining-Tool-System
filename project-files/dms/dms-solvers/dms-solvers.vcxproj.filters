@@ -75,6 +75,15 @@
     <ClInclude Include="RegularNeuron.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ISolverDescription.h">
+      <Filter>Common\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITopology.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PerceptronTopology.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -110,10 +119,13 @@
     <ClCompile Include="SoftplusAF.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BentIdentityAF.cpp">
-      <Filter>Common\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RegularNeuron.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PerceptronTopology.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BentIdentityAF.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

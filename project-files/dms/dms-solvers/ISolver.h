@@ -23,8 +23,8 @@ namespace dms::solvers
 		virtual array<Single>^ solve(array<Single>^ x) = 0;
 		virtual Int32 getInputsCount();
 		virtual Int32 getOutputsCount();
-		virtual std::vector<std::string>* getAttributes();
-		virtual std::vector<LearningOperation>* getOperations();
+		virtual std::vector<std::string> getAttributes();
+		virtual std::vector<LearningOperation> getOperations();
 
 		virtual ~ISolver();
 	private:

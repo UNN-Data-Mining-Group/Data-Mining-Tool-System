@@ -142,8 +142,11 @@
     <ClInclude Include="IdentityAF.h" />
     <ClInclude Include="INeuron.h" />
     <ClInclude Include="InputCell.h" />
+    <ClInclude Include="PerceptronTopology.h" />
     <ClInclude Include="ISoftAF.h" />
     <ClInclude Include="ISolver.h" />
+    <ClInclude Include="ISolverDescription.h" />
+    <ClInclude Include="ITopology.h" />
     <ClInclude Include="LogisticAF.h" />
     <ClInclude Include="RegularNeuron.h" />
     <ClInclude Include="resource.h" />
@@ -159,6 +162,7 @@
     <ClCompile Include="IdentityAF.cpp" />
     <ClCompile Include="INeuron.cpp" />
     <ClCompile Include="InputCell.cpp" />
+    <ClCompile Include="PerceptronTopology.cpp" />
     <ClCompile Include="ISolver.cpp" />
     <ClCompile Include="LogisticAF.cpp" />
     <ClCompile Include="RegularNeuron.cpp" />
