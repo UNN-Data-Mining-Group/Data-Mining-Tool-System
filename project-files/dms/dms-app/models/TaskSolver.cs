@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using dms.solvers;
+
 namespace dms.models
 {
-    interface ISolverDescription
-    {
-    }
-
     class TaskSolver : Entity
     {
         private string name;

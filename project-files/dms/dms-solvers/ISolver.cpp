@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ISolver.h"
 
 namespace dms::solvers
@@ -9,24 +8,24 @@ namespace dms::solvers
 		outputsCount = outputs;
 	}
 
-	int ISolver::getInputsCount()
+	int ISolver::GetInputsCount()
 	{
 		return inputsCount;
 	}
 
-	int ISolver::getOutputsCount()
+	int ISolver::GetOutputsCount()
 	{
 		return outputsCount;
 	}
 
-	std::vector<std::string>* ISolver::getAttributes()
+	std::vector<std::string> ISolver::getAttributes()
 	{
-		return new std::vector<std::string>();
+		return std::vector<std::string>();
 	}
 
-	std::vector<LearningOperation>* ISolver::getOperations()
+	std::vector<LearningOperation> ISolver::getOperations()
 	{
-		return new std::vector<LearningOperation>();
+		return std::vector<LearningOperation>();
 	}
 
 	ISolver::~ISolver()
