@@ -35,4 +35,5 @@ IActivateFunction^ ActivateFunctionsFactory::CreateActivateFunction(System::Stri
 		return gcnew SoftplusAF();
 	if (name->Equals("Tanh"))
 		return gcnew TanhAF();
+	return nullptr;
 }

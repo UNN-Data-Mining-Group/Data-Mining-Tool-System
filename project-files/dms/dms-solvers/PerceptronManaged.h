@@ -1,7 +1,7 @@
 #pragma once
 #include "ISolver.h"
 #include "PerceptronTopology.h"
-#include "../nn-native/Perceptron.h"
+#include "Perceptron.h"
 
 namespace dms::solvers::neural_nets
 {
@@ -14,12 +14,13 @@ namespace dms::solvers::neural_nets
 
 		virtual ~PerceptronManaged();
 	private:
+		delegate float oper_af(float);
+
 		float* x;
 		float* y;
 
 		neurolib::Perceptron* psolver;
 		array<array<float>^>^ weights;
-
-		delegate float oper_af(float);
+		array<oper_af^>^ activateFunctions;
 	};
 }

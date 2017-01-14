@@ -34,15 +34,6 @@
     <Filter Include="Neural Nets\Activation Functions\Source Files">
       <UniqueIdentifier>{e913bc8a-84d8-4bac-9aa3-ec0bb16149d8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Neural Nets\Native Lib">
-      <UniqueIdentifier>{872e1497-478d-41eb-ba69-ec440cad34d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Neural Nets\Native Lib\Header Files">
-      <UniqueIdentifier>{c7b9c752-978c-4f91-b244-7fbbb7c824eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Neural Nets\Native Lib\Source Files">
-      <UniqueIdentifier>{7a6c4e7e-9a94-4f13-8dd9-6617f81695e3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -81,9 +72,6 @@
     <ClInclude Include="TanhAF.h">
       <Filter>Neural Nets\Activation Functions\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\nn-native\Perceptron.h">
-      <Filter>Neural Nets\Native Lib\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PerceptronManaged.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
@@ -118,9 +106,6 @@
     </ClCompile>
     <ClCompile Include="TanhAF.cpp">
       <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\nn-native\Perceptron.cpp">
-      <Filter>Neural Nets\Native Lib\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PerceptronManaged.cpp">
       <Filter>Neural Nets\Source Files</Filter>

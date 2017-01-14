@@ -12,6 +12,7 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 	auto hds = t->HasLayersDelayWeight();
 	auto afs = t->GetLayersActivateFunctions();
 
+	activateFunctions = gcnew array<oper_af^>(layers - 1);
 	Random^ r = gcnew Random();
 	weights = gcnew array<array<float>^>(layers - 1);
 	for (int i = 0; i < layers - 1; i++)
@@ -42,8 +43,8 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 	{
 		delays[i] = hds[i];
 
-		oper_af^ del = gcnew oper_af(afs[i], &IActivateFunction::getResult);
-		IntPtr p = Marshal::GetFunctionPointerForDelegate(del);
+		activateFunctions[i] = gcnew oper_af(afs[i], &IActivateFunction::getResult);
+		IntPtr p = Marshal::GetFunctionPointerForDelegate(activateFunctions[i]);
 		ptr_actfunc[i] = static_cast<neurolib::oper_af>(p.ToPointer());
 	}
 
