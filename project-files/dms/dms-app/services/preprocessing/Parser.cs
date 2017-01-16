@@ -11,17 +11,17 @@ namespace dms.services.preprocessing
 {
     class Parser
     {
-        private static Parser parserObj;
-        public static Parser ParserObj
+        private static Parser selectionParser;
+        public static Parser SelectionParser
         {
             get
             {
-                if (parserObj == null)
+                if (selectionParser == null)
                 {
-                    parserObj = new Parser();
+                    selectionParser = new Parser();
 
                 }
-                return parserObj;
+                return selectionParser;
             }
         }
 
@@ -30,26 +30,19 @@ namespace dms.services.preprocessing
         public Parser()
         { }
 
-        public void parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, ParameterCreationViewModel[] parameters)//, hasHeader
+        public void parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, 
+            ParameterCreationViewModel[] parameters)//, hasHeader
         {
-            int taskTemplateId = addTaskTemplate(taskTemplateName, taskId, null);
-            int selectionId = addSelection(selectionName, taskTemplateId);
-            addParameters(filePath, delimiter, parameters, selectionId, taskTemplateId);
-        }
+            DataHelper helper = new DataHelper();
 
-        private int addTaskTemplate(string name, int taskId, IPreprocessingParameters ppParameters)
-        {
             //ppParameters = null для главного шаблона
-            DataHelper helper = new DataHelper();
-            int taskTemplateId = helper.addTaskTemplate(name, taskId, ppParameters);
-            return taskTemplateId;
-        }
-        private int addSelection(string name, int taskTemplateId)
-        {
+            IPreprocessingParameters ppParameters = null;
+            int taskTemplateId = helper.addTaskTemplate(taskTemplateName, taskId, ppParameters);
+
             string type = "develop";
-            DataHelper helper = new DataHelper();
-            int selectionId = helper.addSelection(name, taskTemplateId, rowCount, type);
-            return selectionId;
+            int selectionId = helper.addSelection(selectionName, taskTemplateId, rowCount, type);
+            
+            addParameters(filePath, delimiter, parameters, selectionId, taskTemplateId);
         }
 
         public string[] getParameterTypes(string filePath, char delimiter)
@@ -109,6 +102,7 @@ namespace dms.services.preprocessing
                 return types;
             }
         }
+
         private string getType(string typeStr)
         {
             string type;
@@ -127,56 +121,37 @@ namespace dms.services.preprocessing
             }
             return type;
         }
-        private int getRowCount(string path, char delimiter)
-        {
-            int size = 0;
-            using (StreamReader sr = new StreamReader(path))
-            {
-                string line = sr.ReadLine();
-                while (line != null)
-                {
-                    line = sr.ReadLine();
-                    size++;
-                }
-            }
-            return size;
-        }
 
-        private void addParameters(string path, char delimiter, ParameterCreationViewModel[] parameters, int selectionId, int taskTemplateId)
+        private void addParameters(string filePath, char delimiter, ParameterCreationViewModel[] parameters, int selectionId, int taskTemplateId)
         {
-            int size = getRowCount(path, delimiter);
-            using (StreamReader sr = new StreamReader(path))
+            using (StreamReader sr = new StreamReader(filePath))
             {
                 DataHelper helper = new DataHelper();
-                int rowNumber = 0;
+                int rowStep = 0;
                 string line = sr.ReadLine();
-                string[] values = line.Split(delimiter);
-                int count = values.Length;
-                List<Entity> listSelRow = new List<Entity>(size);
-                List<Entity> listParams = new List<Entity>(count*size);
-                List<ValueParameter> listValParams = new List<ValueParameter>(count*size);
+                int paramCount = parameters.Length;
 
+                List<Entity> listSelRow = new List<Entity>(rowCount);
+                List<Entity> listParams = new List<Entity>(paramCount * rowCount);
+                List<ValueParameter> listValParams = new List<ValueParameter>(paramCount * rowCount);
                 while (line != null)
                 {
-                    rowNumber++;
-                    SelectionRow entity = helper.addSelectionRow(selectionId, rowNumber);
+                    rowStep++;
+                    SelectionRow entity = helper.addSelectionRow(selectionId, rowStep);
                     listSelRow.Add(entity);
-                    values = line.Split(delimiter);
+
+                    string[] values = line.Split(delimiter);
                     
-                    int i = -1;
+                    int index = -1;
                     foreach (string value in values)
                     {
-                        i++;
-                        string parameterName = parameters[i].Name;
-                        string comment = parameters[i].Comment;
-                        if (comment == null)
-                        {
-                            comment = "";
-                        }
-                        int isOutput = getIsOutput(parameters[i].KindOfParameter);
-                        TypeParameter type = getTypeParameter(parameters[i].Type);
+                        index++;
+                        string parameterName = parameters[index].Name;
+                        string comment = parameters[index].Comment == null ? "" : parameters[index].Comment;
+                        int isOutput = getIsOutput(parameters[index].KindOfParameter);
+                        TypeParameter type = getTypeParameter(parameters[index].Type);
                     
-                        dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, i, isOutput, type);
+                        dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, index, isOutput, type);
                         listParams.Add(parameter);
                         listValParams.Add(helper.addValueParameter(entity.ID, parameter.ID, value));
                     }
@@ -186,19 +161,15 @@ namespace dms.services.preprocessing
 
                 DatabaseManager.SharedManager.insertMultipleEntities(listSelRow);
                 DatabaseManager.SharedManager.insertMultipleEntities(listParams);
-                List<Entity> list = new List<Entity>(size*count);
+                List<Entity> list = new List<Entity>(rowCount * paramCount);
                 int selRowId = 0;
-                for (int i = 0; i < count * size; i++)
+                for (int i = 0; i < paramCount * rowCount; i++)
                 {
-                    if (i % count == 0) {
-                        int index;
-                        if (i == 0)
-                            index = 0;
-                        else
-                            index = i / count - 1;
-                        selRowId = listSelRow[index].ID;
+                    if (i % paramCount == 0) {
+                        selRowId = i == 0 ? listSelRow[0].ID : listSelRow[i / paramCount - 1].ID;
                     }
                     int paramId = listParams[i].ID;
+
                     ValueParameter param = listValParams[i];
                     param.ParameterID = paramId;
                     param.SelectionRowID = selRowId;
@@ -209,14 +180,7 @@ namespace dms.services.preprocessing
         }
         private int getIsOutput(string isOutput)
         {
-            if ("Входной" == isOutput)
-            {
-                return 0;
-            }
-            else
-            {
-                return 1;
-            }
+            return "Входной" == isOutput ? 0 : 1;
         }
         private TypeParameter getTypeParameter(string typeStr)
         {
