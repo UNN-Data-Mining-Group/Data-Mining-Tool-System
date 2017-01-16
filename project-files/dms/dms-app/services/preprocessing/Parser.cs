@@ -161,6 +161,7 @@ namespace dms.services.preprocessing
 
                 DatabaseManager.SharedManager.insertMultipleEntities(listSelRow);
                 DatabaseManager.SharedManager.insertMultipleEntities(listParams);
+
                 List<Entity> list = new List<Entity>(rowCount * paramCount);
                 int selRowId = 0;
                 for (int i = 0; i < paramCount * rowCount; i++)

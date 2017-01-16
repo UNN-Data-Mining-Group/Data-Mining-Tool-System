@@ -45,7 +45,7 @@ namespace dms.services.preprocessing
          //   entity.save();
             return entity;
         }
-        public int addParameter(string name, string comment, int taskTemplateID, int index, int isOutput, TypeParameter type)
+        public Parameter addParameter(string name, string comment, int taskTemplateID, int index, int isOutput, TypeParameter type)
         {
             Parameter entity = new Parameter();
             entity.Name = name;
@@ -54,21 +54,9 @@ namespace dms.services.preprocessing
             entity.Index = index;
             entity.IsOutput = isOutput;
             entity.Type = type;
-            entity.save();
-            return entity.ID;
+        //  entity.save();
+            return entity;
         }
-        /*     public Parameter addParameter(string name, string comment, int taskTemplateID, int index, int isOutput, TypeParameter type)
-             {
-                 Parameter entity = new Parameter();
-                 entity.Name = name;
-                 entity.Comment = comment;
-                 entity.TaskTemplateID = taskTemplateID;
-                 entity.Index = index;
-                 entity.IsOutput = isOutput;
-                 entity.Type = type;
-               //  entity.save();
-                 return entity;
-             }*/
         public ValueParameter addValueParameter(int selectionRowID, int parameterID, string value)
         {
             ValueParameter entity = new ValueParameter();
