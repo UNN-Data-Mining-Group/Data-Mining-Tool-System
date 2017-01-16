@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using dms.tools;
+using dms.services.preprocessing;
 
 namespace dms.view_models
 {
@@ -37,7 +38,7 @@ namespace dms.view_models
         public bool HasHeader { get { return hasHeader; } set { hasHeader = value; NotifyPropertyChanged(); } }
         public int CountRows { get { return countRows; } set { countRows = value; NotifyPropertyChanged(); } }
         public string FilePath { get { return filePath; } set { filePath = value; NotifyPropertyChanged(); } }
-        public List<string> DelimiterList { get { return new List<string> { ".", "," }; } }
+        public List<string> DelimiterList { get { return new List<string> { ".", "," , "|"}; } }
         public string Delimiter { get { return delimiter; } set { delimiter = value; NotifyPropertyChanged(); } }
         public bool CanUseExitingTemplate
         {
@@ -80,7 +81,7 @@ namespace dms.view_models
 
         public ObservableCollection<ParameterCreationViewModel> Parameters { get; set; }
 
-        public SelectionCreationViewModel(string taskName)
+        public SelectionCreationViewModel(string taskName) // нужен taskID
         {
             ParentTask = taskName;
             Random r = new Random();
@@ -107,12 +108,16 @@ namespace dms.view_models
 
         public void Create()
         {
+            string templateName = newTemplateName == null ? "Template" : newTemplateName;
+            int taskId = PreprocessingManager.PrepManager.addTask("Task 1", 5, 10);
+            ParameterCreationViewModel[] parameters = Parameters.ToArray();
+            PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], taskId, selectionName, parameters);
             OnClose?.Invoke(this, null);
         }
 
         public void BrowseFile()
         {
-            FilePath = "/usr/file1.txt";
+            FilePath = "/usr/file1.txt";// "part_of_selection_file.txt";//"/usr/file1.txt";"selection_file.txt";//
             CountRows = 2000;
 
             updateAllowedTemplates();
@@ -120,12 +125,18 @@ namespace dms.view_models
 
         private void updateAllowedTemplates()
         {
+            CountRows = PreprocessingManager.PrepManager.getCountRows();// не ставится
             CanUseExitingTemplate = true;
             CanCreateTemplate = true;
 
             Parameters.Clear();
-            Parameters.Add(new ParameterCreationViewModel(1));
-            Parameters.Add(new ParameterCreationViewModel(2, "Parameter 2", "enum(5)", true));
+            string[] paramTypes = PreprocessingManager.PrepManager.getParameterTypes(FilePath, delimiter.ToCharArray()[0]);
+            int step = 0;
+            foreach(string type in paramTypes)
+            {
+                step++;
+                Parameters.Add(new ParameterCreationViewModel(step, "Parameter " + step, type + "(" + EnumPercent + ")", false));
+            }
 
             TemplateList.Clear();
             TemplateList.Add("шаблон 1");

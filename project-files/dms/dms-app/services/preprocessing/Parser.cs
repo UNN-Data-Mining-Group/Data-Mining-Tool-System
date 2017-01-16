@@ -25,11 +25,12 @@ namespace dms.services.preprocessing
             }
         }
 
-        private int rowCount;
+        private int countRows;
 
         public Parser()
         { }
 
+        public int CountRows { get; set; }
         public void parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, 
             ParameterCreationViewModel[] parameters)//, hasHeader
         {
@@ -40,7 +41,7 @@ namespace dms.services.preprocessing
             int taskTemplateId = helper.addTaskTemplate(taskTemplateName, taskId, ppParameters);
 
             string type = "develop";
-            int selectionId = helper.addSelection(selectionName, taskTemplateId, rowCount, type);
+            int selectionId = helper.addSelection(selectionName, taskTemplateId, countRows, type);
             
             addParameters(filePath, delimiter, parameters, selectionId, taskTemplateId);
         }
@@ -98,7 +99,8 @@ namespace dms.services.preprocessing
                     line = sr.ReadLine();
                 }
 
-                rowCount = iter + 1;
+                countRows = iter + 1;
+                CountRows = countRows;
                 return types;
             }
         }
@@ -131,9 +133,9 @@ namespace dms.services.preprocessing
                 string line = sr.ReadLine();
                 int paramCount = parameters.Length;
 
-                List<Entity> listSelRow = new List<Entity>(rowCount);
-                List<Entity> listParams = new List<Entity>(paramCount * rowCount);
-                List<ValueParameter> listValParams = new List<ValueParameter>(paramCount * rowCount);
+                List<Entity> listSelRow = new List<Entity>(countRows);
+                List<Entity> listParams = new List<Entity>(paramCount * countRows);
+                List<ValueParameter> listValParams = new List<ValueParameter>(paramCount * countRows);
                 while (line != null)
                 {
                     rowStep++;
@@ -162,9 +164,9 @@ namespace dms.services.preprocessing
                 DatabaseManager.SharedManager.insertMultipleEntities(listSelRow);
                 DatabaseManager.SharedManager.insertMultipleEntities(listParams);
 
-                List<Entity> list = new List<Entity>(rowCount * paramCount);
+                List<Entity> list = new List<Entity>(countRows * paramCount);
                 int selRowId = 0;
-                for (int i = 0; i < paramCount * rowCount; i++)
+                for (int i = 0; i < paramCount * countRows; i++)
                 {
                     if (i % paramCount == 0) {
                         selRowId = i == 0 ? listSelRow[0].ID : listSelRow[i / paramCount - 1].ID;

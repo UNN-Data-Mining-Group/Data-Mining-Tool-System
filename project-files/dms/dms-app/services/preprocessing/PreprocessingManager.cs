@@ -44,5 +44,10 @@ namespace dms.services.preprocessing
         {
             Parser.SelectionParser.parse(taskTemplateName, filePath, delimiter, taskId, selectionName, parameters);
         }
+
+        public int getCountRows()
+        {
+            return Parser.SelectionParser.CountRows;
+        }
     }
 }
