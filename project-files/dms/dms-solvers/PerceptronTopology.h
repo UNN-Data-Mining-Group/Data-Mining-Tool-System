@@ -1,8 +1,9 @@
 #pragma once
 #include "ISolverDescription.h"
-#include "IActivateFunction.h"
+#include "ActivationFunctionTypes.h"
 
 using namespace System;
+using namespace neurolib;
 
 namespace dms::solvers::neural_nets
 {
@@ -10,17 +11,17 @@ namespace dms::solvers::neural_nets
 	{
 	public:
 		PerceptronTopology(int layers, array<int>^ neurons,
-			array<bool>^ delays, array<IActivateFunction^>^ afs);
+			array<bool>^ delays, array<String^>^ afs);
 		int GetLayersCount();
 		array<int>^ GetNeuronsInLayersCount();
 		array<bool>^ HasLayersDelayWeight();
-		array<IActivateFunction^>^ GetLayersActivateFunctions();
+		int GetLayersActivateFunctionsTypes(ActivationFunctionType* src);
 		int GetInputsCount();
 		int GetOutputsCount();
 	private:
 		int layersCount;
 		array<int>^ neuronsInLayers;
 		array<bool>^ hasLayerDelay;
-		array<IActivateFunction^>^ afs;
+		array<String^>^ afs;
 	};
 }

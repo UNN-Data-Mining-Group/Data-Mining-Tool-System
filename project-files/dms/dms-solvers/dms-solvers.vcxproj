@@ -139,33 +139,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ActivateFunctionsFactory.h" />
-    <ClInclude Include="BentIdentityAF.h" />
-    <ClInclude Include="BinaryStepAF.h" />
-    <ClInclude Include="IActivateFunction.h" />
-    <ClInclude Include="IdentityAF.h" />
+    <ClInclude Include="ActivationFunctionTypes.h" />
     <ClInclude Include="PerceptronManaged.h" />
     <ClInclude Include="PerceptronTopology.h" />
-    <ClInclude Include="ISoftAF.h" />
     <ClInclude Include="ISolver.h" />
     <ClInclude Include="ISolverDescription.h" />
-    <ClInclude Include="LogisticAF.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SoftplusAF.h" />
-    <ClInclude Include="TanhAF.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ActivateFunctionsFactory.cpp" />
+    <ClCompile Include="ActivationFunctionTypes.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="BentIdentityAF.cpp" />
-    <ClCompile Include="BinaryStepAF.cpp" />
-    <ClCompile Include="IdentityAF.cpp" />
     <ClCompile Include="PerceptronManaged.cpp" />
     <ClCompile Include="PerceptronTopology.cpp" />
     <ClCompile Include="ISolver.cpp" />
-    <ClCompile Include="LogisticAF.cpp" />
-    <ClCompile Include="SoftplusAF.cpp" />
-    <ClCompile Include="TanhAF.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

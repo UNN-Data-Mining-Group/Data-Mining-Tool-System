@@ -1,32 +1,28 @@
 #include "Perceptron.h"
+#include "ActivationFunctions.h"
 #include <ctime>
 #include <iostream>
+#include <mkl_cblas.h>
 
 using namespace neurolib;
 
 Perceptron::Perceptron(Perceptron& p)
 {
-	init(p.neurons, p.has_delay, p.afs, p.layers, p.w);
+	init(p.neurons, p.has_delay, p.aftypes, p.layers, p.w);
 }
 
-Perceptron::Perceptron(int* neurons, oper_af* afs, int layers, float** weights)
+Perceptron::Perceptron(int* neuronsCount, ActivationFunctionType* types, int layersCount, float** weights)
 {
-	init(neurons, nullptr, afs, layers, weights);
+	init(neuronsCount, nullptr, types, layersCount, weights);
 }
 
-Perceptron::Perceptron(int* neurons, bool* has_delay, oper_af* afs, int layers, float** weights)
-{
-	init(neurons, has_delay, afs, layers, weights);
+Perceptron::Perceptron(int* neuronsCount, bool* isDelayOnLayer, ActivationFunctionType* types, int layersCount, float** weights)
+{	
+	init(neuronsCount, isDelayOnLayer, types, layersCount, weights);
 }
-
 
 int Perceptron::solve(float* x, float* y)
 {
-	if ((is_initialised == false) ||
-		(x == nullptr) ||
-		(y == nullptr))
-		return 0;
-
 	int inputs = neurons[0];
 	int outputs = neurons[layers-1];
 
@@ -37,12 +33,10 @@ int Perceptron::solve(float* x, float* y)
 	
 	for (int i = 1; i < layers; i++)
 	{
-		mult(w[i-1], temp_res[i-1], temp_res[i], neurons[i-1] + has_delay[i-1], neurons[i]);
-		
-		for(int j = 0; j < neurons[i]; j++)
-		{
-			temp_res[i][j] = afs[i-1](temp_res[i][j]);
-		}
+		cblas_sgemv(CblasRowMajor, CblasNoTrans, neurons[i], neurons[i - 1] + has_delay[i - 1], 1.0f, w[i-1], neurons[i - 1] + has_delay[i - 1], temp_res[i - 1], 1, 0.0f, temp_res[i], 1);
+		const int n = neurons[i];
+		float* vec = temp_res[i];
+		get_activation_function_for_layer(aftypes[i - 1], vec, n);
 	}
 
 	for(int i = 0; i < outputs; i++)
@@ -75,94 +69,67 @@ Perceptron::~Perceptron()
 	{
 		delete[] w[i];
 	}
+	delete[] aftypes;		aftypes = nullptr;
 	delete[] w;				w = nullptr;
-
-	delete[] afs;			afs = nullptr;
 	delete[] has_delay;		has_delay = nullptr;
 	delete[] neurons;		neurons = nullptr;
 }
 
-bool Perceptron::can_init(int* neurons, bool* has_delay, oper_af* afs, int layers, float** weights)
+void Perceptron::check_initializers(int* neurons, bool* has_delay, ActivationFunctionType* afs, int layers, float** weights)
 {
 	if (layers < 2)
-		return false;
+		throw "too little layers";
 
-	if ((afs == nullptr) || 
+	if ((afs == nullptr) ||
 		(weights == nullptr) ||
 		(neurons == nullptr))
-		return false;
+		throw "memory is not allocated";
 
-	for(int i = 0; i < layers; i++)
+	for (int i = 0; i < layers; i++)
 		if (neurons[i] <= 0)
-			return false;
+			throw "illegal (negative) neurons count";
 
 	for (int i = 0; i < layers - 1; i++)
-		if (afs[i] == nullptr)
-			return false;
-
-	for(int i = 0; i < layers - 1; i++)
 		if (weights[i] == nullptr)
-			return false;
-
-	return true;
+			throw "weights memory is not allocated";
 }
 
-void Perceptron::init(int* neurons, bool* has_delay, oper_af* afs, int layers, float** weights)
+void Perceptron::init(int* neurons, bool* has_delay, ActivationFunctionType* types, int layers, float** weights)
 {
-	is_initialised = false;
+	check_initializers(neurons, has_delay, types, layers, weights);
 
-	bool c = can_init(neurons, has_delay, afs, layers, weights);
-	if (c == true)
-	{
-		this->layers = layers;
+	this->layers = layers;
+	this->neurons = new int[layers];
+	for(int i = 0; i < layers; i++)
+		this->neurons[i] = neurons[i];
 
-		this->neurons = new int[layers];
-		this->has_delay = new bool[layers - 1];
-		for(int i = 0; i < layers; i++)
-			this->neurons[i] = neurons[i];
-
-		if (has_delay != nullptr)
-			for(int i = 0; i < layers - 1; i++)
-				this->has_delay[i] = has_delay[i];
-		else
-			for(int i = 0; i < layers - 1; i++)
-				this->has_delay[i] = false;
-
-		temp_res = new float*[layers];
+	this->has_delay = new bool[layers - 1];
+	if (has_delay != nullptr)
 		for(int i = 0; i < layers - 1; i++)
-		{
-			temp_res[i] = new float[neurons[i] + this->has_delay[i]];
-
-			if (this->has_delay[i])
-				temp_res[i][neurons[i]] = -1.0f;
-		}
-		temp_res[layers - 1] = new float[neurons[layers - 1]];
-
-		this->afs = new oper_af[layers - 1];
-		w = new float*[layers - 1];
+			this->has_delay[i] = has_delay[i];
+	else
 		for(int i = 0; i < layers - 1; i++)
-		{
-			this->afs[i] = afs[i];
+			this->has_delay[i] = false;
 
-			int dim = (neurons[i] + this->has_delay[i]) * neurons[i+1];
-
-			w[i] = new float[dim];
-			for(int j = 0; j < dim; j++)
-				w[i][j] = weights[i][j];
-		}
-		is_initialised = true;
-	}
-}
-
-inline int Perceptron::mult(float* w, float* v, float* dest, int cols, int rows)
-{
-	for(int i = 0; i < rows; i++)
+	temp_res = new float*[layers];
+	for(int i = 0; i < layers - 1; i++)
 	{
-		dest[i] = 0.0f;
-		for(int j = 0; j < cols; j++)
-		{
-			dest[i] += w[i * cols + j] * v[j];
-		}
+		temp_res[i] = new float[neurons[i] + this->has_delay[i]];
+
+		if (this->has_delay[i])
+			temp_res[i][neurons[i]] = -1.0f;
 	}
-	return rows;
+	temp_res[layers - 1] = new float[neurons[layers - 1]];
+
+	aftypes = new ActivationFunctionType[layers - 1];
+	w = new float*[layers - 1];
+	for(int i = 0; i < layers - 1; i++)
+	{
+		aftypes[i] = types[i];
+		int dim = (neurons[i] + this->has_delay[i]) * neurons[i+1];
+
+		w[i] = new float[dim];
+		for(int j = 0; j < dim; j++)
+			w[i][j] = weights[i][j];
+	}
 }

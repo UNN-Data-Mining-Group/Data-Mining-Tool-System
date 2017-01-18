@@ -10,9 +10,10 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 
 	auto ns = t->GetNeuronsInLayersCount();
 	auto hds = t->HasLayersDelayWeight();
-	auto afs = t->GetLayersActivateFunctions();
 
-	activateFunctions = gcnew array<oper_af^>(layers - 1);
+	ActivationFunctionType* afs = new ActivationFunctionType[layers - 1];
+	t->GetLayersActivateFunctionsTypes(afs);
+
 	Random^ r = gcnew Random();
 	weights = gcnew array<array<float>^>(layers - 1);
 	for (int i = 0; i < layers - 1; i++)
@@ -26,7 +27,6 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 
 	int* neurons = new int[layers];
 	bool* delays = new bool[layers - 1];
-	neurolib::oper_af* ptr_actfunc = new neurolib::oper_af[layers - 1];
 
 	float** w = new float*[layers - 1];
 	for (int i = 0; i < layers - 1; i++)
@@ -42,22 +42,20 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 	for (int i = 0; i < layers - 1; i++)
 	{
 		delays[i] = hds[i];
-
-		activateFunctions[i] = gcnew oper_af(afs[i], &IActivateFunction::getResult);
-		IntPtr p = Marshal::GetFunctionPointerForDelegate(activateFunctions[i]);
-		ptr_actfunc[i] = static_cast<neurolib::oper_af>(p.ToPointer());
 	}
 
-	psolver = new neurolib::Perceptron(neurons, delays, ptr_actfunc, layers, w);
+	psolver = new neurolib::Perceptron(neurons, delays, afs, layers, w);
 	x = new float[GetInputsCount()];
 	y = new float[GetOutputsCount()];
 
 	delete[] neurons;
 	delete[] delays;
-	delete[] ptr_actfunc;
 
 	for (int i = 0; i < layers - 1; i++)
+	{
 		delete[] w[i];
+	}
+	delete[] afs;
 	delete[] w;
 }
 

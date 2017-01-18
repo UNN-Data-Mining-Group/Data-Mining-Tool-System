@@ -25,15 +25,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Neural Nets\Activation Functions">
-      <UniqueIdentifier>{ecfbcc7b-8825-440b-8fcd-517cd272dda5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Neural Nets\Activation Functions\Header Files">
-      <UniqueIdentifier>{dcb8f768-357f-403d-83b0-5177e215cb5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Neural Nets\Activation Functions\Source Files">
-      <UniqueIdentifier>{e913bc8a-84d8-4bac-9aa3-ec0bb16149d8}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -48,35 +39,11 @@
     <ClInclude Include="PerceptronTopology.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BentIdentityAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryStepAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IActivateFunction.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IdentityAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ISoftAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LogisticAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoftplusAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TanhAF.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PerceptronManaged.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ActivateFunctionsFactory.h">
-      <Filter>Neural Nets\Activation Functions\Header Files</Filter>
+    <ClInclude Include="ActivationFunctionTypes.h">
+      <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,29 +56,11 @@
     <ClCompile Include="PerceptronTopology.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BentIdentityAF.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinaryStepAF.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IdentityAF.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LogisticAF.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoftplusAF.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TanhAF.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PerceptronManaged.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ActivateFunctionsFactory.cpp">
-      <Filter>Neural Nets\Activation Functions\Source Files</Filter>
+    <ClCompile Include="ActivationFunctionTypes.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

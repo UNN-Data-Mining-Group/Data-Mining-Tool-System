@@ -14,19 +14,15 @@ namespace neuro_test_managed
         {
             Stopwatch sw = new Stopwatch();
 
-            int N = 100000;
+            int N = 1000000;
 
             int layers = 7;
             int[] neurons = new int[] { 5, 55, 70, 100, 60, 15, 2 };
             bool[] delays = new bool[] { true, true, true, true, true, false };
-            IActivateFunction[] afs = new IActivateFunction[] 
+            string af = "Logistic";
+            string[] afs = new string[]
             {
-                new BinaryStepAF(),
-                new BinaryStepAF(),
-                new BinaryStepAF(),
-                new BinaryStepAF(),
-                new BinaryStepAF(),
-                new BinaryStepAF()
+               af,af,af,af,af,af
             };
 
             sw.Start();

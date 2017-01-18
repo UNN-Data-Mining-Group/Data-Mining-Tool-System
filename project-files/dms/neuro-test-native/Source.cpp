@@ -2,10 +2,11 @@
 #include <ctime>
 #include <random>
 #include <iostream>
+#include <mkl_cblas.h>
 
 float** generate_w(int* neurons, bool* has_delay, int layers)
 {
-	std::srand(static_cast<unsigned int>(std::time(0)));
+	std::srand(static_cast<unsigned int>(/*std::time(0)*/27));
 	float** w = new float*[layers - 1];
 	for (int i = 0; i < layers - 1; i++)
 	{
@@ -20,11 +21,6 @@ float** generate_w(int* neurons, bool* has_delay, int layers)
 	return w;
 }
 
-float sign(float x)
-{
-	return x >= 0 ? 1.0f : 0.0f;
-}
-
 using namespace neurolib;
 
 void main()
@@ -32,15 +28,19 @@ void main()
 	int neurons[] = { 5, 55, 70, 100, 60, 15 , 2 };
 	bool has_delay[] = { 1,1,1,1,1,0 };
 	int layers = 7;
-	oper_af af[] = { &sign, &sign, &sign, &sign, &sign, &sign };
+	ActivationFunctionType t = ActivationFunctionType::Logistic;
+	ActivationFunctionType af[] =
+	{
+		t,t,t,t,t,t
+	};
 	float** w = generate_w(neurons, has_delay, layers);
 
 	int start = std::clock();
 
-	float x[] = { 0,1 };
+	float x[] = { 0.2f, 2.6f };
 	float y[] = { 0, 0 };
 
-	int N = 100000;
+	int N = 1000000;
 	Perceptron* ps = new Perceptron(neurons, has_delay, af, layers, w);
 
 	int finish = std::clock();

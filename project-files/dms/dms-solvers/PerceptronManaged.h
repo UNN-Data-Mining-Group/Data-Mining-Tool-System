@@ -14,13 +14,11 @@ namespace dms::solvers::neural_nets
 
 		virtual ~PerceptronManaged();
 	private:
-		delegate float oper_af(float);
 
 		float* x;
 		float* y;
 
 		neurolib::Perceptron* psolver;
 		array<array<float>^>^ weights;
-		array<oper_af^>^ activateFunctions;
 	};
 }

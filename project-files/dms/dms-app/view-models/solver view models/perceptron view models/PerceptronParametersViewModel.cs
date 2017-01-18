@@ -22,7 +22,7 @@ namespace dms.view_models
             deleteHandler = new ActionHandler(()=>delete(this), o => true);
             Number = number;
             NeuronsCount = 1;
-            ActivateFunctions = ActivateFunctionsFactory.GetAllTypeNames();
+            ActivateFunctions = ActivationFunctionTypes.TypeNames;
             SelectedAF = ActivateFunctions[0];
             IsUsingW0 = true;
         }
@@ -75,7 +75,7 @@ namespace dms.view_models
             int layers = 2 + HiddenLayers.Count;
             int[] neurons = new int[layers];
             bool[] delays = new bool[layers - 1];
-            IActivateFunction[] afs = new IActivateFunction[layers - 1];
+            string[] afs = new string[layers - 1];
 
             neurons[0] = InputNeuronsCount;
             for (int i = 1; i < layers - 1; i++)
@@ -85,10 +85,10 @@ namespace dms.view_models
             for(int i = 0; i < layers - 2; i++)
             {
                 delays[i] = HiddenLayers[i].IsUsingW0;
-                afs[i] = ActivateFunctionsFactory.CreateActivateFunction(HiddenLayers[i].SelectedAF);
+                afs[i] = HiddenLayers[i].SelectedAF;
             }
             delays[layers - 2] = OutputLayer.IsUsingW0;
-            afs[layers - 2] = ActivateFunctionsFactory.CreateActivateFunction(OutputLayer.SelectedAF);
+            afs[layers - 2] = OutputLayer.SelectedAF;
 
             PerceptronTopology t = new PerceptronTopology(layers, neurons, delays, afs);
             TaskSolver ts = new TaskSolver()
