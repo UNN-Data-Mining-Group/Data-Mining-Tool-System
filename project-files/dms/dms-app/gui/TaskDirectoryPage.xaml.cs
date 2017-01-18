@@ -38,6 +38,11 @@ namespace dms.gui
             taskVM.requestViewCreation += CreateView;
         }
 
+        public void updateTasks()
+        {
+            taskVM.UpdateTaskTree();
+        }
+
         private void CreateView(ViewmodelBase vm)
         {
             if (vm is SolverCreationViewModel)

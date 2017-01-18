@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using dms.tools;
+using dms.models;
 
 namespace dms.view_models
 {
@@ -14,22 +15,9 @@ namespace dms.view_models
         private ObservableCollection<TaskTree> tasks;
 
         public TaskTreeViewModel()
-        {
-            Tasks = new ObservableCollection<TaskTree>
-            {
-                new TaskTree("Ирис", 
-                    new string[] { "Выборка 1", "Выборка 2" },
-                    new string[] { "Персептрон 1", "Персептрон 2" },
-                    new string[] { "Дерево 1", },
-                    new string[] { }, 
-                    this), 
-                new TaskTree("Морское ушко", 
-                    new string[] {"Выборка 1"}, 
-                    new string[] { "П_му1"}, 
-                    new string[] { }, 
-                    new string[] { "Решение 1"},
-                    this)
-                };
+        {            
+            Tasks = new ObservableCollection<TaskTree>();
+            UpdateTaskTree();
         }
 
         public event Action<ViewmodelBase> requestViewCreation;
@@ -47,7 +35,23 @@ namespace dms.view_models
 
         public void UpdateTaskTree()
         {
+            for (int i = Tasks.Count - 1; i >= 0; i--)
+            {
+                Tasks.RemoveAt(i);
+            }
+            List<Entity> tasks = models.Task.all(typeof(models.Task));
+            foreach (models.Task task in tasks)
+            {
+                List<TaskSolver> solvers = TaskSolver.solversOfTaskId(task.ID);
+                List<Selection> selections = Selection.selectionsOfDefaultTemplateWithTaskId(task.ID);
 
+                Tasks.Add(new TaskTree(task.Name,
+                    selections.Select(x => x.Name).ToArray(),
+                    solvers.Select(x => x.Name).ToArray(),
+                    new string[] { },
+                    new string[] { },
+                    this));
+            }
         }
     }
 }

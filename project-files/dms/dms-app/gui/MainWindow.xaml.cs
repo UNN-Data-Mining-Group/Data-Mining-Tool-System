@@ -31,7 +31,16 @@ namespace dms.gui
 
             var vm = new MainWindowViewModel();
             DataContext = vm;
-            vm.requestTaskCreation += (s, e) => { var p = new TaskCreationPage(e.Data); ShowPage("Создание задачи", p); };
+            vm.requestTaskCreation += (s, e) => {
+                var p = new TaskCreationPage(e.Data);
+                ShowPage("Создание задачи", p);
+                e.Data.taskCreate += (v) => {
+                    if (v)
+                    {
+                        ((TaskDirectoryPage)taskPanel.Content).updateTasks();
+                    }
+                };
+            };
             vm.requestTaskTreeShow += (v) => SetPropertyWindowVisibility(v, taskPanel, taskPanelPane);
             vm.requestLearnPaneShow += (v) => SetPropertyWindowVisibility(v, learnPanel, learnPanelPane);
             vm.requestLSShow += (e) => { var p = new LearningScenarioManagerPage(e); p.OnShowPage += ShowPage; ShowPage("Сценарии обучения", p); };

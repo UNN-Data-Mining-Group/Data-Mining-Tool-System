@@ -64,7 +64,17 @@ namespace dms.services
                     }
                     else
                     {
-                        changedValues.Add(mappingTable[property.Name], property.GetValue(entity).ToString());
+                        if (property.GetValue(entity) != null)
+                        {
+                            if (!property.PropertyType.IsEnum)
+                            {
+                                changedValues.Add(mappingTable[property.Name], property.GetValue(entity).ToString());
+                            }
+                            else
+                            {
+                                changedValues.Add(mappingTable[property.Name], ((int)property.GetValue(entity)).ToString());
+                            }                            
+                        }                        
                     }                    
                 }                
             }

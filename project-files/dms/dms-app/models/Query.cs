@@ -94,7 +94,7 @@ namespace dms.models
                 for (int index = 0; index < changedValues.Count; index++)
                 {
                     var entry = changedValues.ElementAt(index);
-                    keys += entry.Key;
+                    keys += "[" + entry.Key + "]";
                     if (entry.Value.Contains("@data"))
                     {
                         values += entry.Value;
@@ -124,11 +124,11 @@ namespace dms.models
                     var entry = changedValues.ElementAt(index);
                     if (entry.Value.Contains("@data"))
                     {
-                        updateString += entry.Key + "=" + entry.Value;
+                        updateString += "[" + entry.Key + "]" + "=" + entry.Value;
                     }
                     else
                     {
-                        updateString += entry.Key + "='" + entry.Value + "'";
+                        updateString += "[" + entry.Key + "]" + "='" + entry.Value + "'";
                     }
                     if (index != changedValues.Count - 1)
                     {

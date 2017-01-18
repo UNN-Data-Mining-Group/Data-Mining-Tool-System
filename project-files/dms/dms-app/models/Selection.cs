@@ -79,5 +79,19 @@ namespace dms.models
             base.mappingTable().ToList().ForEach(x => mappingTable.Add(x.Key, x.Value));
             return mappingTable;
         }
+
+        public static List<Selection> selectionsOfDefaultTemplateWithTaskId(int taskId)
+        {
+            TaskTemplate defaultTemplate = null;
+            List<Entity> templates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskID", "=", taskId.ToString()), typeof(TaskTemplate));
+            if (templates.Count == 0)
+            {
+                return new List<Selection>();
+            }
+            defaultTemplate = (TaskTemplate)templates[0];
+            return Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", defaultTemplate.ToString()), typeof(Selection)).Cast<Selection>().ToList();
+        }
     }
 }
