@@ -89,5 +89,11 @@ namespace dms.models
             base.serializationParameters().ToList().ForEach(x => serializationParameters.Add(x.Key, x.Value));
             return serializationParameters;
         }
+
+        public static List<TaskSolver> solversOfTaskId(int taskId)
+        {
+            return TaskSolver.where(new Query("TaskSolver").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskID", "=", taskId.ToString()), typeof(TaskSolver)).Cast<TaskSolver>().ToList();
+        }
     }
 }

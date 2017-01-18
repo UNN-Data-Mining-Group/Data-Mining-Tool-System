@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using dms.tools;
+using dms.models;
 
 namespace dms.view_models
 {
@@ -22,6 +23,7 @@ namespace dms.view_models
         }
 
         public event EventHandler OnClose;
+        public event Action<bool> taskCreate;
         public ICommand CancelCommand { get { return cancelHandler; } }
         public ICommand CreateCommand { get { return createHandler; } }
 
@@ -38,6 +40,14 @@ namespace dms.view_models
 
         public void CreateTask()
         {
+            if (this.taskName == "")
+            {
+                return;
+            }
+            models.Task newTask = new models.Task();
+            newTask.Name = this.taskName;
+            newTask.save();
+            taskCreate.Invoke(true);
             OnClose?.Invoke(this, null);
         }
     }
