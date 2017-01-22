@@ -12,6 +12,7 @@ namespace dms.view_models
 {
     public class SelectionCreationViewModel : ViewmodelBase
     {
+        public event Action<bool> selectionCreate;
         private ActionHandler browseFileCommandHandler;
         private ActionHandler cancelHandler;
         private ActionHandler createHandler;
@@ -109,23 +110,27 @@ namespace dms.view_models
         public void Create()
         {
             string templateName = newTemplateName == null ? "Template" : newTemplateName;
-            int taskId = PreprocessingManager.PrepManager.addTask("Task 1", 5, 10);
+        //    int taskId = PreprocessingManager.PrepManager.TaskId;
+            int taskId = PreprocessingManager.PrepManager.getTaskId(ParentTask);
             ParameterCreationViewModel[] parameters = Parameters.ToArray();
             PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], taskId, selectionName, parameters);
+            PreprocessingManager.PrepManager.updateTask(taskId, PreprocessingManager.PrepManager.getCountParameters(), 
+                PreprocessingManager.PrepManager.getCountRows());
+            
+            //  new TaskTreeViewModel().UpdateTaskTree();
+
             OnClose?.Invoke(this, null);
         }
 
         public void BrowseFile()
         {
-            FilePath = "/usr/file1.txt";// "part_of_selection_file.txt";//"/usr/file1.txt";"selection_file.txt";//
-            CountRows = 2000;
+            FilePath = "part_of_selection_file.txt";//"/usr/file1.txt";"selection_file.txt";
 
             updateAllowedTemplates();
         }
 
         private void updateAllowedTemplates()
         {
-            CountRows = PreprocessingManager.PrepManager.getCountRows();// не ставится
             CanUseExitingTemplate = true;
             CanCreateTemplate = true;
 
@@ -137,6 +142,7 @@ namespace dms.view_models
                 step++;
                 Parameters.Add(new ParameterCreationViewModel(step, "Parameter " + step, type + "(" + EnumPercent + ")", false));
             }
+            CountRows = PreprocessingManager.PrepManager.getCountRows();
 
             TemplateList.Clear();
             TemplateList.Add("шаблон 1");

@@ -171,6 +171,9 @@
     <Compile Include="gui\preprocessing view\TemplateInfoPage.xaml.cs">
       <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="services\preprocessing\DataHelper.cs" />
+    <Compile Include="services\preprocessing\Parser.cs" />
+    <Compile Include="services\preprocessing\PreprocessingManager.cs" />
     <Compile Include="tools\ActionHandler.cs" />
     <Compile Include="tools\EventArgs.cs" />
     <Compile Include="tools\IDocumentContent.cs" />

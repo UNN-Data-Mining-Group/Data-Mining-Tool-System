@@ -27,12 +27,22 @@ namespace dms.services.preprocessing
         public PreprocessingManager()
         {
         }
+  /*      public int TaskId { get; set; }
+        public void setTaskId(int id)
+        {
+            TaskId = id;
+        }
         //нужно ли это теперь здесь ?
         public int addTask(string name, int parameterCount, int selectionCount)
         {
             DataHelper helper = new DataHelper();
             int taskId = helper.addTask(name, parameterCount, selectionCount);
             return taskId;
+        }*/
+        public void updateTask(int taskId, int parameterCount, int selectionCount)
+        {
+            DataHelper helper = new DataHelper();
+            helper.updateTask(taskId, parameterCount, selectionCount);
         }
 
         public string[] getParameterTypes(string filePath, char delimiter)
@@ -48,6 +58,21 @@ namespace dms.services.preprocessing
         public int getCountRows()
         {
             return Parser.SelectionParser.CountRows;
+        }
+
+        public int getCountParameters()
+        {
+            return Parser.SelectionParser.CountParameters;
+        }
+
+        public int getTaskId(string taskName)
+        {
+            Query query = new models.Query("Task");
+            query.addTypeQuery(TypeQuery.select);
+            query.addCondition("Name", "=", "\"" +taskName + "\"");
+            List<Entity> entities = DatabaseManager.SharedManager.entitiesByQuery(query, typeof(dms.models.Task));
+            int taskId = entities[0].ID;
+            return taskId;
         }
     }
 }

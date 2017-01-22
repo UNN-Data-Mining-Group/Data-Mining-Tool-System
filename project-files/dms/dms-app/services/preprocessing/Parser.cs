@@ -31,6 +31,7 @@ namespace dms.services.preprocessing
         { }
 
         public int CountRows { get; set; }
+        public int CountParameters { get; set; }
         public void parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, 
             ParameterCreationViewModel[] parameters)//, hasHeader
         {
@@ -53,6 +54,7 @@ namespace dms.services.preprocessing
                 int iter = -1;
                 string line = sr.ReadLine();
                 string[] values = line.Split(delimiter);
+                CountParameters = values.Length;
                 string[] types = new string[values.Length];
                 while (line != null)
                 {
@@ -169,7 +171,7 @@ namespace dms.services.preprocessing
                 for (int i = 0; i < paramCount * countRows; i++)
                 {
                     if (i % paramCount == 0) {
-                        selRowId = i == 0 ? listSelRow[0].ID : listSelRow[i / paramCount - 1].ID;
+                        selRowId = i == 0 ? listSelRow[0].ID : listSelRow[i / paramCount].ID;
                     }
                     int paramId = listParams[i].ID;
 
