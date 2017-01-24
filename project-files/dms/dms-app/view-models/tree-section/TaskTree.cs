@@ -15,14 +15,15 @@ namespace dms.view_models
         private ActionHandler showInfoDialogCommand;
         private ActionHandler showPreprocessingCreationHandler;
 
-        public TaskTree(string Name,
+        public TaskTree(int id,
             string[] sel, string[] per, string[] des, string[] solv, 
             TaskTreeViewModel vm)
         {
-            Title = Name;
+
+            Title = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(id, typeof(dms.models.Task))).Name;
             Content = new ObservableCollection<TreeSection>
             {
-                new SelectionTree(Title, sel, vm),
+                new SelectionTree(id, sel, vm),
                 new SolverTree(Title, per, des, vm),
                 new SolutionsTree(Title, solv, vm)
             };

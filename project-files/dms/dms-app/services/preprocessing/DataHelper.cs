@@ -16,15 +16,6 @@ namespace dms.services.preprocessing
             entity.SelectionCount = selectionCount;
             entity.save();
         }
-        public int addTask(string name, int paramCount, int selectionCount)
-        {
-            dms.models.Task entity = new dms.models.Task();
-            entity.Name = name;
-            entity.ParamCount = paramCount;
-            entity.SelectionCount = selectionCount;
-            entity.save();  
-            return entity.ID;
-        }
         public int addTaskTemplate(string name, int taskId, IPreprocessingParameters ppParameters)
         {
             TaskTemplate entity = new TaskTemplate();

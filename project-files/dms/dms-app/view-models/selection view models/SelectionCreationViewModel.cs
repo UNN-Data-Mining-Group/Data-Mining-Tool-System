@@ -34,6 +34,7 @@ namespace dms.view_models
         public ICommand CancelCommand { get { return cancelHandler; } }
         public ICommand CreateCommand { get { return createHandler; } }
 
+        public int TaskId { get; set; }
         public string ParentTask { get; set; }
         public string SelectionName { get { return selectionName; } set { selectionName = value; NotifyPropertyChanged(); } }
         public bool HasHeader { get { return hasHeader; } set { hasHeader = value; NotifyPropertyChanged(); } }
@@ -82,9 +83,10 @@ namespace dms.view_models
 
         public ObservableCollection<ParameterCreationViewModel> Parameters { get; set; }
 
-        public SelectionCreationViewModel(string taskName) // нужен taskID
+        public SelectionCreationViewModel(int taskId)
         {
-            ParentTask = taskName;
+            TaskId = taskId;
+            ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             Random r = new Random();
             SelectionName = "Выборка " + r.Next(1, 1000);
             HasHeader = false;
@@ -110,11 +112,9 @@ namespace dms.view_models
         public void Create()
         {
             string templateName = newTemplateName == null ? "Template" : newTemplateName;
-        //    int taskId = PreprocessingManager.PrepManager.TaskId;
-            int taskId = PreprocessingManager.PrepManager.getTaskId(ParentTask);
             ParameterCreationViewModel[] parameters = Parameters.ToArray();
-            PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], taskId, selectionName, parameters);
-            PreprocessingManager.PrepManager.updateTask(taskId, PreprocessingManager.PrepManager.getCountParameters(), 
+            PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], TaskId, selectionName, parameters);
+            PreprocessingManager.PrepManager.updateTask(TaskId, PreprocessingManager.PrepManager.getCountParameters(), 
                 PreprocessingManager.PrepManager.getCountRows());
             
             //  new TaskTreeViewModel().UpdateTaskTree();

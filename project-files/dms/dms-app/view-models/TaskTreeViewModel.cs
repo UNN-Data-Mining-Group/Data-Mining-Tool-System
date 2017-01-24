@@ -45,7 +45,7 @@ namespace dms.view_models
                 List<TaskSolver> solvers = TaskSolver.solversOfTaskId(task.ID);
                 List<Selection> selections = Selection.selectionsOfDefaultTemplateWithTaskId(task.ID);
 
-                Tasks.Add(new TaskTree(task.Name,
+                Tasks.Add(new TaskTree(task.ID,
                     selections.Select(x => x.Name).ToArray(),
                     solvers.Select(x => x.Name).ToArray(),
                     new string[] { },
