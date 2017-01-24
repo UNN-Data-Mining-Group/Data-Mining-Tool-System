@@ -41,11 +41,11 @@ namespace dms.models
         {
             if (conditionString == "")
             {
-                conditionString = key + op + value;
+                conditionString = key + op + "'" + value + "'";
             }
             else
             {
-                conditionString += " AND " + key + op + value;
+                conditionString += " AND " + key + op + "'" + value + "'";
             }
             return this;
         }
