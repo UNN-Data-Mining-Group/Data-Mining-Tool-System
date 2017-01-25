@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using dms.tools;
+using dms.services.preprocessing;
 
 namespace dms.view_models
 {
     public class SelectionCreationViewModel : ViewmodelBase
     {
+        public event Action<bool> selectionCreate;
         private ActionHandler browseFileCommandHandler;
         private ActionHandler cancelHandler;
         private ActionHandler createHandler;
@@ -32,12 +34,13 @@ namespace dms.view_models
         public ICommand CancelCommand { get { return cancelHandler; } }
         public ICommand CreateCommand { get { return createHandler; } }
 
+        public int TaskId { get; set; }
         public string ParentTask { get; set; }
         public string SelectionName { get { return selectionName; } set { selectionName = value; NotifyPropertyChanged(); } }
         public bool HasHeader { get { return hasHeader; } set { hasHeader = value; NotifyPropertyChanged(); } }
         public int CountRows { get { return countRows; } set { countRows = value; NotifyPropertyChanged(); } }
         public string FilePath { get { return filePath; } set { filePath = value; NotifyPropertyChanged(); } }
-        public List<string> DelimiterList { get { return new List<string> { ".", "," }; } }
+        public List<string> DelimiterList { get { return new List<string> { ".", "," , "|"}; } }
         public string Delimiter { get { return delimiter; } set { delimiter = value; NotifyPropertyChanged(); } }
         public bool CanUseExitingTemplate
         {
@@ -80,9 +83,10 @@ namespace dms.view_models
 
         public ObservableCollection<ParameterCreationViewModel> Parameters { get; set; }
 
-        public SelectionCreationViewModel(string taskName)
+        public SelectionCreationViewModel(int taskId)
         {
-            ParentTask = taskName;
+            TaskId = taskId;
+            ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             Random r = new Random();
             SelectionName = "Выборка " + r.Next(1, 1000);
             HasHeader = false;
@@ -107,13 +111,20 @@ namespace dms.view_models
 
         public void Create()
         {
+            string templateName = newTemplateName == null ? "Template" : newTemplateName;
+            ParameterCreationViewModel[] parameters = Parameters.ToArray();
+            PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], TaskId, selectionName, parameters);
+            PreprocessingManager.PrepManager.updateTask(TaskId, PreprocessingManager.PrepManager.getCountParameters(), 
+                PreprocessingManager.PrepManager.getCountRows());
+            
+            //  new TaskTreeViewModel().UpdateTaskTree();
+
             OnClose?.Invoke(this, null);
         }
 
         public void BrowseFile()
         {
-            FilePath = "/usr/file1.txt";
-            CountRows = 2000;
+            FilePath = "part_of_selection_file.txt";//"/usr/file1.txt";"selection_file.txt";
 
             updateAllowedTemplates();
         }
@@ -124,8 +135,14 @@ namespace dms.view_models
             CanCreateTemplate = true;
 
             Parameters.Clear();
-            Parameters.Add(new ParameterCreationViewModel(1));
-            Parameters.Add(new ParameterCreationViewModel(2, "Parameter 2", "enum(5)", true));
+            string[] paramTypes = PreprocessingManager.PrepManager.getParameterTypes(FilePath, delimiter.ToCharArray()[0]);
+            int step = 0;
+            foreach(string type in paramTypes)
+            {
+                step++;
+                Parameters.Add(new ParameterCreationViewModel(step, "Parameter " + step, type + "(" + EnumPercent + ")", false));
+            }
+            CountRows = PreprocessingManager.PrepManager.getCountRows();
 
             TemplateList.Clear();
             TemplateList.Add("шаблон 1");
