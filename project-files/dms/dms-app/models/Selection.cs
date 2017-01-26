@@ -91,7 +91,7 @@ namespace dms.models
             }
             defaultTemplate = (TaskTemplate)templates[0];
             return Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", defaultTemplate.ToString()), typeof(Selection)).Cast<Selection>().ToList();
+                .addCondition("TaskTemplateID", "=", defaultTemplate.ID.ToString()), typeof(Selection)).Cast<Selection>().ToList();
         }
     }
 }
