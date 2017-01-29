@@ -7,6 +7,7 @@ using namespace neurolib;
 
 namespace dms::solvers::neural_nets
 {
+	[SerializableAttribute]
 	public ref class PerceptronTopology : public ISolverDescription
 	{
 	public:

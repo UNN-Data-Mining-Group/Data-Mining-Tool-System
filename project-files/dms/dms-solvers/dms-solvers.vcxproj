@@ -89,11 +89,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>D:\Michael\Documents\Software projects\In progress\Data-Mining-Tool-System\project-files\dms\neurolib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>neurolib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -145,6 +147,8 @@
     <ClInclude Include="ISolver.h" />
     <ClInclude Include="ISolverDescription.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="WardNNManaged.h" />
+    <ClInclude Include="WardNNTopology.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActivationFunctionTypes.cpp" />
@@ -152,6 +156,8 @@
     <ClCompile Include="PerceptronManaged.cpp" />
     <ClCompile Include="PerceptronTopology.cpp" />
     <ClCompile Include="ISolver.cpp" />
+    <ClCompile Include="WardNNManaged.cpp" />
+    <ClCompile Include="WardNNTopology.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

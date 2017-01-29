@@ -45,6 +45,12 @@
     <ClInclude Include="ActivationFunctionTypes.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WardNNTopology.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WardNNManaged.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -60,6 +66,12 @@
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ActivationFunctionTypes.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WardNNTopology.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WardNNManaged.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,7 +3,7 @@
 using namespace dms::solvers::neural_nets;
 using namespace System::Runtime::InteropServices;
 
-PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) : 
+PerceptronManaged::PerceptronManaged(PerceptronTopology^ t, array<array<float>^>^ weights) :
 	ISolver(t->GetInputsCount(), t->GetOutputsCount())
 {
 	int layers = t->GetLayersCount();
@@ -14,14 +14,13 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 	ActivationFunctionType* afs = new ActivationFunctionType[layers - 1];
 	t->GetLayersActivateFunctionsTypes(afs);
 
-	Random^ r = gcnew Random();
-	weights = gcnew array<array<float>^>(layers - 1);
+	this->weights = gcnew array<array<float>^>(layers - 1);
 	for (int i = 0; i < layers - 1; i++)
 	{
-		weights[i] = gcnew array<float>(ns[i + 1] * (ns[i] + hds[i]));
-		for (int j = 0; j < weights[i]->Length; j++)
+		this->weights[i] = gcnew array<float>(ns[i + 1] * (ns[i] + hds[i]));
+		for (int j = 0; j < this->weights[i]->Length; j++)
 		{
-			weights[i][j] = (float)r->NextDouble() * 2.0f - 1.0f;
+			this->weights[i][j] = weights[i][j];
 		}
 	}
 
@@ -34,7 +33,7 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 		int dim = ns[i + 1] * (ns[i] + hds[i]);
 		w[i] = new float[dim];
 		for (int j = 0; j < dim; j++)
-			w[i][j] = weights[i][j];
+			w[i][j] = this->weights[i][j];
 	}
 
 	for (int i = 0; i < layers; i++)

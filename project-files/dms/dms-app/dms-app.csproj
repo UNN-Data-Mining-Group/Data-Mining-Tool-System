@@ -176,6 +176,9 @@
     <Compile Include="gui\solution view\SolveStatisticPage.xaml.cs">
       <DependentUpon>SolveStatisticPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\solver view\ward net view\WardParametersPage.xaml.cs">
+      <DependentUpon>WardParametersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\task view\TaskCreationPage.xaml.cs">
       <DependentUpon>TaskCreationPage.xaml</DependentUpon>
     </Compile>
@@ -208,6 +211,7 @@
     <Compile Include="view-models\selection view models\SelectionInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\SolveViewModel.cs" />
     <Compile Include="view-models\solution view models\SolveStatisticViewModel.cs" />
+    <Compile Include="view-models\solver view models\ward net view models\WardNetParametersViewModel.cs" />
     <Compile Include="view-models\task view models\TaskInfoViewModel.cs" />
     <Compile Include="view-models\preprocessing view models\TemplateViewModel.cs" />
     <Compile Include="view-models\tree-section\DecisionTreesTree.cs" />
@@ -324,6 +328,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\solution view\SolveStatisticPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\ward net view\WardParametersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

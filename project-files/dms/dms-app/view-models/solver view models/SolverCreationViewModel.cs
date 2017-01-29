@@ -19,13 +19,15 @@ namespace dms.view_models
 
     public class SolverParameterFactory
     {
-        public static string[] Types { get { return new string[] { "Персептрон", "Дерево решений" }; } }
+        public static string[] Types { get { return new string[] { "Персептрон", "Сеть Ворда", "Дерево решений" }; } }
         public static ISolverParameterViewModel Create(string type)
         {
             if (type.Equals("Персептрон"))
                 return new PerceptronParametersViewModel();
             else if (type.Equals("Дерево решений"))
                 return new DecisionTreeParametersViewModel();
+            else if (type.Equals("Сеть Ворда"))
+                return new WardNetParametersViewModel();
             else
                 return null;
         }

@@ -8,7 +8,7 @@ namespace dms::solvers::neural_nets
 	public ref class PerceptronManaged : public ISolver
 	{
 	public:
-		PerceptronManaged(PerceptronTopology^ t);
+		PerceptronManaged(PerceptronTopology^ t, array<array<float>^>^ weights);
 
 		virtual array<Single>^ Solve(array<Single>^ x) override;
 
