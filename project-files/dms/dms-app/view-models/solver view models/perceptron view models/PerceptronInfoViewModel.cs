@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using dms.models;
+
 namespace dms.view_models
 {
     public class Layer
@@ -24,6 +26,7 @@ namespace dms.view_models
         {
             TaskName = taskName;
             Name = solverName;
+ 
             Layers = new Layer[]
             {
                 new Layer { Name = "1 слой", NeuronsCount = 5, ActivateFunction = "Сигмоидальная", HasW0 = true},

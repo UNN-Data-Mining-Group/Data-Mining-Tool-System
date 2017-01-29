@@ -91,7 +91,7 @@ namespace dms.view_models
             afs[layers - 2] = OutputLayer.SelectedAF;
 
             PerceptronTopology t = new PerceptronTopology(layers, neurons, delays, afs);
-            Query q = new Query("Task").addTypeQuery(TypeQuery.select).addCondition("name", "=", "'" + taskName + "'");
+            Query q = new Query("Task").addTypeQuery(TypeQuery.select).addCondition("name", "=", taskName);
             List<models.Entity> tasks = models.Task.where(q, typeof(models.Task));
             models.Task task = tasks[0] as models.Task;
 

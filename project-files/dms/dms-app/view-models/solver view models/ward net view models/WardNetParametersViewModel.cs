@@ -174,7 +174,7 @@ namespace dms.view_models
             }
 
             WardNNTopology wnn = new WardNNTopology(neurons, delays, afs, g, ac, HiddenLayers.Count + 2);
-            Query q = new Query("Task").addTypeQuery(TypeQuery.select).addCondition("name", "=", "'" + taskName + "'");
+            Query q = new Query("Task").addTypeQuery(TypeQuery.select).addCondition("name", "=", taskName);
             List<models.Entity> tasks = models.Task.where(q, typeof(models.Task));
             models.Task task = tasks[0] as models.Task;
 
