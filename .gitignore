@@ -26,6 +26,35 @@ project-files/**/bld/
 project-files/**/[Bb]in/
 project-files/**/[Oo]bj/
 
+!project-files/lib/mkl/x64
+!project-files/lib/mkl/x86
+!project-files/dms/bin
+!project-files/dms/bin/x64
+!project-files/dms/bin/x86
+!project-files/dms/bin/x86/Debug
+!project-files/dms/bin/x64/Debug
+!project-files/dms/bin/x86/Release
+!project-files/dms/bin/x64/Release
+
+project-files/dms/bin/x86/Debug/*
+project-files/dms/bin/x64/Debug/*
+project-files/dms/bin/x86/Release/*
+project-files/dms/bin/x64/Release/*
+
+!project-files/dms/bin/x64/Debug/mkl_core.dll
+!project-files/dms/bin/x64/Debug/mkl_def.dll
+!project-files/dms/bin/x64/Debug/mkl_intel_thread.dll
+!project-files/dms/bin/x64/Release/mkl_core.dll
+!project-files/dms/bin/x64/Release/mkl_def.dll
+!project-files/dms/bin/x64/Release/mkl_intel_thread.dll
+
+!project-files/dms/bin/x86/Debug/mkl_core.dll
+!project-files/dms/bin/x86/Debug/mkl_p4m3.dll
+!project-files/dms/bin/x86/Debug/mkl_intel_thread.dll
+!project-files/dms/bin/x86/Release/mkl_core.dll
+!project-files/dms/bin/x86/Release/mkl_p4m3.dll
+!project-files/dms/bin/x86/Release/mkl_intel_thread.dll
+
 # Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
