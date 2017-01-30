@@ -32,7 +32,7 @@ namespace dms.services.preprocessing
 
         public int CountRows { get; set; }
         public int CountParameters { get; set; }
-        public void parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, 
+        public int parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, 
             ParameterCreationViewModel[] parameters)//, hasHeader
         {
             DataHelper helper = new DataHelper();
@@ -45,6 +45,8 @@ namespace dms.services.preprocessing
             int selectionId = helper.addSelection(selectionName, taskTemplateId, countRows, type);
             
             addParameters(filePath, delimiter, parameters, selectionId, taskTemplateId);
+
+            return selectionId;
         }
 
         public string[] getParameterTypes(string filePath, char delimiter)
@@ -154,10 +156,13 @@ namespace dms.services.preprocessing
                         string comment = parameters[index].Comment == null ? "" : parameters[index].Comment;
                         int isOutput = getIsOutput(parameters[index].KindOfParameter);
                         TypeParameter type = getTypeParameter(parameters[index].Type);
-                    
-                        dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, index, isOutput, type);
-                        listParams.Add(parameter);
-                        listValParams.Add(helper.addValueParameter(entity.ID, parameter.ID, value));
+
+                        if (rowStep == 1)
+                        {
+                            dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, index, isOutput, type);
+                            listParams.Add(parameter);
+                        }
+                        listValParams.Add(helper.addValueParameter(entity.ID, -1/*parameter.ID*/, value));
                     }
                     
                     line = sr.ReadLine();
@@ -173,7 +178,7 @@ namespace dms.services.preprocessing
                     if (i % paramCount == 0) {
                         selRowId = i == 0 ? listSelRow[0].ID : listSelRow[i / paramCount].ID;
                     }
-                    int paramId = listParams[i].ID;
+                    int paramId = listParams[i % paramCount].ID;
 
                     ValueParameter param = listValParams[i];
                     param.ParameterID = paramId;
@@ -189,16 +194,17 @@ namespace dms.services.preprocessing
         }
         private TypeParameter getTypeParameter(string typeStr)
         {
-            switch (typeStr)
+            if (typeStr.Contains("enum"))
             {
-                case "enum":
-                    return TypeParameter.Enum;
-                case "int":
-                    return TypeParameter.Int;
-                default:
-                    //  case "float":
-                    return TypeParameter.Real;
+                return TypeParameter.Enum;
+            } else if (typeStr.Contains("int"))
+            {
+                return TypeParameter.Int;
+            } else if (typeStr.Contains("float"))
+            {
+                return TypeParameter.Real;
             }
+            return TypeParameter.Real;
         }
 
     }

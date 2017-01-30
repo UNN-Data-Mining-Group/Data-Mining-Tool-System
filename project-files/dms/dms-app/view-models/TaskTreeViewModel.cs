@@ -15,7 +15,7 @@ namespace dms.view_models
         private ObservableCollection<TaskTree> tasks;
 
         public TaskTreeViewModel()
-        {            
+        {
             Tasks = new ObservableCollection<TaskTree>();
             UpdateTaskTree();
         }

@@ -49,8 +49,8 @@
             </ItemsControl>
         </GroupBox>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Создать" Margin="5" Width="100"/>
-            <Button Content="Отмена" Margin="5" Width="100"/>
+            <Button Content="Создать" Command="{Binding CreateCommand}" Margin="5" Width="100" Click="Button_Click"/>
+            <Button Content="Отмена" Command="{Binding CancelCommand}" Margin="5" Width="100"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

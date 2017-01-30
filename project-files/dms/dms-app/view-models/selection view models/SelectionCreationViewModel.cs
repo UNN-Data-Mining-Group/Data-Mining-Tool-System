@@ -12,6 +12,7 @@ namespace dms.view_models
 {
     public class SelectionCreationViewModel : ViewmodelBase
     {
+        public int selectionId;
         public event Action<bool> selectionCreate;
         private ActionHandler browseFileCommandHandler;
         private ActionHandler cancelHandler;
@@ -82,9 +83,10 @@ namespace dms.view_models
         public float EnumPercent { get; set; }
 
         public ObservableCollection<ParameterCreationViewModel> Parameters { get; set; }
-
-        public SelectionCreationViewModel(int taskId)
+        public TaskTreeViewModel VM;
+        public SelectionCreationViewModel(int taskId, TaskTreeViewModel vm)
         {
+            VM = vm;
             TaskId = taskId;
             ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             Random r = new Random();
@@ -113,12 +115,11 @@ namespace dms.view_models
         {
             string templateName = newTemplateName == null ? "Template" : newTemplateName;
             ParameterCreationViewModel[] parameters = Parameters.ToArray();
-            PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], TaskId, selectionName, parameters);
+            selectionId = PreprocessingManager.PrepManager.parseSelection(templateName, filePath, delimiter.ToCharArray()[0], TaskId, selectionName, parameters);
             PreprocessingManager.PrepManager.updateTask(TaskId, PreprocessingManager.PrepManager.getCountParameters(), 
                 PreprocessingManager.PrepManager.getCountRows());
-            
-            //  new TaskTreeViewModel().UpdateTaskTree();
 
+            VM.SendRequestCreateView(this);
             OnClose?.Invoke(this, null);
         }
 

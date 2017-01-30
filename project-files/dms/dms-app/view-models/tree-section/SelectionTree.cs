@@ -12,8 +12,8 @@ namespace dms.view_models
     public class SelectionTree : TreeSection
     {
         private ActionHandler createSelection;
-
-        public SelectionTree(models.Task task, models.Selection[] selections, 
+        
+        public SelectionTree(models.Task task, models.Selection[] selections,
             TaskTreeViewModel vm) : base("Выборки")
         {
             createSelection = new ActionHandler(() => 
@@ -24,7 +24,7 @@ namespace dms.view_models
 
             ParentTask = task.Name;
             Content = new ObservableCollection<TreeSection>();
-            for(int i = 0; i < selections.Length; i++)
+            for (int i = 0; i < selections.Length; i++)
             {
                 Content.Add(new SelectionLeaf(task, selections[i], vm));
             }
@@ -32,5 +32,6 @@ namespace dms.view_models
 
         public string ParentTask { get; set; }
         public ICommand ShowCreateSelectionDialogCommand { get { return createSelection; } }
+
     }
 }

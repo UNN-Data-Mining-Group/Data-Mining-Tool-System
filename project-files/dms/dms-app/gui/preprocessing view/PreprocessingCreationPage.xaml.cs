@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.AvalonDock.Layout;
 
 using dms.view_models;
 
@@ -26,6 +27,22 @@ namespace dms.gui
         {
             InitializeComponent();
             DataContext = vm;
+            vm.OnClose += OnClose;
+        }
+
+        public LayoutDocument ParentDocument { get; set; }
+
+        private void OnClose(object sender, EventArgs e)
+        {
+            if (ParentDocument != null)
+            {
+                ParentDocument.Close();
+                ParentDocument = null;
+            }
+        }
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

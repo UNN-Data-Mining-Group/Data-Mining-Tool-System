@@ -189,6 +189,10 @@
       <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="services\preprocessing\DataHelper.cs" />
+    <Compile Include="services\preprocessing\normalization\EnumeratedParameter.cs" />
+    <Compile Include="services\preprocessing\normalization\IntegerParameter.cs" />
+    <Compile Include="services\preprocessing\normalization\IParameter.cs" />
+    <Compile Include="services\preprocessing\normalization\RealParameter.cs" />
     <Compile Include="services\preprocessing\Parser.cs" />
     <Compile Include="services\preprocessing\PreprocessingManager.cs" />
     <Compile Include="tools\ActionHandler.cs" />

@@ -63,7 +63,7 @@ namespace dms.view_models
             Templates = new TemplateViewModel []{ new TemplateViewModel("Один шаблон"), new TemplateViewModel("Другой шаблон", 1) };
             SelectedTemplate = Templates[0];
 
-            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(TaskName)), o => SelectedPreprocessing != null);
+            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(taskId)), o => SelectedPreprocessing != null);
         }
 
         public string TaskName { get; }
