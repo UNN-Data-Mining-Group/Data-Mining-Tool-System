@@ -2,7 +2,7 @@
 #include "ActivationFunctions.h"
 #include <ctime>
 #include <iostream>
-#include <mkl_cblas.h>
+#include "mkl_cblas.h"
 
 using namespace neurolib;
 
