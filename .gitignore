@@ -26,8 +26,8 @@ project-files/**/bld/
 project-files/**/[Bb]in/
 project-files/**/[Oo]bj/
 
-!project-files/lib/mkl/x64
-!project-files/lib/mkl/x86
+!project-files/dms/mkl/x64
+!project-files/dms/mkl/x86
 !project-files/dms/bin
 !project-files/dms/bin/x64
 !project-files/dms/bin/x86
