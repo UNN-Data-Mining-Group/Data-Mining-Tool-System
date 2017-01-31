@@ -14,7 +14,7 @@ namespace dms.models
         Enum
     }
 
-    class Parameter : Entity
+    public class Parameter : Entity
     {
         private string name;
         public string Name

@@ -9,13 +9,13 @@ namespace dms.view_models
 {
     public class DecisionTreesTree : TreeSection
     {
-        public DecisionTreesTree(string taskName, string[] trees,
-            TaskTreeViewModel vm) : base("Деревья решений", trees)
+        public DecisionTreesTree(models.Task task, models.TaskSolver[] trees,
+            TaskTreeViewModel vm) : base("Деревья решений", trees.Select(x => x.Name).ToArray())
         {
             Content = new ObservableCollection<TreeSection>();
             for (int i = 0; i < trees.Length; i++)
             {
-                Content.Add(new SolverLeaf(taskName, trees[i], "Дерево решений", vm));
+                Content.Add(new SolverLeaf(task, trees[i], "Дерево решений", vm));
             }
         }
     }

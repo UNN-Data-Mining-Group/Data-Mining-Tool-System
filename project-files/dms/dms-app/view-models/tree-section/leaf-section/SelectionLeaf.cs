@@ -15,21 +15,21 @@ namespace dms.view_models
         private ActionHandler showSelectionInfoHandler;
         private ActionHandler showSelectionLearnHandler;
 
-        public SelectionLeaf(string taskName, string name, TaskTreeViewModel vm)
+        public SelectionLeaf(models.Task task, models.Selection selection, TaskTreeViewModel vm)
         {
-            Title = name;
-            parentTask = taskName;
+            Title = task.Name;
+            parentTask = selection.Name;
             deleteHandler = new ActionHandler(() => vm.UpdateTaskTree(), e => true);
             showSelectionInfoHandler = new ActionHandler(
                 () => 
                 {
-                    SelectionInfoViewModel t = new SelectionInfoViewModel(taskName, Title);
+                    SelectionInfoViewModel t = new SelectionInfoViewModel(task.Name, Title);
                     vm.SendRequestCreateView(t);
                 }, e => true);
             showSelectionLearnHandler = new ActionHandler(
                 () =>
                 {
-                    var t = new SelectionLearnStatisticViewModel(taskName, Title);
+                    var t = new SelectionLearnStatisticViewModel(task.Name, Title);
                     vm.SendRequestCreateView(t);
                 }, e => true);
         }

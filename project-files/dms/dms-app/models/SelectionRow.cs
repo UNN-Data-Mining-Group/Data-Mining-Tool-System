@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    class SelectionRow : Entity
+    public class SelectionRow : Entity
     {
         private int selectionID;
         public int SelectionID

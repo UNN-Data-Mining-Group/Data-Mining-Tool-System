@@ -8,7 +8,7 @@ using dms.solvers;
 
 namespace dms.models
 {
-    class TaskSolver : Entity
+    public class TaskSolver : Entity
     {
         private string name;
         public string Name

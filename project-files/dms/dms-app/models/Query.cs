@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    enum TypeQuery
+    public enum TypeQuery
     {
         none = -1,
         select,
@@ -15,7 +15,7 @@ namespace dms.models
         delete
     }
 
-    class Query
+    public class Query
     {
         private TypeQuery typeQuery = TypeQuery.none;
         private string nameTable = "";

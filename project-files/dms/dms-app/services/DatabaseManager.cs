@@ -239,7 +239,15 @@ namespace dms.services
                             }
                             else
                             {
-                                property.SetValue(entity, Convert.ChangeType(r[item.Value], property.PropertyType));
+                                if (!property.PropertyType.IsEnum)
+                                {
+                                    property.SetValue(entity, Convert.ChangeType(r[item.Value], property.PropertyType));
+                                }
+                                else
+                                {
+                                    property.SetValue(entity, Int32.Parse(r[item.Value].ToString()));
+                                }
+                                
                             }
                             
                         }                        

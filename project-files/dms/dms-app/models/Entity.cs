@@ -10,7 +10,7 @@ using dms.services;
 
 namespace dms.models
 {
-    class Entity
+    public class Entity
     {
         private int id = -1;
         public int ID

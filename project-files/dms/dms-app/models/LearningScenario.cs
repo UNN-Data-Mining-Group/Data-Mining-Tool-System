@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    interface ILAParameters
+    public interface ILAParameters
     {
 
     }
 
-    class LearningScenario : Entity
+    public class LearningScenario : Entity
     {
         private string name;
         public string Name

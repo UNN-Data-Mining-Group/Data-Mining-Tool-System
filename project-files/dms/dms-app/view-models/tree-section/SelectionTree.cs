@@ -13,20 +13,20 @@ namespace dms.view_models
     {
         private ActionHandler createSelection;
 
-        public SelectionTree(int taskId, string[] selections, 
+        public SelectionTree(models.Task task, models.Selection[] selections, 
             TaskTreeViewModel vm) : base("Выборки")
         {
             createSelection = new ActionHandler(() => 
             {
-                SelectionCreationViewModel t = new SelectionCreationViewModel(taskId);
+                SelectionCreationViewModel t = new SelectionCreationViewModel(task.ID);
                 vm.SendRequestCreateView(t);
             }, e => true);
 
-            ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
+            ParentTask = task.Name;
             Content = new ObservableCollection<TreeSection>();
             for(int i = 0; i < selections.Length; i++)
             {
-                Content.Add(new SelectionLeaf(ParentTask, selections[i], vm));
+                Content.Add(new SelectionLeaf(task, selections[i], vm));
             }
         }
 

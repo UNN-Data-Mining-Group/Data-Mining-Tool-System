@@ -13,29 +13,29 @@ namespace dms.view_models
     {
         private string parentTask;
         private string solverType;
-        private string solverName;
+        private models.TaskSolver solver;
         private ActionHandler showSolverInfoHandler;
         private ActionHandler showSolveDialogHandler;
         private ActionHandler showLearnDialogHandler;
         private ActionHandler deleteSolverHandler;
 
-        public SolverLeaf(string taskName, string solverName, string solverType, 
-            TaskTreeViewModel vm) : base(solverName)
+        public SolverLeaf(models.Task task, models.TaskSolver solver, string solverType, 
+            TaskTreeViewModel vm) : base(solver.Name)
         {
-            parentTask = taskName;
+            parentTask = task.Name;
             this.solverType = solverType;
-            this.solverName = solverName;
+            this.solver = solver;
             showSolverInfoHandler = new ActionHandler(() => vm.SendRequestCreateView(CreateSolverInfoViewModel()), e => true);
-            showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask, solverName)), e => true);
-            showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask, solverName)), e => true);
+            showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask, solver.Name)), e => true);
+            showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask, solver.Name)), e => true);
         }
 
         public ViewmodelBase CreateSolverInfoViewModel()
         {
             if (solverType.Equals("Персептрон"))
-                return new PerceptronInfoViewModel(parentTask, solverName);
+                return new PerceptronInfoViewModel(parentTask, solver.Name);
             else if (solverType.Equals("Дерево решений"))
-                return new DecisionTreeInfoViewModel(parentTask, solverName);
+                return new DecisionTreeInfoViewModel(parentTask, solver.Name);
             else
                 return null;
         }
