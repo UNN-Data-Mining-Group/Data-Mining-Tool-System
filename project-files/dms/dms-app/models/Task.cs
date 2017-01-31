@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    class Task : Entity
+    public class Task : Entity
     {
         private string name;
         public string Name

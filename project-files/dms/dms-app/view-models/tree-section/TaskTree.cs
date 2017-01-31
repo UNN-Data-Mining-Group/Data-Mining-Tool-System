@@ -15,22 +15,21 @@ namespace dms.view_models
         private ActionHandler showInfoDialogCommand;
         private ActionHandler showPreprocessingCreationHandler;
 
-        public TaskTree(int id,
-            string[] sel, string[] per, string[] des, string[] solv, 
+        public TaskTree(models.Task task,
+            models.Selection[] sel, models.TaskSolver[] per, models.TaskSolver[] des, string[] solv, 
             TaskTreeViewModel vm)
         {
-
-            Title = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(id, typeof(dms.models.Task))).Name;
+            Title = task.Name;
             Content = new ObservableCollection<TreeSection>
             {
-                new SelectionTree(id, sel, vm),
-                new SolverTree(Title, per, des, vm),
+                new SelectionTree(task, sel, vm),
+                new SolverTree(task, per, des, vm),
                 new SolutionsTree(Title, solv, vm)
             };
             deleteCommand = new ActionHandler(() => vm.UpdateTaskTree(), e => true);
             showInfoDialogCommand = new ActionHandler(() => 
             {
-                TaskInfoViewModel t = new TaskInfoViewModel(Title);
+                TaskInfoViewModel t = new TaskInfoViewModel(task);
                 vm.SendRequestCreateView(t);
             }, e => true);
             showPreprocessingCreationHandler = new ActionHandler(() =>

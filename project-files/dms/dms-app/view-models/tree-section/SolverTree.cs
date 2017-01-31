@@ -14,17 +14,17 @@ namespace dms.view_models
     {
         private ActionHandler createSolverCommand;
 
-        public SolverTree(string taskName, string[] per, string[] des, TaskTreeViewModel vm) : base("Решатели")
+        public SolverTree(models.Task task, models.TaskSolver[] per, models.TaskSolver[] des, TaskTreeViewModel vm) : base("Решатели")
         {
-            ParentTask = taskName;
+            ParentTask = task.Name;
             Content = new ObservableCollection<TreeSection>
             {
-                new PerceptronTree(taskName, per, vm),
-                new DecisionTreesTree(taskName, des, vm)
+                new PerceptronTree(task, per, vm),
+                new DecisionTreesTree(task, des, vm)
             };
             createSolverCommand = new ActionHandler(() => 
             {
-                SolverCreationViewModel t = new SolverCreationViewModel(taskName);
+                SolverCreationViewModel t = new SolverCreationViewModel(task.Name);
                 vm.SendRequestCreateView(t);
             }, o => true);
         }

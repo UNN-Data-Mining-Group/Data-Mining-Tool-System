@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    class Selection : Entity
+    public class Selection : Entity
     {
         private string name;
         public string Name
@@ -89,9 +89,15 @@ namespace dms.models
             {
                 return new List<Selection>();
             }
-            defaultTemplate = (TaskTemplate)templates[0];
-            return Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", defaultTemplate.ID.ToString()), typeof(Selection)).Cast<Selection>().ToList();
+            int i = 0;
+            List<Selection> selections = new List<Selection>();
+            foreach (models.Entity template in templates)
+            {
+                List<Selection> temp = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", template.ID.ToString()), typeof(Selection)).Cast<Selection>().ToList();
+                selections = selections.Concat(temp).ToList();
+            }
+            return selections;
         }
     }
 }

@@ -8,7 +8,7 @@ using dms.solvers;
 
 namespace dms.models
 {
-    class LearnedSolver : Entity
+    public class LearnedSolver : Entity
     {
         private int selectionID;
         public int SelectionID

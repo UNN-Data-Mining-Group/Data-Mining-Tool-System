@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    interface IPreprocessingParameters
+    public interface IPreprocessingParameters
     {
         void testMethod();
     }
@@ -31,7 +31,7 @@ namespace dms.models
         }
     }
 
-    class TaskTemplate : Entity
+    public class TaskTemplate : Entity
     {
         private string name;
         public string Name

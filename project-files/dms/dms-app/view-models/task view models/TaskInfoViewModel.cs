@@ -44,13 +44,13 @@ namespace dms.view_models
         private ActionHandler moreHandler;
         private Preprocessing selectedPreprocessing;
 
-        public TaskInfoViewModel(string taskName)
+        public TaskInfoViewModel(models.Task task)
         {
             var p1 = new Parameter("Параметр 1", "float", "");
             var p2 = new Parameter("Параметр 2", "int", "");
             var p3 = new Parameter("Параметр 3", "enum", "выходной параметр");
 
-            TaskName = taskName;
+            TaskName = task.Name;
             PreprocessingList = new Preprocessing[]
             {
                 new Preprocessing("Преобразование 1", "Один шаблон", "Другой шаблон", new Tuple<Parameter, string>[] 
