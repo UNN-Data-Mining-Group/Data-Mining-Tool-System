@@ -23,7 +23,7 @@ namespace dms.view_models
             showSelectionInfoHandler = new ActionHandler(
                 () => 
                 {
-                    SelectionInfoViewModel t = new SelectionInfoViewModel(task.Name, Title);
+                    SelectionInfoViewModel t = new SelectionInfoViewModel(task.ID, selection.ID);
                     vm.SendRequestCreateView(t);
                 }, e => true);
             showSelectionLearnHandler = new ActionHandler(

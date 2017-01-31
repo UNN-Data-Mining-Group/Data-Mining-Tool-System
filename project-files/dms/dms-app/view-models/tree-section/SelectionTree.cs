@@ -18,7 +18,7 @@ namespace dms.view_models
         {
             createSelection = new ActionHandler(() => 
             {
-                SelectionCreationViewModel t = new SelectionCreationViewModel(task.ID);
+                SelectionCreationViewModel t = new SelectionCreationViewModel(task.ID, vm);
                 vm.SendRequestCreateView(t);
             }, e => true);
 
