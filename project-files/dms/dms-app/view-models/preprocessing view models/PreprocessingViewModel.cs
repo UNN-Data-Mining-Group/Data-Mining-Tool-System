@@ -124,7 +124,7 @@ namespace dms.view_models
                     pp.set(p, prepParam.Type, step);
                     step ++;
                 }
-                taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName, TaskId, null);// pp);
+                taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName, TaskId, pp);
                 newSelectionId = PreprocessingManager.PrepManager.addNewEntities(((Selection)selections[0]).Name, ((Selection)selections[0]).RowCount,
                     TaskId, taskTemplateId);
             } else
