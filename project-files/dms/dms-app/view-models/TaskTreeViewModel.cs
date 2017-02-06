@@ -30,6 +30,7 @@ namespace dms.view_models
 
         public void SendRequestCreateView(ViewmodelBase vm)
         {
+            UpdateTaskTree();
             requestViewCreation?.Invoke(vm);
         }
 

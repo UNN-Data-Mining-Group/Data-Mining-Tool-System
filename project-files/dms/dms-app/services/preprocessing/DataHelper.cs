@@ -40,7 +40,6 @@ namespace dms.services.preprocessing
             SelectionRow entity = new SelectionRow();
             entity.SelectionID = selectionId;
             entity.Number = rowNumber;
-         //   entity.save();
             return entity;
         }
         public Parameter addParameter(string name, string comment, int taskTemplateID, int index, int isOutput, TypeParameter type)
@@ -52,7 +51,6 @@ namespace dms.services.preprocessing
             entity.Index = index;
             entity.IsOutput = isOutput;
             entity.Type = type;
-        //  entity.save();
             return entity;
         }
         public ValueParameter addValueParameter(int selectionRowID, int parameterID, string value)
@@ -61,9 +59,7 @@ namespace dms.services.preprocessing
             entity.SelectionRowID = selectionRowID;
             entity.ParameterID = parameterID;
             entity.Value = value;
-            //      entity.save();
             return entity;
         }
-        
     }
 }

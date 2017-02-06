@@ -194,6 +194,7 @@
     <Compile Include="services\preprocessing\normalization\IParameter.cs" />
     <Compile Include="services\preprocessing\normalization\RealParameter.cs" />
     <Compile Include="services\preprocessing\Parser.cs" />
+    <Compile Include="services\preprocessing\Preprocessing.cs" />
     <Compile Include="services\preprocessing\PreprocessingManager.cs" />
     <Compile Include="tools\ActionHandler.cs" />
     <Compile Include="tools\EventArgs.cs" />

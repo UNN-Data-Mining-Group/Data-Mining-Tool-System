@@ -17,8 +17,8 @@ namespace dms.view_models
         
         public SelectionLeaf(models.Task task, models.Selection selection, TaskTreeViewModel vm)
         {
-            Title = task.Name;
-            parentTask = selection.Name;
+            Title = selection.Name;
+            parentTask = task.Name;
             deleteHandler = new ActionHandler(() => vm.UpdateTaskTree(), e => true);
             showSelectionInfoHandler = new ActionHandler(
                 () => 
