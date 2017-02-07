@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.AvalonDock.Layout;
+using dms.tools;
 
 using dms.view_models;
 
@@ -20,12 +22,24 @@ namespace dms.gui
     /// <summary>
     /// Interaction logic for PreprocessingCreationPage.xaml
     /// </summary>
-    public partial class PreprocessingCreationPage : UserControl
+    public partial class PreprocessingCreationPage : UserControl, IDocumentContent
     {
         public PreprocessingCreationPage(PreprocessingViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
+            vm.OnClose += OnClose;
+        }
+
+        public LayoutDocument ParentDocument { get; set; }
+
+        private void OnClose(object sender, EventArgs e)
+        {
+            if (ParentDocument != null)
+            {
+                ParentDocument.Close();
+                ParentDocument = null;
+            }
         }
     }
 }

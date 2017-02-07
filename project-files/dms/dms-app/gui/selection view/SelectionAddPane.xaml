@@ -38,6 +38,6 @@
         </Grid>
         <Label Content="{Binding CountRows}" ContentStringFormat="{}Объем: {0}" Grid.Column="4" Margin="5"/>
         <Label Content="{Binding  FilePath}" Grid.Column="5" Margin="5"/>
-        <Button Content="..." Command="{Binding BrowseFileCommand}" Grid.Column="6" Margin="5" />
+        <Button Content="..." Command="{Binding BrowseFileCommand}" Grid.Column="6" Margin="5"/>
     </Grid>
 </UserControl>
