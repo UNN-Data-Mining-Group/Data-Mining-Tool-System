@@ -160,7 +160,7 @@ namespace dms.view_models
             if (openFileDialog.ShowDialog() == true)
             {
                 foreach (string filename in openFileDialog.FileNames)
-                    FilePath = Path.GetFileName(filename);
+                    FilePath = Path.GetFullPath(filename);//.GetFileName(filename);
             }
             updateAllowedTemplates();
         }

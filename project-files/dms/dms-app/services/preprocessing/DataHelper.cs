@@ -42,6 +42,18 @@ namespace dms.services.preprocessing
             entity.Number = rowNumber;
             return entity;
         }
+        public int addOneParameter(string name, string comment, int taskTemplateID, int index, int isOutput, TypeParameter type)
+        {
+            Parameter entity = new Parameter();
+            entity.Name = name;
+            entity.Comment = comment;
+            entity.TaskTemplateID = taskTemplateID;
+            entity.Index = index;
+            entity.IsOutput = isOutput;
+            entity.Type = type;
+            entity.save();
+            return entity.ID;
+        }
         public Parameter addParameter(string name, string comment, int taskTemplateID, int index, int isOutput, TypeParameter type)
         {
             Parameter entity = new Parameter();

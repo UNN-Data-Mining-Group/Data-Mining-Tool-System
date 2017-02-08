@@ -3,32 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using dms.models;
 
 namespace dms.view_models
 {
     public class TemplateViewModel
     {
-        public TemplateViewModel(string templateName, int var = 0)
+        public TemplateViewModel(int templateId, int var = 0)
         {
-            TemplateName = templateName;
+            TemplateName = ((dms.models.TaskTemplate)dms.services.DatabaseManager.SharedManager.entityById(templateId, typeof(dms.models.TaskTemplate))).Name; ;
 
-            if (var == 0)
+            List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", templateId.ToString()), typeof(dms.models.Parameter));
+
+            List<Parameter> input = new List<Parameter>();
+            List<Parameter> output = new List<Parameter>();
+            
+            foreach (Entity param in parameters)
             {
-                var p1 = new Parameter("Параметр 1", "float", "");
-                var p2 = new Parameter("Параметр 2", "int", "");
-                var p3 = new Parameter("Параметр 3", "enum", "выходной параметр");
-
-                InputParameters = new Parameter[] { p1, p2 };
-                OutputParameters = new Parameter[] { p3 };
+                dms.models.Parameter p = (dms.models.Parameter)param;
+                if (p.IsOutput == 0)
+                {
+                    input.Add(new Parameter(p.Name, p.Type.ToString(), p.Comment));
+                } else
+                {
+                    output.Add(new Parameter(p.Name, p.Type.ToString(), p.Comment));
+                }
             }
-            else
-            {
-                var p1 = new Parameter("Параметр 1", "float", "");
-                var p2 = new Parameter("Параметр 2", "enum", "выходной параметр");
-
-                InputParameters = new Parameter[] { p1 };
-                OutputParameters = new Parameter[] { p2 };
-            }
+            InputParameters = input.ToArray();
+            OutputParameters = output.ToArray();
         }
         public string TemplateName { get; }
         public Parameter[] InputParameters { get; }

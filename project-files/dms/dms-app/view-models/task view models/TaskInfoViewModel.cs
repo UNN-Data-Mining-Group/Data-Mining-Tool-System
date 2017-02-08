@@ -10,6 +10,7 @@ using dms.tools;
 
 namespace dms.view_models
 {
+    [Serializable]
     public class Parameter
     {
         public Parameter(string name, string type, string comment)
@@ -47,10 +48,6 @@ namespace dms.view_models
 
         public TaskInfoViewModel(models.Task task)
         {
-            var p1 = new Parameter("Параметр 1", "float", "");
-            var p2 = new Parameter("Параметр 2", "int", "");
-            var p3 = new Parameter("Параметр 3", "enum", "выходной параметр");
-
             TaskName = task.Name;
             List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskID", "=", task.ID.ToString()), typeof(TaskTemplate));
@@ -63,38 +60,32 @@ namespace dms.view_models
                 if (((TaskTemplate) template).PreprocessingParameters != null)
                 {
                     prepTemplates.Add((TaskTemplate)template);
+                } else
+                {
+                    Templates[step] = new TemplateViewModel(((TaskTemplate)template).ID, step);
+                    step++;
                 }
-                Templates[step] = new TemplateViewModel("Один шаблон", step);
-                step++;
             }
             PreprocessingList = new Preprocessing[prepTemplates.Count];
             
             int index = 0;
             foreach (TaskTemplate template in prepTemplates)
             {
-                IPreprocessingParameters pp = template.PreprocessingParameters;
-                dms.view_models.PreprocessingViewModel.PreprocessingTemplate ppT = (dms.view_models.PreprocessingViewModel.PreprocessingTemplate)pp;
-                Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[ppT.sizeS];
+                PreprocessingViewModel.PreprocessingTemplate pp = 
+                    (PreprocessingViewModel.PreprocessingTemplate) template.PreprocessingParameters;
+                Dictionary<Parameter, string> dictionary = pp.get();
+                Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[dictionary.Count];
                 int i = 0;
-                foreach(Tuple<Parameter, string> t in ppT.get())
+                foreach (KeyValuePair<Parameter, string> kp in dictionary)
                 {
-                    tuple[i] = t;
+                    tuple[i] = new Tuple<Parameter, string>(kp.Key, kp.Value);
                     i++;
                 }
-                PreprocessingList[index] = new Preprocessing(ppT.PreprocessingName, ppT.BaseTemplate.ToString(), template.Name, tuple);
+                PreprocessingList[index] = new Preprocessing(pp.PreprocessingName, pp.BaseTemplate.Name, template.Name, tuple);
                 
                 index++;
             }
-         /*   PreprocessingList = new Preprocessing[]
-            {
-                new Preprocessing("Преобразование 1", "Один шаблон", "Другой шаблон", new Tuple<Parameter, string>[] 
-                {
-                    new Tuple<Parameter, string>(p1, "normalize"),
-                    new Tuple<Parameter, string>(p2, "none"),
-                    new Tuple<Parameter, string>(p3, "binarise")
-                })
-            };
-            Templates = new TemplateViewModel []{ new TemplateViewModel("Один шаблон"), new TemplateViewModel("Другой шаблон", 1) };*/
+
             SelectedTemplate = Templates[0];
 
             moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task.ID)), o => SelectedPreprocessing != null);

@@ -15,7 +15,7 @@ namespace dms.view_models
         public int ParameterId { get; set; }
         public string ParameterName { get; set; }
         public string Type { get; set; }
-        public string[] TypesList { get { return new string[] { "нормализация", "бинаризация", "без предобработки" }; } }
+        public string[] TypesList { get { return new string[] { "нормализация 1 (к float)", "нормализация 2 (к int)", "бинаризация", "без предобработки" }; } }
     }
 
     public class PreprocessingViewModel : ViewmodelBase
@@ -79,26 +79,20 @@ namespace dms.view_models
         public class PreprocessingTemplate : IPreprocessingParameters
         {
             public string PreprocessingName { get; set; }
-            public int BaseTemplate { get; set; }
-            public Tuple<Parameter, string>[] newParam;
+            public Pair BaseTemplate { get; set; }
+            public Dictionary<Parameter, string> parameters = new Dictionary<Parameter, string>();
             public int sizeS;
-
-            public void initArray(int size)
-            {
-                sizeS = size;
-                newParam = new Tuple<Parameter, string>[size];
-            }
 
             public void set(Parameter p, string type, int index)
             {
-                newParam[index] = new Tuple<Parameter, string>(p, type);
+                parameters.Add(p, type);
             }
 
-            public Tuple<Parameter, string>[] get()
+            public Dictionary<Parameter, string> get()
             {
-                return newParam;
+                return parameters;
             }
-            
+
             public void testMethod()
             {
 
@@ -111,28 +105,27 @@ namespace dms.view_models
                 .addCondition("TaskTemplateID", "=", BaseTemplate.Id.ToString()), typeof(Selection));
             int newSelectionId = -1;
             int taskTemplateId;
-            if (!IsUsingExitingTemplate)
+            if (IsUsingExitingTemplate)
+            {
+                taskTemplateId = templateId;
+            } else
             {
                 PreprocessingTemplate pp = new PreprocessingTemplate();
                 pp.PreprocessingName = PreprocessingName;
-                pp.BaseTemplate = BaseTemplate.Id;
-                pp.initArray(PreprocessingParameters.Length);
+                pp.BaseTemplate = BaseTemplate;
                 int step = 0;
                 foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
                 {
-                    Parameter p = new Parameter(prepParam.ParameterName, prepParam.Type, "nothing");
+                    Parameter p = new Parameter(prepParam.ParameterName, prepParam.Type, "");
                     pp.set(p, prepParam.Type, step);
-                    step ++;
+                    step++;
                 }
                 taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName, TaskId, pp);
-                newSelectionId = PreprocessingManager.PrepManager.addNewEntities(((Selection)selections[0]).Name, ((Selection)selections[0]).RowCount,
-                    TaskId, taskTemplateId);
-            } else
-            {
-                taskTemplateId = templateId;
+                newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
+                    ((Selection)selections[0]).Name + " - " + PreprocessingName,
+                    ((Selection)selections[0]).RowCount, TaskId, taskTemplateId);
             }
-            string str = NewTemplateName;
-            bool v = IsUsingExitingTemplate;
+            
             int index = 0;
             foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
             {
@@ -140,7 +133,8 @@ namespace dms.view_models
                 string prepType = prepParam.Type;
                 
                 int selectionId = selections[0].ID;
-                PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId, prepType);
+                PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId, 
+                    prepType, PreprocessingParameters.Count(), index + 1);
                 index++;
             }
 
@@ -163,9 +157,9 @@ namespace dms.view_models
         public string[] PerformedTemplateList { get; private set; }
      //   public bool IsUsingExitingTemplate { get; set; }
         public string NewTemplateName { get; set; }
-        public TemplateViewModel BaseTemplateViewModel { get { return new TemplateViewModel(BaseTemplate.Name); } }
-        public TemplateViewModel PerformedTemplateViewModel { get { return new TemplateViewModel(PerformedTemplate.Name, 1); } }
-
+        public TemplateViewModel BaseTemplateViewModel { get { return new TemplateViewModel(BaseTemplate.Id); } }
+        public TemplateViewModel PerformedTemplateViewModel { get { return new TemplateViewModel(PerformedTemplate.Id, 1); } }
+        [Serializable]
         public class Pair
         {
             public string Name { get; set; }
