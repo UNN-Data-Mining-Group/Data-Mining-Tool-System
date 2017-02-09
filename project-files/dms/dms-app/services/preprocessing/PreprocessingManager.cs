@@ -68,10 +68,10 @@ namespace dms.services.preprocessing
         }
 
         public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, 
-            int paramId, string prepType, int paramCount, int parameterPosition)
+            int paramId, string prepType, int paramCount, int parameterPosition, bool canAdd)
         {
             Preprocessing.PreprocessingObj.executePreprocessing(taskTemplateId, newSelectionId, selectionId, 
-                paramId, prepType, paramCount, parameterPosition);
+                paramId, prepType, paramCount, parameterPosition, canAdd);
         }
     }
 }

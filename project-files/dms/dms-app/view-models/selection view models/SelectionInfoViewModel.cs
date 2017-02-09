@@ -84,10 +84,7 @@ namespace dms.view_models
         public string[] DataColumns { get; private set; }
 
         private void updateTable(int taskTemplateId)
-        {//переписать поиск выборки для шаблона
-            List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(Selection));
-            SelectionId = selections[0].ID;
+        {
             //рисуем заголовки
             List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(dms.models.Parameter));

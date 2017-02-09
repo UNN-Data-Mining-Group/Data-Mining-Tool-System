@@ -103,12 +103,12 @@ namespace dms.view_models
         {
             List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", BaseTemplate.Id.ToString()), typeof(Selection));
-            int newSelectionId = -1;
             int taskTemplateId;
             if (IsUsingExitingTemplate)
             {
                 taskTemplateId = templateId;
-            } else
+            }
+            else
             {
                 PreprocessingTemplate pp = new PreprocessingTemplate();
                 pp.PreprocessingName = PreprocessingName;
@@ -120,24 +120,34 @@ namespace dms.view_models
                     pp.set(p, prepParam.Type, step);
                     step++;
                 }
-                taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName, TaskId, pp);
-                newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
-                    ((Selection)selections[0]).Name + " - " + PreprocessingName,
-                    ((Selection)selections[0]).RowCount, TaskId, taskTemplateId);
+                taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName + " - " + PreprocessingName, TaskId, pp);
             }
-            
-            int index = 0;
-            foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
+            bool canAdd = true;
+            foreach (Entity sel in selections)
             {
-                int paramId = prepParam.ParameterId;
-                string prepType = prepParam.Type;
-                
-                int selectionId = selections[0].ID;
-                PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId, 
-                    prepType, PreprocessingParameters.Count(), index + 1);
-                index++;
-            }
+                int newSelectionId = -1;
+                if (!IsUsingExitingTemplate)
+                {
+                    newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
+                        ((Selection)sel).Name + " - " + PreprocessingName,
+                        ((Selection)sel).RowCount, TaskId, taskTemplateId);
+                }
 
+                int index = 0;
+                
+                foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
+                {
+                    int paramId = prepParam.ParameterId;
+                    string prepType = prepParam.Type;
+
+                    int selectionId = sel.ID;
+                    PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId,
+                        prepType, PreprocessingParameters.Count(), index + 1, canAdd);
+                    index++;
+                    
+                }
+                canAdd = false;
+            }
              OnClose?.Invoke(this, null);
         }
 

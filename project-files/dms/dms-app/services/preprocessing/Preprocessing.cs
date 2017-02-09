@@ -46,8 +46,9 @@ namespace dms.services.preprocessing
             return selectionId;
         }
         
+        private List<int> pars = new List<int>();
         public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, 
-            int paramId, string prepType, int paramCount, int parameterPosition)
+            int paramId, string prepType, int paramCount, int parameterPosition, bool canAdd)
         {
             dms.models.Parameter param = ((dms.models.Parameter)dms.services.DatabaseManager.SharedManager
                 .entityById(paramId, typeof(dms.models.Parameter)));
@@ -72,8 +73,20 @@ namespace dms.services.preprocessing
                     type = TypeParameter.Real;
                     break;
             }
-            int newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
+            int newParamId;
+            if (canAdd)
+            {
+                newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
                 taskTemplateId, param.Index, param.IsOutput, type);
+                pars.Add(newParamId);
+            }
+            else
+            {
+
+                newParamId = pars[parameterPosition - 1];
+
+            }
+            
             
             List<string> values = new List<string>();
             List<Entity> valueParam = new List<Entity>();
