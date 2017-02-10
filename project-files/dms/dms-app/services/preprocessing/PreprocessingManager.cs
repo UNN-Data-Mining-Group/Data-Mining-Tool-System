@@ -61,16 +61,17 @@ namespace dms.services.preprocessing
             return Parser.SelectionParser.CountParameters;
         }
 
-        public int addNewEntities(string selectionName, int countRows, int taskId,
+        public int addNewEntitiesForPreprocessing(string selectionName, int countRows, int taskId,
             int taskTemplateId)
         {
-            return Preprocessing.PreprocessingObj.addNewTemplateForPreprocessingSelection(selectionName, countRows, taskId,
-            taskTemplateId);
+            return Preprocessing.PreprocessingObj.addNewEntitiesForPreprocessing(selectionName, countRows, taskTemplateId);
         }
 
-        public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, int paramId, string prepType)
+        public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, 
+            int paramId, string prepType, int paramCount, int parameterPosition, bool canAdd)
         {
-            Preprocessing.PreprocessingObj.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId, prepType);
+            Preprocessing.PreprocessingObj.executePreprocessing(taskTemplateId, newSelectionId, selectionId, 
+                paramId, prepType, paramCount, parameterPosition, canAdd);
         }
     }
 }

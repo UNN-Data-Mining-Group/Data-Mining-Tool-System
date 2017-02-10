@@ -26,7 +26,7 @@ namespace dms.view_models
 
         public SelectionInfoViewModel(int taskId, int selectionId)
         {
-            Selection selection = ((Selection)dms.services.DatabaseManager.SharedManager.entityById(SelectionId, typeof(Selection)));
+            Selection selection = ((Selection)dms.services.DatabaseManager.SharedManager.entityById(selectionId, typeof(Selection)));
             SelectionId = selectionId;
             SelectionName = selection.Name;
             CountRows = selection.RowCount;
