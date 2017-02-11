@@ -25,34 +25,58 @@ namespace dms.services.preprocessing
             }
         }
 
-        private int countRows;
-
         public Parser()
         { }
 
+        private int countRows;
         public int CountRows { get; set; }
         public int CountParameters { get; set; }
-        public void parse(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, 
-            ParameterCreationViewModel[] parameters)//, hasHeader
+        public bool HasHeader { get; set; }
+        public string[] ParametersName { get; set; }
+
+        public int parse(int taskTemplateId, string filePath, char delimiter, int taskId, string selectionName, 
+            ParameterCreationViewModel[] parameters, bool hasHeader, bool isUsingExitingTemplate)
         {
             DataHelper helper = new DataHelper();
-
-            //ppParameters = null для главного шаблона
-            IPreprocessingParameters ppParameters = null;
-            int taskTemplateId = helper.addTaskTemplate(taskTemplateName, taskId, ppParameters);
-
+            HasHeader = hasHeader;
             string type = "develop";
             int selectionId = helper.addSelection(selectionName, taskTemplateId, countRows, type);
             
-            addParameters(filePath, delimiter, parameters, selectionId, taskTemplateId);
+            addParameters(filePath, delimiter, parameters, selectionId, taskTemplateId, isUsingExitingTemplate);
+
+            return selectionId;
         }
 
-        public string[] getParameterTypes(string filePath, char delimiter)
+        private string convertToType(string typeStr)
+        {
+            string type;
+            switch (typeStr)
+            {
+                case "String":
+                    type = "enum";
+                    break;
+                case "Int32":
+                    type = "int";
+                    break;
+                default:
+                    //  case "float":
+                    type = "float";
+                    break;
+            }
+            return type;
+        }
+
+        public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader)
         {
             using (StreamReader sr = new StreamReader(filePath))
             {
                 int iter = -1;
                 string line = sr.ReadLine();
+                if (hasHeader)
+                {
+                    ParametersName = line.Split(delimiter);
+                    line = sr.ReadLine();
+                }
                 string[] values = line.Split(delimiter);
                 CountParameters = values.Length;
                 string[] types = new string[values.Length];
@@ -76,21 +100,21 @@ namespace dms.services.preprocessing
                         }
                         if (iter == 0)
                         {
-                            types[index] = getType(type.Name);
+                            types[index] = convertToType(type.Name);
                         }
                         else
                         {
-                            if (types[index] != getType(type.Name))
+                            if (types[index] != convertToType(type.Name))
                             {
                                 switch (types[index])
                                 {
                                     case "enum":
-                                        types[index] = getType(type.Name);
+                                        types[index] = convertToType(type.Name);
                                         break;
                                     case "int":
-                                        if ("float".Equals(getType(type.Name)))
+                                        if ("float".Equals(convertToType(type.Name)))
                                         {
-                                            types[index] = getType(type.Name);
+                                            types[index] = convertToType(type.Name);
                                         }
                                         break;
                                 }
@@ -107,32 +131,40 @@ namespace dms.services.preprocessing
             }
         }
 
-        private string getType(string typeStr)
+        private int getIsOutput(string isOutput)
         {
-            string type;
-            switch (typeStr)
-            {
-                case "String":
-                    type = "enum";
-                    break;
-                case "Int32":
-                    type = "int";
-                    break;
-                default:
-                    //  case "float":
-                    type = "float";
-                    break;
-            }
-            return type;
+            return "Входной" == isOutput ? 0 : 1;
         }
 
-        private void addParameters(string filePath, char delimiter, ParameterCreationViewModel[] parameters, int selectionId, int taskTemplateId)
+        public TypeParameter getTypeParameter(string typeStr)
+        {
+            if (typeStr.Contains("enum"))
+            {
+                return TypeParameter.Enum;
+            }
+            else if (typeStr.Contains("int"))
+            {
+                return TypeParameter.Int;
+            }
+            else if (typeStr.Contains("float"))
+            {
+                return TypeParameter.Real;
+            }
+            return TypeParameter.Real;
+        }
+
+        private void addParameters(string filePath, char delimiter, ParameterCreationViewModel[] parameters, 
+            int selectionId, int taskTemplateId, bool isUsingExitingTemplate)
         {
             using (StreamReader sr = new StreamReader(filePath))
             {
                 DataHelper helper = new DataHelper();
                 int rowStep = 0;
                 string line = sr.ReadLine();
+                if (HasHeader)
+                {
+                    line = sr.ReadLine();
+                }
                 int paramCount = parameters.Length;
 
                 List<Entity> listSelRow = new List<Entity>(countRows);
@@ -154,26 +186,38 @@ namespace dms.services.preprocessing
                         string comment = parameters[index].Comment == null ? "" : parameters[index].Comment;
                         int isOutput = getIsOutput(parameters[index].KindOfParameter);
                         TypeParameter type = getTypeParameter(parameters[index].Type);
-                    
-                        dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, index, isOutput, type);
-                        listParams.Add(parameter);
-                        listValParams.Add(helper.addValueParameter(entity.ID, parameter.ID, value));
+
+                        if (rowStep == 1)
+                        {
+                            dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, index, isOutput, type);
+                            listParams.Add(parameter);
+                        }
+                        listValParams.Add(helper.addValueParameter(entity.ID, -1/*parameter.ID*/, value));
                     }
                     
                     line = sr.ReadLine();
                 }
 
                 DatabaseManager.SharedManager.insertMultipleEntities(listSelRow);
-                DatabaseManager.SharedManager.insertMultipleEntities(listParams);
+                if (!isUsingExitingTemplate)
+                {
+                    DatabaseManager.SharedManager.insertMultipleEntities(listParams);
+                }
+                else
+                {
+                    listParams = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                        .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(dms.models.Parameter));
+                }
 
                 List<Entity> list = new List<Entity>(countRows * paramCount);
                 int selRowId = 0;
                 for (int i = 0; i < paramCount * countRows; i++)
                 {
-                    if (i % paramCount == 0) {
+                    if (i % paramCount == 0)
+                    {
                         selRowId = i == 0 ? listSelRow[0].ID : listSelRow[i / paramCount].ID;
                     }
-                    int paramId = listParams[i].ID;
+                    int paramId = listParams[i % paramCount].ID;
 
                     ValueParameter param = listValParams[i];
                     param.ParameterID = paramId;
@@ -183,23 +227,5 @@ namespace dms.services.preprocessing
                 DatabaseManager.SharedManager.insertMultipleEntities(list);
             }
         }
-        private int getIsOutput(string isOutput)
-        {
-            return "Входной" == isOutput ? 0 : 1;
-        }
-        private TypeParameter getTypeParameter(string typeStr)
-        {
-            switch (typeStr)
-            {
-                case "enum":
-                    return TypeParameter.Enum;
-                case "int":
-                    return TypeParameter.Int;
-                default:
-                    //  case "float":
-                    return TypeParameter.Real;
-            }
-        }
-
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using dms.models;
 using dms.view_models;
+using dms.services.preprocessing.normalization;
 
 namespace dms.services.preprocessing
 {
@@ -34,14 +35,20 @@ namespace dms.services.preprocessing
             helper.updateTask(taskId, parameterCount, selectionCount);
         }
 
-        public string[] getParameterTypes(string filePath, char delimiter)
+        public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader)
         {
-            return Parser.SelectionParser.getParameterTypes(filePath, delimiter);
+            return Parser.SelectionParser.getParametersTypes(filePath, delimiter, hasHeader);
         }
 
-        public void parseSelection(string taskTemplateName, string filePath, char delimiter, int taskId, string selectionName, ParameterCreationViewModel[] parameters)
+        public string[] getParametersName()
         {
-            Parser.SelectionParser.parse(taskTemplateName, filePath, delimiter, taskId, selectionName, parameters);
+            return Parser.SelectionParser.ParametersName;
+        }
+
+        public int parseSelection(int taskTemplateId, string filePath, char delimiter, int taskId, string selectionName, 
+            ParameterCreationViewModel[] parameters, bool hasHeader, bool isUsingExitingTemplate)
+        {
+            return Parser.SelectionParser.parse(taskTemplateId, filePath, delimiter, taskId, selectionName, parameters, hasHeader, isUsingExitingTemplate);
         }
 
         public int getCountRows()
@@ -52,6 +59,19 @@ namespace dms.services.preprocessing
         public int getCountParameters()
         {
             return Parser.SelectionParser.CountParameters;
+        }
+
+        public int addNewEntitiesForPreprocessing(string selectionName, int countRows, int taskId,
+            int taskTemplateId)
+        {
+            return Preprocessing.PreprocessingObj.addNewEntitiesForPreprocessing(selectionName, countRows, taskTemplateId);
+        }
+
+        public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, 
+            int paramId, string prepType, int paramCount, int parameterPosition, bool canAdd)
+        {
+            Preprocessing.PreprocessingObj.executePreprocessing(taskTemplateId, newSelectionId, selectionId, 
+                paramId, prepType, paramCount, parameterPosition, canAdd);
         }
     }
 }

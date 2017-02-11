@@ -15,7 +15,7 @@ namespace dms.view_models
         private ObservableCollection<TaskTree> tasks;
 
         public TaskTreeViewModel()
-        {            
+        {
             Tasks = new ObservableCollection<TaskTree>();
             UpdateTaskTree();
         }
@@ -30,6 +30,7 @@ namespace dms.view_models
 
         public void SendRequestCreateView(ViewmodelBase vm)
         {
+            UpdateTaskTree();
             requestViewCreation?.Invoke(vm);
         }
 

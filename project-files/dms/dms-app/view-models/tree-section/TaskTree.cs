@@ -14,9 +14,9 @@ namespace dms.view_models
         private ActionHandler deleteCommand;
         private ActionHandler showInfoDialogCommand;
         private ActionHandler showPreprocessingCreationHandler;
-
+        
         public TaskTree(models.Task task,
-            models.Selection[] sel, models.TaskSolver[] per, models.TaskSolver[] des, string[] solv, 
+            models.Selection[] sel, models.TaskSolver[] per, models.TaskSolver[] des, string[] solv,
             TaskTreeViewModel vm)
         {
             Title = task.Name;
@@ -34,7 +34,7 @@ namespace dms.view_models
             }, e => true);
             showPreprocessingCreationHandler = new ActionHandler(() =>
             {
-                PreprocessingViewModel t = new PreprocessingViewModel(Title);
+                PreprocessingViewModel t = new PreprocessingViewModel(task.ID);
                 vm.SendRequestCreateView(t);
             }, e => true);
         }
