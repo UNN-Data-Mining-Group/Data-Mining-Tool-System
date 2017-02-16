@@ -26,10 +26,10 @@ namespace dms.view_models
         public ICommand CreateCommand { get { return createHandler; } }
         public event EventHandler OnClose;
 
-        public int templateId;
+        public int TemplateId;
         private int TaskId;
 
-        public PreprocessingViewModel(int taskId)
+        public PreprocessingViewModel(int taskId, int templateId)
         {
             TaskId = taskId;
             //TaskTemplates
@@ -47,7 +47,6 @@ namespace dms.view_models
                 BaseTemplateListPair[index] = pair;
                     index++;
             }
-
             PerformedTemplateListPair = BaseTemplateListPair;
             PerformedTemplateList = BaseTemplateList;
             PerformedTemplate = PerformedTemplateListPair[0]; 
@@ -55,10 +54,18 @@ namespace dms.view_models
             IsUsingExitingTemplate = false;
             TaskName = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             PreprocessingName = "Преобразование 1";
+            TaskTemplate template = null;
+            if (templateId == -1)
+            {
+                TemplateId = taskTemplates[0].ID;
+            }else
+            {
+                TemplateId = templateId;
+                template = ((dms.models.TaskTemplate)dms.services.DatabaseManager.SharedManager.entityById(templateId, typeof(dms.models.TaskTemplate)));
+            }
             
-            templateId = taskTemplates[0].ID;
             List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", templateId.ToString()), typeof(dms.models.Parameter));
+                .addCondition("TaskTemplateID", "=", TemplateId.ToString()), typeof(dms.models.Parameter));
             PreprocessingParameters = new PreprocessingParameterViewModel[parameters.Count];
             index = 0;
             foreach (Entity entity in parameters)
@@ -66,7 +73,18 @@ namespace dms.view_models
                 PreprocessingParameters[index] = new PreprocessingParameterViewModel();
                 PreprocessingParameters[index].ParameterId = entity.ID;
                 PreprocessingParameters[index].ParameterName = ((dms.models.Parameter)entity).Name;
-                PreprocessingParameters[index].Type = "без предобработки";
+                if (template == null)
+                {
+                    PreprocessingParameters[index].Type = "без предобработки";
+                }
+                else
+                {
+                    PreprocessingViewModel.PreprocessingTemplate pp = (PreprocessingViewModel.PreprocessingTemplate) template.PreprocessingParameters;
+                    Dictionary<Parameter, string> dictionary = pp.get();
+                    Parameter[] paramss = dictionary.Keys.ToArray();
+                    PreprocessingParameters[index].Type = paramss[index].Type;
+                }
+                
                 index++;
             }
             
@@ -106,7 +124,7 @@ namespace dms.view_models
             int taskTemplateId;
             if (IsUsingExitingTemplate)
             {
-                taskTemplateId = templateId;
+                taskTemplateId = TemplateId;
             }
             else
             {

@@ -27,13 +27,15 @@ namespace dms.view_models
     public class Preprocessing
     {
         public Preprocessing(string name, string baseTemplate, 
-            string performedTemplate, Tuple<Parameter, string>[] preproc)
+            string performedTemplate, Tuple<Parameter, string>[] preproc, int id)
         {
+            PerformedTemplateId = id;
             Name = name;
             BaseTemplateName = baseTemplate;
             PerformedTemplateName = performedTemplate;
             ParameterProcessing = preproc;
         }
+        public int PerformedTemplateId { get; }
         public string Name { get; }
         public string BaseTemplateName { get; }
         public string PerformedTemplateName { get; }
@@ -81,14 +83,14 @@ namespace dms.view_models
                     tuple[i] = new Tuple<Parameter, string>(kp.Key, kp.Value);
                     i++;
                 }
-                PreprocessingList[index] = new Preprocessing(pp.PreprocessingName, pp.BaseTemplate.Name, template.Name, tuple);
+                PreprocessingList[index] = new Preprocessing(pp.PreprocessingName, pp.BaseTemplate.Name, template.Name, tuple, template.ID);
                 
                 index++;
             }
 
             SelectedTemplate = Templates[0];
 
-            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task.ID)), o => SelectedPreprocessing != null);
+            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task.ID, SelectedPreprocessing.PerformedTemplateId)), o => SelectedPreprocessing != null);
         }
 
         public string TaskName { get; }

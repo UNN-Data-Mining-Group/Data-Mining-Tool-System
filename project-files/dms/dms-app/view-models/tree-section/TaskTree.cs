@@ -34,7 +34,7 @@ namespace dms.view_models
             }, e => true);
             showPreprocessingCreationHandler = new ActionHandler(() =>
             {
-                PreprocessingViewModel t = new PreprocessingViewModel(task.ID);
+                PreprocessingViewModel t = new PreprocessingViewModel(task.ID, -1);
                 vm.SendRequestCreateView(t);
             }, e => true);
         }
