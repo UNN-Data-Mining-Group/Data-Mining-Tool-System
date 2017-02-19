@@ -119,6 +119,9 @@
     <Compile Include="gui\LearnProcessPage.xaml.cs">
       <DependentUpon>LearnProcessPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\scenario view\GeneticParams.xaml.cs">
+      <DependentUpon>GeneticParams.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solution view\CreateSolutionPage.xaml.cs">
       <DependentUpon>CreateSolutionPage.xaml</DependentUpon>
     </Compile>
@@ -188,6 +191,7 @@
     <Compile Include="gui\preprocessing view\TemplateInfoPage.xaml.cs">
       <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="models\LearningAlgo.cs" />
     <Compile Include="services\preprocessing\DataHelper.cs" />
     <Compile Include="services\preprocessing\normalization\EnumeratedParameter.cs" />
     <Compile Include="services\preprocessing\normalization\IntegerParameter.cs" />
@@ -246,6 +250,10 @@
     <Compile Include="view-models\tree-section\TreeSection.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
     <Page Include="gui\LearnProcessPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\GeneticParams.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -393,6 +401,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\dms-learning-algo\dms-learning-algo.vcxproj">
+      <Project>{6a7958af-d58c-48b6-95d3-887a6d8face7}</Project>
+      <Name>dms-learning-algo</Name>
+    </ProjectReference>
     <ProjectReference Include="..\dms-solvers\dms-solvers.vcxproj">
       <Project>{aa5667b0-8a83-4e4d-941c-62ed5cabd487}</Project>
       <Name>dms-solvers</Name>

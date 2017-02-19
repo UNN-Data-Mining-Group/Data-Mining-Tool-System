@@ -1,4 +1,5 @@
-﻿using System;
+﻿using dms.view_models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,21 +13,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Xceed.Wpf.AvalonDock.Controls;
-using Xceed.Wpf.AvalonDock.Layout;
 
-
-using dms.view_models;
-
-
-namespace dms.gui
+namespace dms.gui.scenario_view
 {
     /// <summary>
-    /// Interaction logic for CreateLearningScenarioPage.xaml
+    /// Логика взаимодействия для GeneticParams.xaml
     /// </summary>
-    public partial class CreateLearningScenarioPage : UserControl
+    public partial class GeneticParams : UserControl
     {
-        public CreateLearningScenarioPage()
+        public GeneticParams()
         {
             InitializeComponent();
             DataContext = new LearningScenarioViewModel();

@@ -56,7 +56,7 @@ namespace dms.services.preprocessing
                     switch (type)
                     {
                         case TypeParameter.Real:
-                            values[stepRow][stepParam] = Convert.ToDouble((((ValueParameter)value[0]).Value).Replace(".", ","));
+                            values[stepRow][stepParam] = Convert.Tofloat((((ValueParameter)value[0]).Value).Replace(".", ","));
                             break;
                         case TypeParameter.Int:
                             values[stepRow][stepParam] = Convert.ToInt32(((ValueParameter)value[0]).Value);
@@ -104,7 +104,7 @@ namespace dms.services.preprocessing
                     switch (type)
                     {
                         case TypeParameter.Real:
-                            values[stepRow][stepParam] = Convert.ToDouble((((ValueParameter)value[0]).Value).Replace(".", ","));
+                            values[stepRow][stepParam] = Convert.Tofloat((((ValueParameter)value[0]).Value).Replace(".", ","));
                             break;
                         case TypeParameter.Int:
                             values[stepRow][stepParam] = Convert.ToInt32(((ValueParameter)value[0]).Value);

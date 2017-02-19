@@ -29,7 +29,7 @@ namespace neuro_test_managed
                 res[i] = new float[dim];
                 for(int j = 0; j < dim; j++)
                 {
-                    res[i][j] = (float)r.NextDouble() * 2.0f - 1.0f;
+                    res[i][j] = (float)r.Nextfloat() * 2.0f - 1.0f;
                 }
             }
 

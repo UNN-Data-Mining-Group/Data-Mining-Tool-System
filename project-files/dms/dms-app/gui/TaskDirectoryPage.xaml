@@ -19,7 +19,7 @@
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                     <TextBlock.InputBindings>
-                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ShowTaskInfoDialogCommand}"/>
+                        <MouseBinding Gesture="LeftfloatClick" Command="{Binding ShowTaskInfoDialogCommand}"/>
                     </TextBlock.InputBindings>
                 </TextBlock>
             </HierarchicalDataTemplate>
@@ -69,7 +69,7 @@
                         </ContextMenu>
                     </TextBlock.ContextMenu>
                     <TextBlock.InputBindings>
-                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding ShowSelectionInfoDialog}"/>
+                        <MouseBinding Gesture="LeftfloatClick" Command="{Binding ShowSelectionInfoDialog}"/>
                     </TextBlock.InputBindings>
                 </TextBlock>
             </HierarchicalDataTemplate>
