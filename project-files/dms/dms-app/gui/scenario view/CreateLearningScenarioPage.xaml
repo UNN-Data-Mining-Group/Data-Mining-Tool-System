@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:dms.gui"
+             xmlns:ad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             xmlns:local="clr-namespace:dms.gui.scenario_view"
              mc:Ignorable="d">
     <StackPanel>
         <Grid>
@@ -27,9 +28,9 @@
             <ComboBox ItemsSource="{Binding TeacherTypesList}" SelectedItem="{Binding TeacherType}" Grid.Row="3" Grid.Column="1" Margin="5"/>
         </Grid>
         <GroupBox Header="Параметры алгоритма обучения">
-            <Label Content="Здесь могли быть ваши параметры"/>
+            <local:GeneticParams></local:GeneticParams>
         </GroupBox>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" CanVerticallyScroll="True">
             <Button Content="Создать" Command="{Binding CreateCommand}" Margin="5" Width="100"/>
             <Button Content="Отменить" Command="{Binding CancelCommand}" Margin="5" Width="100"/>
         </StackPanel>
