@@ -121,7 +121,7 @@ namespace dms.view_models
             {
                 for (int i = 0; i < item.Y.Count; i++)
                 {
-                    item.Y[i] = r.NextDouble().ToString();
+                    item.Y[i] = r.Nextfloat().ToString();
                 }
             }
         }

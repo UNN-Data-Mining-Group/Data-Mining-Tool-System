@@ -38,11 +38,11 @@ namespace dms.services.preprocessing.normalization
             return classes.IndexOf(value);
         }
 
-        public double GetNormalizedDouble(string value)
+        public float GetNormalizedfloat(string value)
         {
             int val = GetInt(value);
-            double step = 1.0 / countClasses;
-            double temp = 0.0;
+            float step = 1.0 / countClasses;
+            float temp = 0.0;
             for (int i = 0; i < countClasses; i++)
             {
                 if (Math.Abs(val - temp) < 1e-10)
@@ -51,12 +51,12 @@ namespace dms.services.preprocessing.normalization
                 }
                 temp++;
             }
-            return Double.NaN;
+            return float.NaN;
         }
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetNormalizedDouble(value);
+            float val = GetNormalizedfloat(value);
             return Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 

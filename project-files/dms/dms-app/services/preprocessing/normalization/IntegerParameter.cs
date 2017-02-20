@@ -58,11 +58,11 @@ namespace dms.services.preprocessing.normalization
             return temp;
         }
 
-        public double GetNormalizedDouble(string value)
+        public float GetNormalizedfloat(string value)
         {
             int val = GetInt(value);
-            double step = 1.0 / countValues;
-            double temp = minValue;
+            float step = 1.0 / countValues;
+            float temp = minValue;
             for (int i = 0; i < countValues; i++)
             {
                 if (Math.Abs(val - temp) < 1e-10)
@@ -71,12 +71,12 @@ namespace dms.services.preprocessing.normalization
                 }
                 temp++;
             }
-            return Double.NaN;
+            return float.NaN;
         }
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetNormalizedDouble(value);
+            float val = GetNormalizedfloat(value);
             return Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 

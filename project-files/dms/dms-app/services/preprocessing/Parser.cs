@@ -89,14 +89,14 @@ namespace dms.services.preprocessing
                     {
                         Type type = value.GetType();
                         int intValue = 0;
-                        float doubleValue = 0;
+                        float floatValue = 0;
                         if (Int32.TryParse(value.Replace('.', ','), out intValue))
                         {
                             type = intValue.GetType();
                         }
-                        else if (float.TryParse(value.Replace('.', ','), out doubleValue))
+                        else if (float.TryParse(value.Replace('.', ','), out floatValue))
                         {
-                            type = doubleValue.GetType();
+                            type = floatValue.GetType();
                         }
                         if (iter == 0)
                         {
