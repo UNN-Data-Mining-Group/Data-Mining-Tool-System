@@ -11,7 +11,7 @@ namespace dms.view_models
 {
     public class SolverLeaf : TreeSection
     {
-        private string parentTask;
+        private models.Task parentTask;
         private string solverType;
         private models.TaskSolver solver;
         private ActionHandler showSolverInfoHandler;
@@ -22,20 +22,24 @@ namespace dms.view_models
         public SolverLeaf(models.Task task, models.TaskSolver solver, string solverType, 
             TaskTreeViewModel vm) : base(solver.Name)
         {
-            parentTask = task.Name;
+            parentTask = task;
             this.solverType = solverType;
             this.solver = solver;
             showSolverInfoHandler = new ActionHandler(() => vm.SendRequestCreateView(CreateSolverInfoViewModel()), e => true);
-            showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask, solver.Name)), e => true);
-            showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask, solver.Name)), e => true);
+            showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask.Name, solver.Name)), e => true);
+            showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask.Name, solver.Name)), e => true);
         }
 
         public ViewmodelBase CreateSolverInfoViewModel()
         {
-            if (solverType.Equals("Персептрон"))
-                return new PerceptronInfoViewModel(parentTask, solver.Name);
+            if (solver.TypeName.Equals("Perceptron"))
+                return new PerceptronInfoViewModel(parentTask, solver);
             else if (solverType.Equals("Дерево решений"))
-                return new DecisionTreeInfoViewModel(parentTask, solver.Name);
+                return new DecisionTreeInfoViewModel(parentTask, solver);
+            else if (solver.TypeName.Equals("WardNN"))
+                return new WardNetInfoViewModel(parentTask, solver);
+            else if (solver.TypeName.Equals("ConvNN"))
+                return new ConvNNInfoViewModel(parentTask, solver);
             else
                 return null;
         }

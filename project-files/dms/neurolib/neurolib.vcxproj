@@ -167,11 +167,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActivationFunction.cpp" />
+    <ClCompile Include="ConvNN.cpp" />
     <ClCompile Include="Perceptron.cpp" />
     <ClCompile Include="WardNN.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActivationFunctions.h" />
+    <ClInclude Include="ConvNN.h" />
     <ClInclude Include="Perceptron.h" />
     <ClInclude Include="WardNN.h" />
   </ItemGroup>

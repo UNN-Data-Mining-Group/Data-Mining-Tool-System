@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using dms.models;
+using dms.solvers.neural_nets;
 
 namespace dms.view_models
 {
@@ -19,19 +20,38 @@ namespace dms.view_models
     public class PerceptronInfoViewModel : ViewmodelBase
     {
         public string Name { get; }
-        public int CountInputNeurons { get { return 10; } }
+        public int CountInputNeurons { get; }
         public string TaskName { get; }
 
-        public PerceptronInfoViewModel(string taskName, string solverName)
+        public PerceptronInfoViewModel(models.Task task, models.TaskSolver solver)
         {
-            TaskName = taskName;
-            Name = solverName;
- 
-            Layers = new Layer[]
+            TaskName = task.Name;
+            Name = solver.Name;
+
+            PerceptronTopology topology = solver.Description as PerceptronTopology;
+
+            Layers = new Layer[topology.GetLayersCount() - 1];
+            var neurons = topology.GetNeuronsInLayersCount();
+            var delays = topology.HasLayersDelayWeight();
+            var afs = topology.GetActivationFunctionsNames();
+
+            CountInputNeurons = topology.GetInputsCount();
+            for (int i = 0; i < Layers.Length - 1; i++)
             {
-                new Layer { Name = "1 слой", NeuronsCount = 5, ActivateFunction = "Сигмоидальная", HasW0 = true},
-                new Layer { Name = "2 слой", NeuronsCount = 15, ActivateFunction = "Сигмоидальная", HasW0 = true},
-                new Layer { Name = "Выходной слой", NeuronsCount = 3, ActivateFunction = "Пороговая", HasW0 = false}
+                Layers[i] = new Layer
+                {
+                    Name = String.Format("{0} слой", i + 1),
+                    ActivateFunction = afs[i],
+                    NeuronsCount = neurons[i+1],
+                    HasW0 = delays[i]
+                };
+            }
+            Layers[Layers.Length - 1] = new Layer
+            {
+                Name = "Выходной слой",
+                ActivateFunction = afs[Layers.Length - 1],
+                NeuronsCount = neurons[Layers.Length],
+                HasW0 = delays[Layers.Length - 1]
             };
         }
 

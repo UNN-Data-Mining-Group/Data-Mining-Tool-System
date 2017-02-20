@@ -137,6 +137,12 @@
     <Compile Include="gui\selection view\SelectionLearnStatisticsPage.xaml.cs">
       <DependentUpon>SelectionLearnStatisticsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\solver view\convnn view\ConvNNInfoPage.xaml.cs">
+      <DependentUpon>ConvNNInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\convnn view\ConvNNParametersPage.xaml.cs">
+      <DependentUpon>ConvNNParametersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solver view\LearnSolverPage.xaml.cs">
       <DependentUpon>LearnSolverPage.xaml</DependentUpon>
     </Compile>
@@ -176,6 +182,9 @@
     <Compile Include="gui\solution view\SolveStatisticPage.xaml.cs">
       <DependentUpon>SolveStatisticPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\solver view\ward net view\WardInfoPage.xaml.cs">
+      <DependentUpon>WardInfoPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solver view\ward net view\WardParametersPage.xaml.cs">
       <DependentUpon>WardParametersPage.xaml</DependentUpon>
     </Compile>
@@ -204,6 +213,8 @@
     <Compile Include="view-models\solution view models\CreateSolutionViewModel.cs" />
     <Compile Include="view-models\scenario view model\LearningScenarioManagerViewModel.cs" />
     <Compile Include="view-models\selection view models\SelectionLearnStatisticViewModel.cs" />
+    <Compile Include="view-models\solver view models\convNN view models\ConvNNInfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\convNN view models\ConvNNParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\LearnSolverViewModel.cs" />
     <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeInfoViewModel.cs" />
@@ -217,9 +228,11 @@
     <Compile Include="view-models\selection view models\SelectionInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\SolveViewModel.cs" />
     <Compile Include="view-models\solution view models\SolveStatisticViewModel.cs" />
+    <Compile Include="view-models\solver view models\ward net view models\WardNetInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\ward net view models\WardNetParametersViewModel.cs" />
     <Compile Include="view-models\task view models\TaskInfoViewModel.cs" />
     <Compile Include="view-models\preprocessing view models\TemplateViewModel.cs" />
+    <Compile Include="view-models\tree-section\ConvNNTree.cs" />
     <Compile Include="view-models\tree-section\DecisionTreesTree.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SelectionLeaf.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SolutionLeaf.cs" />
@@ -244,6 +257,7 @@
     <Compile Include="view-models\tree-section\TaskTree.cs" />
     <Compile Include="view-models\TaskTreeViewModel.cs" />
     <Compile Include="view-models\tree-section\TreeSection.cs" />
+    <Compile Include="view-models\tree-section\WardTree.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
     <Page Include="gui\LearnProcessPage.xaml">
       <SubType>Designer</SubType>
@@ -270,6 +284,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\selection view\SelectionLearnStatisticsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\convnn view\ConvNNInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\convnn view\ConvNNParametersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -334,6 +356,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\solution view\SolveStatisticPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\ward net view\WardInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

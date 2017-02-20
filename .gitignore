@@ -44,16 +44,20 @@ project-files/dms/bin/x64/Release/*
 !project-files/dms/bin/x64/Debug/mkl_core.dll
 !project-files/dms/bin/x64/Debug/mkl_def.dll
 !project-files/dms/bin/x64/Debug/mkl_intel_thread.dll
+!project-files/dms/bin/x86/Debug/libiomp5md.dll
 !project-files/dms/bin/x64/Release/mkl_core.dll
 !project-files/dms/bin/x64/Release/mkl_def.dll
 !project-files/dms/bin/x64/Release/mkl_intel_thread.dll
+!project-files/dms/bin/x86/Release/libiomp5md.dll
 
 !project-files/dms/bin/x86/Debug/mkl_core.dll
 !project-files/dms/bin/x86/Debug/mkl_p4m3.dll
 !project-files/dms/bin/x86/Debug/mkl_intel_thread.dll
+!project-files/dms/bin/x86/Debug/libiomp5md.dll
 !project-files/dms/bin/x86/Release/mkl_core.dll
 !project-files/dms/bin/x86/Release/mkl_p4m3.dll
 !project-files/dms/bin/x86/Release/mkl_intel_thread.dll
+!project-files/dms/bin/x86/Release/libiomp5md.dll
 
 # Visual Studio 2015 cache/options directory
 .vs/

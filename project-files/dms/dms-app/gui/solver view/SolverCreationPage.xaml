@@ -18,6 +18,9 @@
         <DataTemplate x:Key="decisionTreeTemplate">
             <local:DecisionTreeParameterPage/>
         </DataTemplate>
+        <DataTemplate x:Key="convNNTemplate">
+            <local:ConvNNParametersPage/>
+        </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
@@ -47,6 +50,9 @@
                         </DataTrigger>
                         <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений">
                             <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeTemplate}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectedType}" Value="Сверточная нейронная сеть">
+                            <Setter Property="ContentTemplate" Value="{StaticResource convNNTemplate}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

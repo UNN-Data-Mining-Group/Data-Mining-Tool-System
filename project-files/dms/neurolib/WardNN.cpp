@@ -174,7 +174,7 @@ int WardNN::solve(float* x, float* y)
 			}
 			float* x_cur = temp_res[i] + d;
 			cblas_sgemv(CblasRowMajor, CblasNoTrans, n, cols, 1.0f, w[i - 1] + k, cols, buf_x, 1, 0.0f, x_cur, 1);
-			get_activation_function_for_layer(af_types[i - 1][j], x_cur, n);
+			calc_activation_function(x_cur, n, af_types[i - 1][j], x_cur);
 			k += n * cols;
 			d += n;
 		}

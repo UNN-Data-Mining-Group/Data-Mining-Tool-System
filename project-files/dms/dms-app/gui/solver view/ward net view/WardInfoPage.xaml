@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="dms.gui.WardInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d">
+    <StackPanel>
+        <Label Content="{Binding Name}" ContentStringFormat="Название сети: {0}"/>
+        <Label Content="{Binding CountInputNeurons}" ContentStringFormat="Количество входных нейронов: {0}"/>
+        <DataGrid ItemsSource="{Binding Groups}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Номер слоя" Binding="{Binding LayerName}" Width="*"/>
+                <DataGridTextColumn Header="Номер группы" Binding="{Binding GroupName}" Width="*"/>
+                <DataGridTextColumn Header="Количество нейронов" Binding="{Binding NeuronsCount}"  Width="*"/>
+                <DataGridTextColumn Header="Активационная функция" Binding="{Binding ActivateFunction}"  Width="*"/>
+                <DataGridTextColumn Header="w0" Binding="{Binding HasW0}"  Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Label Content="Дополнительные связи:"/>
+        <DataGrid ItemsSource="{Binding AdditionalConns}" AutoGenerateColumns="False"  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Начало связи" Binding="{Binding Start}" Width="*"/>
+                <DataGridTextColumn Header="Окончание связи" Binding="{Binding End}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>  
+        </StackPanel>
+</UserControl>

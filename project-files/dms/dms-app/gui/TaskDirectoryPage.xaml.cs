@@ -57,6 +57,10 @@ namespace dms.gui
                 CreatePerceptronInfoPage(vm as PerceptronInfoViewModel);
             else if (vm is DecisionTreeInfoViewModel)
                 CreateDecisionTreeInfoPage(vm as DecisionTreeInfoViewModel);
+            else if (vm is WardNetInfoViewModel)
+                CreateWardNNInfoPage(vm as WardNetInfoViewModel);
+            else if (vm is ConvNNInfoViewModel)
+                CreateConvNNInfoPage(vm as ConvNNInfoViewModel);
             else if (vm is SolveViewModel)
                 CreateSolvePage(vm as SolveViewModel);
             else if (vm is LearnSolverViewModel)
@@ -99,6 +103,18 @@ namespace dms.gui
         private void CreatePerceptronInfoPage(PerceptronInfoViewModel obj)
         {
             PerceptronInfoPage t = new PerceptronInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
+        }
+
+        private void CreateWardNNInfoPage(WardNetInfoViewModel obj)
+        {
+            WardInfoPage t = new WardInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
+        }
+
+        private void CreateConvNNInfoPage(ConvNNInfoViewModel obj)
+        {
+            ConvNNInfoPage t = new ConvNNInfoPage(obj);
             OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
         }
 

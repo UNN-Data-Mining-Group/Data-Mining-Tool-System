@@ -1,5 +1,6 @@
 #include "Perceptron.h"
 #include "WardNN.h"
+#include "ConvNN.h"
 #include <ctime>
 #include <random>
 #include <iostream>
@@ -10,11 +11,13 @@ using namespace neurolib;
 void performance_test();
 void accuracy_test_perc();
 void accuracy_test_ward();
+void accuracy_test_conv();
 
 void main()
 {
 	accuracy_test_perc();
 	accuracy_test_ward();
+	accuracy_test_conv();
 	performance_test();
 }
 
@@ -128,6 +131,51 @@ void accuracy_test_ward()
 	else
 		std::cout << "FAIL";
 	std::cout << std::endl;
+}
+
+void accuracy_test_conv()
+{
+	std::cout << "Accuracy test conv:";
+	float w1[] = 
+	{ 
+		-1, 0, 0, 1, 
+		0, 1, -1, 0
+	};
+	float w2[] =
+	{
+		1, 0, 0, -1,
+		-0.5, 0, 1, 0,
+
+		0, -1, 1, 0,
+		0, 0, -0.5, 0
+	};
+	float* w[] = { w1, w2 };
+	std::vector<ConvNNLayer*> layers;
+	layers.push_back(new ConvNNConvolutionLayer{ 2, 2, 1, 1, 1, 2, ActivationFunctionType::Identity });
+	layers.push_back(new ConvNNPoolingLayer{ 2, 2, 1, 1 });
+	layers.push_back(new ConvNNFullyConnectedLayer{ 2, ActivationFunctionType::Identity });
+
+	ConvNN net{ 2, 2, 1, layers, w };
+
+	float x[] = { 0.5, 0.3, -0.6, -0.2 };
+	float y[2];
+	float answer[] = { 0.35, -0.15 };
+	net.solve(x, y);
+
+	float EPS = 1e-5;
+	if ((std::abs(y[0] - answer[0]) > EPS) || (std::abs(y[1] - answer[1]) > EPS))
+	{
+		std::cout << "FAIL" << std::endl;
+		std::cout << "answer = (" << answer[0] << "," << answer[1] << ")" << std::endl;
+		std::cout << "y = (" << y[0] << "," << y[1] << ")" << std::endl;
+	}
+	else
+	{
+		std::cout << "PASS" << std::endl;
+	}
+
+	for (int i = 0; i < layers.size(); i++)
+		delete layers[i];
 }
 
 void performance_test()
