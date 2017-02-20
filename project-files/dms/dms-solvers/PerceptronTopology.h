@@ -16,6 +16,7 @@ namespace dms::solvers::neural_nets
 		int GetLayersCount();
 		array<int>^ GetNeuronsInLayersCount();
 		array<bool>^ HasLayersDelayWeight();
+		array<String^>^ GetActivationFunctionsNames();
 		int GetLayersActivateFunctionsTypes(ActivationFunctionType* src);
 		int GetInputsCount();
 		int GetOutputsCount();

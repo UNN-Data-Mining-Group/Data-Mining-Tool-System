@@ -11,10 +11,10 @@ namespace dms.view_models
         public string Name { get; }
         public string TaskName { get; }
 
-        public DecisionTreeInfoViewModel(string taskName, string solverName)
+        public DecisionTreeInfoViewModel(models.Task task, models.TaskSolver solver)
         {
-            TaskName = taskName;
-            Name = solverName;
+            TaskName = task.Name;
+            Name = solver.Name;
         }
     }
 }

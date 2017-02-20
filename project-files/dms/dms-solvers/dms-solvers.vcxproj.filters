@@ -51,6 +51,12 @@
     <ClInclude Include="WardNNManaged.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConvNNTopology.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvNNManaged.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -72,6 +78,12 @@
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WardNNManaged.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvNNTopology.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvNNManaged.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

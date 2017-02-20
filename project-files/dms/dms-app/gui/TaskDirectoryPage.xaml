@@ -56,6 +56,12 @@
             <HierarchicalDataTemplate DataType="{x:Type vm:DecisionTreesTree}" ItemsSource="{Binding Content}">
                 <TextBlock Text="{Binding Title}"/>
             </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type vm:WardTree}" ItemsSource="{Binding Content}">
+                <TextBlock Text="{Binding Title}"/>
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type vm:ConvNNTree}" ItemsSource="{Binding Content}">
+                <TextBlock Text="{Binding Title}"/>
+            </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type vm:TreeSection}" ItemsSource="{Binding Content}">
                 <TextBlock Text="{Binding Title}" FontStyle="Italic"/>
             </HierarchicalDataTemplate>

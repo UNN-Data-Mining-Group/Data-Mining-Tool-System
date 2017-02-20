@@ -46,10 +46,27 @@ namespace dms.view_models
                 List<TaskSolver> solvers = TaskSolver.solversOfTaskId(task.ID);
                 List<Selection> selections = Selection.selectionsOfDefaultTemplateWithTaskId(task.ID);
 
-                Tasks.Add(new TaskTree(task,
+                var pers = new List<TaskSolver>();
+                var wards = new List<TaskSolver>();
+                var convnets = new List<TaskSolver>();
+
+                foreach(TaskSolver solver in solvers)
+                {
+                    if (solver.TypeName.Equals("Perceptron"))
+                        pers.Add(solver);
+                    else if (solver.TypeName.Equals("WardNN"))
+                        wards.Add(solver);
+                    else if (solver.TypeName.Equals("ConvNN"))
+                        convnets.Add(solver);
+                }
+
+                Tasks.Add(new TaskTree
+                    (task,
                     selections.ToArray(),
-                    solvers.ToArray(),
+                    pers.ToArray(),
                     new TaskSolver[] { },
+                    wards.ToArray(),
+                    convnets.ToArray(),
                     new string[] { },
                     this));
             }

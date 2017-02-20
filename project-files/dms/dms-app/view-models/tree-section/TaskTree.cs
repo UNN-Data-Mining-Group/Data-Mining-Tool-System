@@ -16,14 +16,18 @@ namespace dms.view_models
         private ActionHandler showPreprocessingCreationHandler;
         
         public TaskTree(models.Task task,
-            models.Selection[] sel, models.TaskSolver[] per, models.TaskSolver[] des, string[] solv,
+            models.Selection[] sel, 
+            models.TaskSolver[] per, 
+            models.TaskSolver[] des, 
+            models.TaskSolver[] wards, 
+            models.TaskSolver[] convnets, string[] solv, 
             TaskTreeViewModel vm)
         {
             Title = task.Name;
             Content = new ObservableCollection<TreeSection>
             {
                 new SelectionTree(task, sel, vm),
-                new SolverTree(task, per, des, vm),
+                new SolverTree(task, per, des, wards, convnets, vm),
                 new SolutionsTree(Title, solv, vm)
             };
             deleteCommand = new ActionHandler(() => vm.UpdateTaskTree(), e => true);

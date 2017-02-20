@@ -14,6 +14,7 @@ namespace neuro_test_managed
         {
             AccuracyTestPerc();
             AccuracyTestWard();
+            AccuracyTestConvNN();
             PerformanceTest();
         }
 
@@ -34,6 +35,64 @@ namespace neuro_test_managed
             }
 
             return res;
+        }
+
+        static void AccuracyTestConvNN()
+        {
+            Console.WriteLine("Accuracy test convNN:");
+            var layers = new List<IConvNNLayer>
+            {
+                new ConvNNConvolutionLayer
+                {
+                    FilterWidth = 2, FilterHeight = 2,
+                    StrideWidth = 1, StrideHeight = 1,
+                    Padding = 1, CountFilters = 2,
+                    ActivationFunction = "Identity"
+                },
+                new ConvNNPoolingLayer
+                {
+                    FilterWidth = 2, FilterHeight = 2,
+                    StrideWidth = 1, StrideHeight = 1
+                },
+                new ConvNNFullyConnectedLayer
+                {
+                    NeuronsCount = 2,
+                    ActivationFunction = "Identity"
+                }
+            };
+
+            float[][] w = new float[][] 
+            {
+                new float[] 
+                {
+                    -1, 0, 0, 1,
+                     0, 1, -1, 0
+                },
+                new float[]
+                {
+                    1, 0, 0, -1,
+                    -0.5f, 0, 1, 0,
+
+                    0, -1, 1, 0,
+                    0, 0, -0.5f, 0
+                }
+            };
+            
+            var t = new ConvNNTopology(2, 2, 1, layers);
+            var net = new ConvNNManaged(t, w);
+
+            float[] y = net.Solve(new float[]{ 0.5f, 0.3f, -0.6f, -0.2f });
+            float[] answer = new float[] { 0.35f, -0.15f };
+
+            float EPS = 1e-5f;
+            if ((Math.Abs(y[0]-answer[0]) > EPS) || (Math.Abs(y[1] - answer[1]) > EPS))
+            {
+                Console.WriteLine("FAIL");
+            }
+            else
+            {
+                Console.WriteLine("PASS");
+            }
         }
 
         static void AccuracyTestWard()

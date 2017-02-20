@@ -149,6 +149,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActivationFunctionTypes.h" />
+    <ClInclude Include="ConvNNManaged.h" />
+    <ClInclude Include="ConvNNTopology.h" />
     <ClInclude Include="PerceptronManaged.h" />
     <ClInclude Include="PerceptronTopology.h" />
     <ClInclude Include="ISolver.h" />
@@ -160,6 +162,8 @@
   <ItemGroup>
     <ClCompile Include="ActivationFunctionTypes.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="ConvNNManaged.cpp" />
+    <ClCompile Include="ConvNNTopology.cpp" />
     <ClCompile Include="PerceptronManaged.cpp" />
     <ClCompile Include="PerceptronTopology.cpp" />
     <ClCompile Include="ISolver.cpp" />

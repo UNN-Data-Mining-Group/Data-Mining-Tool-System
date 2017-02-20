@@ -21,6 +21,12 @@ namespace dms::solvers::neural_nets
 		int getActivateFunctionsTypes(ActivationFunctionType** src);
 		int getDelays(bool** src);
 		int getNeuronsCount(int** src);
+
+		array<int>^ GetAdditionalConnections();
+		array<int>^ GetGroupsCount();
+		array<array<String^>^>^ GetActivationFunctions();
+		array<array<bool>^>^ GetDelays();
+		array<array<int>^>^ GetNeuronsCount();
 	private:
 		int layersCount;
 		array<int>^ addCons;
