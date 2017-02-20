@@ -45,6 +45,10 @@ namespace dms::solvers::neural_nets
 	{
 		return hasLayerDelay;
 	}
+	array<String^>^ PerceptronTopology::GetActivationFunctionsNames()
+	{
+		return afs;
+	}
 	int PerceptronTopology::GetLayersActivateFunctionsTypes(ActivationFunctionType* src)
 	{
 		for (int i = 0; i < layersCount - 1; i++)

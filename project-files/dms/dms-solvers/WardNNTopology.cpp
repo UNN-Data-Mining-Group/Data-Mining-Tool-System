@@ -156,3 +156,9 @@ int WardNNTopology::getOutputsCount()
 		res += neurons[layersCount - 1][i];
 	return res;
 }
+
+array<int>^ WardNNTopology::GetAdditionalConnections() { return addCons; }
+array<int>^ WardNNTopology::GetGroupsCount() { return groupsCount; }
+array<array<String^>^>^ WardNNTopology::GetActivationFunctions() { return afs; }
+array<array<bool>^>^ WardNNTopology::GetDelays() { return delays; }
+array<array<int>^>^ WardNNTopology::GetNeuronsCount() { return neurons; }

@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="dms.gui.ConvNNInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             xmlns:model="clr-namespace:dms.solvers.neural_nets;assembly=dms-solvers"
+             mc:Ignorable="d">
+    <StackPanel>
+        <Label Content="{Binding Name}" ContentStringFormat="Название сети: {0}"/>
+        <Label Content="{Binding InputDimention}" ContentStringFormat="Размерность входного слоя: {0}"/>
+        <DataGrid ItemsSource="{Binding Layers}" SelectionMode="Single" SelectedItem="{Binding SelectedLayer}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Номер слоя" Binding="{Binding Number}" Width="*"/>
+                <DataGridTextColumn Header="Тип слоя" Binding="{Binding Type}" Width="*"/>
+                <DataGridTextColumn Header="Ширина" Binding="{Binding Width}" Width="*"/>
+                <DataGridTextColumn Header="Высота" Binding="{Binding Height}" Width="*"/>
+                <DataGridTextColumn Header="Глубина" Binding="{Binding Depth}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Label Content="Параметры слоя:"/>
+        <ContentControl Content="{Binding LayerParameters}" Margin="5">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedLayerType}" Value="Conv">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <Label Content="{Binding FilterWidth}" ContentStringFormat="Ширина фильтра: {0}" />
+                                            <Label Content="{Binding FilterHeight}" ContentStringFormat="Высота фильтра: {0}" />
+                                            <Label Content="{Binding CountFilters}" ContentStringFormat="Количество фильтров: {0}" />
+                                            <Label Content="{Binding Padding}" ContentStringFormat="Граница: {0}" />
+                                            <Label Content="{Binding StrideWidth}" ContentStringFormat="Шаг по ширине: {0}"/>
+                                            <Label Content="{Binding StrideHeight}" ContentStringFormat="Шаг по высоте: {0}"/>
+                                            <Label Content="{Binding ActivationFunction}" ContentStringFormat="Активационная функция: {0}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectedLayerType}" Value="Pool">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <Label Content="{Binding FilterWidth}" ContentStringFormat="Ширина фильтра: {0}" />
+                                            <Label Content="{Binding FilterHeight}" ContentStringFormat="Высота фильтра: {0}" />
+                                            <Label Content="{Binding StrideWidth}" ContentStringFormat="Шаг по ширине: {0}" />
+                                            <Label Content="{Binding StrideHeight}" ContentStringFormat="Шаг по высоте: {0}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectedLayerType}" Value="FC">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <Label Content="{Binding NeuronsCount}" ContentStringFormat="Количество нейронов: {0}" />
+                                            <Label Content="{Binding ActivationFunction}" ContentStringFormat="Активационная функция: {0}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </StackPanel>
+</UserControl>

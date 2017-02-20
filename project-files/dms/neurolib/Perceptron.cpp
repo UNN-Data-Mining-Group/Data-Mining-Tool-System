@@ -36,7 +36,7 @@ int Perceptron::solve(float* x, float* y)
 		cblas_sgemv(CblasRowMajor, CblasNoTrans, neurons[i], neurons[i - 1] + has_delay[i - 1], 1.0f, w[i-1], neurons[i - 1] + has_delay[i - 1], temp_res[i - 1], 1, 0.0f, temp_res[i], 1);
 		const int n = neurons[i];
 		float* vec = temp_res[i];
-		get_activation_function_for_layer(aftypes[i - 1], vec, n);
+		calc_activation_function(vec, n, aftypes[i - 1], vec);
 	}
 
 	for(int i = 0; i < outputs; i++)

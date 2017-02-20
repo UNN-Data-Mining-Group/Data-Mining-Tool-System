@@ -70,7 +70,7 @@ namespace dms.view_models
             CanCreateChanged?.Invoke();
         }
 
-        public void CreateSolver(string name, string taskName)
+        public void CreateSolver(string name, models.Task task)
         {
             int layers = 2 + HiddenLayers.Count;
             int[] neurons = new int[layers];
@@ -91,9 +91,6 @@ namespace dms.view_models
             afs[layers - 2] = OutputLayer.SelectedAF;
 
             PerceptronTopology t = new PerceptronTopology(layers, neurons, delays, afs);
-            Query q = new Query("Task").addTypeQuery(TypeQuery.select).addCondition("name", "=", taskName);
-            List<models.Entity> tasks = models.Task.where(q, typeof(models.Task));
-            models.Task task = tasks[0] as models.Task;
 
             TaskSolver ts = new TaskSolver()
             {
@@ -106,7 +103,7 @@ namespace dms.view_models
             ts.save();
         }
 
-        public bool CanCreateSolver(string name, string taskName)
+        public bool CanCreateSolver(string name, models.Task task)
         {
             return true;
         }

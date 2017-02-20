@@ -125,12 +125,12 @@ namespace dms.view_models
         public ICommand AddLayer { get { return addLayerHandler; } }
         public WardNetLayerViewModel OutputLayer { get; }
 
-        public bool CanCreateSolver(string name, string taskName)
+        public bool CanCreateSolver(string name, models.Task task)
         {
             return HiddenLayers.Count > 0;
         }
 
-        public void CreateSolver(string name, string taskName)
+        public void CreateSolver(string name, models.Task task)
         {
             int[] g = new int[HiddenLayers.Count + 1];
             int[] ac = new int[HiddenLayers.Count];
@@ -174,14 +174,11 @@ namespace dms.view_models
             }
 
             WardNNTopology wnn = new WardNNTopology(neurons, delays, afs, g, ac, HiddenLayers.Count + 2);
-            Query q = new Query("Task").addTypeQuery(TypeQuery.select).addCondition("name", "=", taskName);
-            List<models.Entity> tasks = models.Task.where(q, typeof(models.Task));
-            models.Task task = tasks[0] as models.Task;
 
             TaskSolver ts = new TaskSolver()
             {
                 Name = name,
-                TypeName = "Perceptron",
+                TypeName = "WardNN",
                 TaskID = task.ID,
                 Description = wnn
             };

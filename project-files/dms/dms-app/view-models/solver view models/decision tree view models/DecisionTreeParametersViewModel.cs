@@ -10,12 +10,12 @@ namespace dms.view_models
     {
         public event Action CanCreateChanged;
 
-        public bool CanCreateSolver(string name, string taskName)
+        public bool CanCreateSolver(string name, models.Task task)
         {
             return false;
         }
 
-        public void CreateSolver(string name, string taskName)
+        public void CreateSolver(string name, models.Task task)
         {
             throw new NotImplementedException();
         }

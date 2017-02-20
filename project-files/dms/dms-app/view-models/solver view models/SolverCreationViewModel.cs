@@ -12,14 +12,14 @@ namespace dms.view_models
 {
     public interface ISolverParameterViewModel
     {
-        void CreateSolver(string name, string taskName);
-        bool CanCreateSolver(string name, string taskName);
+        void CreateSolver(string name, models.Task task);
+        bool CanCreateSolver(string name, models.Task task);
         event Action CanCreateChanged;
     }
 
     public class SolverParameterFactory
     {
-        public static string[] Types { get { return new string[] { "Персептрон", "Сеть Ворда", "Дерево решений" }; } }
+        public static string[] Types { get { return new string[] { "Персептрон", "Сеть Ворда", "Дерево решений", "Сверточная нейронная сеть" }; } }
         public static ISolverParameterViewModel Create(string type)
         {
             if (type.Equals("Персептрон"))
@@ -28,6 +28,8 @@ namespace dms.view_models
                 return new DecisionTreeParametersViewModel();
             else if (type.Equals("Сеть Ворда"))
                 return new WardNetParametersViewModel();
+            else if (type.Equals("Сверточная нейронная сеть"))
+                return new ConvNNParametersViewModel();
             else
                 return null;
         }
@@ -35,18 +37,20 @@ namespace dms.view_models
 
     public class SolverCreationViewModel : ViewmodelBase
     {
+        private models.Task parentTask;
         private string selectedType;
         private ActionHandler createHandler;
         private ActionHandler cancelHandler;
         private ISolverParameterViewModel parameters;
 
-        public SolverCreationViewModel(string taskName)
+        public SolverCreationViewModel(models.Task task)
         {
-            TaskName = taskName;
+            parentTask = task;
+            TaskName = task.Name;
             SolverName = "Решатель 1";
             SolverTypes = SolverParameterFactory.Types;
             SelectedType = SolverTypes[0];
-            createHandler = new ActionHandler(CreateSolver, o => Parameters.CanCreateSolver(SolverName, TaskName));
+            createHandler = new ActionHandler(CreateSolver, o => Parameters.CanCreateSolver(SolverName, parentTask));
             cancelHandler = new ActionHandler(() => OnClose?.Invoke(this, null), o => true);
         }
 
@@ -67,14 +71,25 @@ namespace dms.view_models
             }
         }
         public string[] SolverTypes { get; }
-        public ISolverParameterViewModel Parameters { get { return parameters; } private set { parameters = value; NotifyPropertyChanged(); } }
+        public ISolverParameterViewModel Parameters
+        {
+            get
+            {
+                return parameters;
+            }
+            private set
+            {
+                parameters = value;
+                NotifyPropertyChanged();
+            }
+        }
         public ICommand Create { get { return createHandler; } }
         public ICommand Cancel { get { return cancelHandler; } }
-        public EventHandler OnClose;
+        public event EventHandler OnClose;
 
         public void CreateSolver()
         {
-            Parameters.CreateSolver(SolverName, TaskName);
+            Parameters.CreateSolver(SolverName, parentTask);
             OnClose?.Invoke(this, null);
         }
     }
