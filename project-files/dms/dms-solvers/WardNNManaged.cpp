@@ -118,6 +118,11 @@ array<Single>^ WardNNManaged::Solve(array<Single>^ x)
 	return y;
 }
 
+void* WardNNManaged::getNativeSolver()
+{
+	return wsolver;
+}
+
 WardNNManaged::~WardNNManaged()
 {
 	delete[] x;
