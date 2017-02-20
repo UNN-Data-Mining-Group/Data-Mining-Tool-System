@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dms-app", "dms-app\dms-app.csproj", "{4FA36FB6-EC31-4785-8C61-E13200D63ECB}"
 	ProjectSection(ProjectDependencies) = postProject
+		{6A7958AF-D58C-48B6-95D3-887A6D8FACE7} = {6A7958AF-D58C-48B6-95D3-887A6D8FACE7}
 		{AA5667B0-8A83-4E4D-941C-62ED5CABD487} = {AA5667B0-8A83-4E4D-941C-62ED5CABD487}
 	EndProjectSection
 EndProject
