@@ -79,6 +79,11 @@ array<float>^ ConvNNManaged::Solve(array<float>^ x)
 	return y;
 }
 
+void* ConvNNManaged::getNativeSolver()
+{
+	return solver;
+}
+
 ConvNNManaged::~ConvNNManaged()
 {
 	delete[] x;

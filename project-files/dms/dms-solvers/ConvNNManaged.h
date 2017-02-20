@@ -11,6 +11,7 @@ namespace dms::solvers::neural_nets
 		ConvNNManaged(ConvNNTopology^ t, array<array<float>^>^ weights);
 
 		virtual array<float>^ Solve(array<float>^ x) override;
+		virtual void* getNativeSolver() override;
 
 		virtual ~ConvNNManaged();
 	private:
