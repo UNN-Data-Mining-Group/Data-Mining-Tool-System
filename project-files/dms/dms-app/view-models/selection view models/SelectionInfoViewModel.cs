@@ -100,7 +100,10 @@ namespace dms.view_models
             {
                 originalData[i] = new string[parameters.Count];
             }
-            List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+         /*   List<Entity> sels = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", taskTemplateId.ToString())
+                .addCondition("Name", "=", SelectedPreprocessing), typeof(Selection));
+           */ List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", SelectionId.ToString()), typeof(SelectionRow));
 
             int stepRow = 0;
