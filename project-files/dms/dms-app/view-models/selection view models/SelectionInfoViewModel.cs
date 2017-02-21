@@ -30,7 +30,7 @@ namespace dms.view_models
             SelectionId = selectionId;
             SelectionName = selection.Name;
             CountRows = selection.RowCount;
-
+            TaskId = taskId;
             TaskName = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
 
             List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
@@ -54,6 +54,7 @@ namespace dms.view_models
         }
         
         public string TaskName { get; }
+        public int TaskId { get; }
         public string SelectionName { get; }
         public int CountRows { get; }
         public string[] PreprocessingList { get; }
@@ -63,8 +64,12 @@ namespace dms.view_models
             get { return selectedPreprocessing; }
             set
             {
-                int taskTemplateId = -1;
+                List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskID", "=", TaskId.ToString())
+                .addCondition("Name", "=", value), typeof(TaskTemplate));
+                int taskTemplateId = taskTemplates[0].ID;
                 selectedPreprocessing = value;
+                updateTable(taskTemplateId);
                 for (int i = 0; i < PreprocessingList.Length; i++)
                 {
                     if (selectedPreprocessing.Equals(PreprocessingListPair[i].Name))
@@ -75,7 +80,7 @@ namespace dms.view_models
                         break;
                     }
                 }
-                updateTable(taskTemplateId);
+             //   updateTable(taskTemplateId);
                 NotifyPropertyChanged("Data");
                 NotifyPropertyChanged("DataColumns");
             }
@@ -100,11 +105,11 @@ namespace dms.view_models
             {
                 originalData[i] = new string[parameters.Count];
             }
-         /*   List<Entity> sels = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+            List<Entity> sels = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplateId.ToString())
-                .addCondition("Name", "=", SelectedPreprocessing), typeof(Selection));
-           */ List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
-                .addCondition("SelectionID", "=", SelectionId.ToString()), typeof(SelectionRow));
+                .addCondition("Name", "=", SelectionName), typeof(Selection));
+            List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", sels[0].ID.ToString()), typeof(SelectionRow));
 
             int stepRow = 0;
             foreach (Entity selRow in selectionRows)
