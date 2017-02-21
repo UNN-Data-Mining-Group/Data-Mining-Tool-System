@@ -6,16 +6,14 @@
 
 using namespace neurolib;
 
-int neurolib::getAllWeightsPerc(float* &dest, void* obj)
+size_t neurolib::getAllWeightsPerc(float* &dest, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 
-	int dest_index = 0;
+	size_t dest_index = 0;
 	for (int i = 0; i < p->layers - 1; i++)
 	{
-		int dim = (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
-
-		for (int j = 0; j < dim; j++)
+		for (int j = 0; j < p->w_sizes[i]; j++)
 			dest[dest_index++] = p->w[i][j];
 	}
 	return dest_index;
@@ -28,9 +26,7 @@ void neurolib::setAllWeightsPerc(const float* src, void* obj)
 	int src_index = 0;
 	for (int i = 0; i < p->layers - 1; i++)
 	{
-		int dim = (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
-
-		for (int j = 0; j < dim; j++)
+		for (int j = 0; j < p->w_sizes[i]; j++)
 			p->w[i][j] = src[src_index++];
 	}
 }
@@ -41,13 +37,13 @@ int neurolib::solvePerc(float* x, float* y, void* obj)
 	return p->solve(x, y);
 }
 
-int neurolib::getWeightsCountPerc(void* obj)
+size_t neurolib::getWeightsCountPerc(void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	size_t weights_count = 0;
 	for (int i = 0; i < p->layers - 1; i++)
 	{
-		weights_count += (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
+		weights_count += p->w_sizes[i];
 	}
 
 	return weights_count;
@@ -59,10 +55,11 @@ void* neurolib::copyPerc(void* obj)
 	return new Perceptron(*p);
 }
 
-void neurolib::freePerc(void* obj)
+void neurolib::freePerc(void* &obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	delete p;
+	obj = nullptr;
 }
 
 Perceptron::Perceptron(Perceptron& p)
@@ -128,6 +125,8 @@ Perceptron::~Perceptron()
 	{
 		delete[] w[i];
 	}
+
+	delete[] w_sizes;		w_sizes = nullptr;
 	delete[] aftypes;		aftypes = nullptr;
 	delete[] w;				w = nullptr;
 	delete[] has_delay;		has_delay = nullptr;
@@ -182,13 +181,14 @@ void Perceptron::init(int* neurons, bool* has_delay, ActivationFunctionType* typ
 
 	aftypes = new ActivationFunctionType[layers - 1];
 	w = new float*[layers - 1];
+	w_sizes = new int[layers - 1];
 	for(int i = 0; i < layers - 1; i++)
 	{
 		aftypes[i] = types[i];
-		int dim = (neurons[i] + this->has_delay[i]) * neurons[i+1];
+		w_sizes[i] = (neurons[i] + this->has_delay[i]) * neurons[i+1];
 
-		w[i] = new float[dim];
-		for(int j = 0; j < dim; j++)
+		w[i] = new float[w_sizes[i]];
+		for(int j = 0; j < w_sizes[i]; j++)
 			w[i][j] = weights[i][j];
 	}
 }

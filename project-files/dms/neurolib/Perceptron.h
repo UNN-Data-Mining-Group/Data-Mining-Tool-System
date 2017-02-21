@@ -9,12 +9,12 @@ namespace neurolib
 		ActivationFunctionType AfType;
 	};
 
-	int getAllWeightsPerc(float* &dest, void* obj);
+	size_t getAllWeightsPerc(float* &dest, void* obj);
 	void setAllWeightsPerc(const float* src, void* obj);
 	int solvePerc(float* x, float* y, void* obj);
-	int getWeightsCountPerc(void* obj);
+	size_t getWeightsCountPerc(void* obj);
 	void* copyPerc(void* obj);
-	void freePerc(void* obj);
+	void freePerc(void* &obj);
 
 	class Perceptron
 	{
@@ -49,14 +49,13 @@ namespace neurolib
 		int* neurons;
 		bool* has_delay;
 		ActivationFunctionType* aftypes;
+		int* w_sizes;
 		float** w;
 		float** temp_res;
 
-		friend int getAllWeightsPerc(float* &dest, void* obj);
+		friend size_t getAllWeightsPerc(float* &dest, void* obj);
 		friend void setAllWeightsPerc(const float* src, void* obj);
 		friend int solvePerc(float* x, float* y, void* obj);
-		friend int getWeightsCountPerc(void* obj);
-		friend void* copyPerc(void* obj);
-		friend void freePerc(void* obj);
+		friend size_t getWeightsCountPerc(void* obj);
 	};
 }
