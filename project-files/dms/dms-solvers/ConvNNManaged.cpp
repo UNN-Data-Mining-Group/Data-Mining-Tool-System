@@ -1,6 +1,6 @@
 #include "ConvNNManaged.h"
 
-using namespace dms::solvers::neural_nets;
+using namespace dms::solvers::neural_nets::conv_net;
 
 ConvNNManaged::ConvNNManaged(ConvNNTopology^ t, array<array<float>^>^ weights) :
 	ISolver(t->GetInputsCount(), t->GetOutputsCount())
@@ -18,35 +18,35 @@ ConvNNManaged::ConvNNManaged(ConvNNTopology^ t, array<array<float>^>^ weights) :
 		}
 	}
 
-	std::vector<neurolib::ConvNNLayer*> layers;
+	std::vector<nnets_conv::Layer*> layers;
 	auto ls = t->GetLayers();
 	for (int i = 0; i < ls->Count; i++)
 	{
-		if (ls[i]->GetType() == ConvNNFullyConnectedLayer::typeid)
+		if (ls[i]->GetType() == FullyConnectedLayer::typeid)
 		{
-			auto l = (ConvNNFullyConnectedLayer^)ls[i];
+			auto l = (FullyConnectedLayer^)ls[i];
 			layers.push_back(
-				new neurolib::ConvNNFullyConnectedLayer(l->NeuronsCount, 
+				new nnets_conv::FullyConnectedLayer(l->NeuronsCount,
 				 ActivationFunctionTypes::getType(l->ActivationFunction)));
 		}
-		else if (ls[i]->GetType() == ConvNNConvolutionLayer::typeid)
+		else if (ls[i]->GetType() == ConvolutionLayer::typeid)
 		{
-			auto l = (ConvNNConvolutionLayer^)ls[i];
+			auto l = (ConvolutionLayer^)ls[i];
 			layers.push_back(
-				new neurolib::ConvNNConvolutionLayer(l->FilterWidth, l->FilterHeight,
+				new nnets_conv::ConvolutionLayer(l->FilterWidth, l->FilterHeight,
 					l->StrideWidth, l->StrideHeight,
 					l->Padding, l->CountFilters,
 					ActivationFunctionTypes::getType(l->ActivationFunction)));
 		}
-		else if (ls[i]->GetType() == ConvNNPoolingLayer::typeid)
+		else if (ls[i]->GetType() == PoolingLayer::typeid)
 		{
-			auto l = (ConvNNPoolingLayer^)ls[i];
+			auto l = (PoolingLayer^)ls[i];
 			layers.push_back(
-			new neurolib::ConvNNPoolingLayer(l->FilterWidth, l->FilterHeight, l->StrideWidth, l->StrideHeight));
+			new nnets_conv::PoolingLayer(l->FilterWidth, l->FilterHeight, l->StrideWidth, l->StrideHeight));
 		}
 	}
 
-	solver = new neurolib::ConvNN(t->GetInputWidth(), t->GetInputHeigth(), t->GetInputDepth(), layers, w);
+	solver = new nnets_conv::ConvNN(t->GetInputWidth(), t->GetInputHeigth(), t->GetInputDepth(), layers, w);
 	x = new float[t->GetInputsCount()];
 	y = new float[t->GetOutputsCount()];
 

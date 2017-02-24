@@ -6,7 +6,7 @@ namespace dms::solvers::neural_nets
 	public ref class ActivationFunctionTypes
 	{
 	public:
-		static const array<System::String^>^ TypeNames = 
+		static array<System::String^>^ TypeNames = 
 		{
 			"Bent Identity",
 			"Binary Step",
@@ -16,6 +16,6 @@ namespace dms::solvers::neural_nets
 			"Tanh"
 		};
 
-		static neurolib::ActivationFunctionType getType(System::String^ typeName);
+		static nnets::ActivationFunctionType getType(System::String^ typeName);
 	};
 }

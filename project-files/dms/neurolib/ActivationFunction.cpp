@@ -1,9 +1,9 @@
 #include "ActivationFunctions.h"
 #include <cmath>
 
-using namespace neurolib;
+#define get_activation_function_for_vec(src, activate_function, dest, size) for(size_t _ = 0; _ < size; _++) { dest[_] = activate_function(src[_]); }
 
-void neurolib::calc_activation_function(const float* src, size_t size, ActivationFunctionType af, float* dest)
+void nnets::calc_activation_function(const float* src, size_t size, ActivationFunctionType af, float* dest)
 {
 	switch (af) 
 	{

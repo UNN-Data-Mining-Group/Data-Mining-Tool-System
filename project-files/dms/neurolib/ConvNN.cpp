@@ -1,11 +1,68 @@
 #include "ConvNN.h"
 #include <mkl_cblas.h>
 
-using namespace neurolib;
+using nnets_conv::ConvNN;
+using nnets_conv::Layer;
+using nnets::ActivationFunctionType;
 
 #define is_a_positive_and_lower_b(a,b) (static_cast<unsigned int>(a) < static_cast<unsigned int>(b))
 
-int ConvNN::solve(float* x, float* y)
+struct ConvNN::Volume
+{
+	int Width, Height, Depth;
+	float* Values;
+	VolumeType Type;
+
+	Volume(int w, int h, int d, VolumeType type)
+	{
+		Width = w;	Height = h;	Depth = d;
+		Values = new float[Width * Height * Depth];
+		Type = type;
+	}
+	~Volume()
+	{
+		delete[] Values;
+	}
+};
+
+struct ConvNN::VolumeActivation : Volume
+{
+	nnets::ActivationFunctionType ActivationFunction;
+
+	VolumeActivation(Volume* prev, nnets::ActivationFunctionType af) :
+		Volume(prev->Width, prev->Height, prev->Depth, VolumeType::Activation)
+	{
+		ActivationFunction = af;
+	}
+};
+
+struct ConvNN::VolumePooling : Volume
+{
+	int FilterWidth, FilterHeight;
+	int StrideWidth, StrideHeight;
+
+	VolumePooling(int w, int h, int d, int fw, int fh, int sw, int sh) : Volume(w, h, d, VolumeType::Pooling)
+	{
+		FilterWidth = fw;	FilterHeight = fh;	StrideWidth = sw; StrideHeight = sh;
+		Type = VolumeType::Pooling;
+	}
+};
+
+struct ConvNN::VolumeConvolutional : VolumePooling
+{
+	int Padding;
+	int CountFilters;
+
+	VolumeConvolutional(int w, int h, int d,
+		int fw, int fh,
+		int sw, int sh, int p, int cf) : VolumePooling(w, h, d, fw, fh, sw, sh)
+	{
+		Padding = p;	CountFilters = cf;
+		Type = VolumeType::Convolutional;
+	}
+};
+
+size_t ConvNN::solve(const float* x, float* y)
 {
 	size_t inputs = getInputsCount();
 	for (size_t i = 0; i < inputs; i++)
@@ -177,13 +234,13 @@ void ConvNN::im2col(const float* source, const int channels,
 	}
 }
 
-int ConvNN::getInputsCount() 
+size_t ConvNN::getInputsCount()
 {
 	Volume* v = volumes[0];
 	return v->Width * v->Height * v->Depth;
 }
 
-int ConvNN::getOutputsCount() 
+size_t ConvNN::getOutputsCount()
 {
 	Volume* v = volumes[volumesCount - 1];
 	return v->Width * v->Height * v->Depth;
@@ -229,7 +286,7 @@ inline void ConvNN::freeMemory()
 	clearPtrs();
 }
 
-ConvNN::ConvNN(int w, int h, int d, const std::vector<ConvNNLayer*>& layers, float** weights)
+ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights)
 {
 	clearPtrs();
 
@@ -242,7 +299,7 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<ConvNNLayer*>& layers, flo
 	volumesCount = 1;
 	for (auto layer = layers.begin(); layer != layers.end(); layer++)
 	{
-		if ((*layer)->Type == ConvNNLayerType::Pooling)
+		if ((*layer)->Type == LayerType::Pooling)
 			volumesCount++;
 		else
 			volumesCount += 2;
@@ -261,9 +318,9 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<ConvNNLayer*>& layers, flo
 	{
 		switch ((*layer)->Type)
 		{
-			case ConvNNLayerType::Convolution:
+			case LayerType::Convolution:
 			{
-				auto conv = static_cast<const ConvNNConvolutionLayer*>(*layer);
+				auto conv = static_cast<const ConvolutionLayer*>(*layer);
 
 				int w = calcOutputVolume(volumes[volumeIndex - 1]->Width, conv->FilterWidth, conv->Padding, conv->StrideWidth);
 				int h = calcOutputVolume(volumes[volumeIndex - 1]->Height, conv->FilterHeight, conv->Padding, conv->StrideHeight);
@@ -287,9 +344,9 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<ConvNNLayer*>& layers, flo
 				weightsCount++;
 				break;
 			}
-			case ConvNNLayerType::FullyConnected:
+			case LayerType::FullyConnected:
 			{
-				auto fc = static_cast<const ConvNNFullyConnectedLayer*>(*layer);
+				auto fc = static_cast<const FullyConnectedLayer*>(*layer);
 
 				int d = fc->NeuronsCount;
 
@@ -309,9 +366,9 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<ConvNNLayer*>& layers, flo
 				weightsCount++;
 				break;
 			}
-			case ConvNNLayerType::Pooling:
+			case LayerType::Pooling:
 			{
-				auto pool = static_cast<const ConvNNPoolingLayer*>(*layer);
+				auto pool = static_cast<const PoolingLayer*>(*layer);
 				int w = calcOutputVolume(volumes[volumeIndex - 1]->Width, pool->FilterWidth, 0, pool->StrideWidth);
 				int h = calcOutputVolume(volumes[volumeIndex - 1]->Height, pool->FilterHeight, 0, pool->StrideHeight);
 				int d = volumes[volumeIndex - 1]->Depth;

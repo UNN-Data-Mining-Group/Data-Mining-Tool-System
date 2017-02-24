@@ -3,7 +3,7 @@
 #include "WardNNTopology.h"
 #include "WardNN.h"
 
-namespace dms::solvers::neural_nets
+namespace dms::solvers::neural_nets::ward_net
 {
 	public ref class WardNNManaged : public ISolver
 	{
@@ -16,7 +16,7 @@ namespace dms::solvers::neural_nets
 	private:
 		float *x, *y;
 
-		neurolib::WardNN* wsolver;
+		nnets_ward::WardNN* wsolver;
 		array<array<float>^>^ weights;
 	};
 }

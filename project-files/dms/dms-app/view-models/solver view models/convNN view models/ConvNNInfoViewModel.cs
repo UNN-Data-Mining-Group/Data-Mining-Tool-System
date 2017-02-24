@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.conv_net;
 
 namespace dms.view_models
 {
@@ -51,7 +51,7 @@ namespace dms.view_models
                 NotifyPropertyChanged();
             }
         }
-        public IConvNNLayer LayerParameters
+        public ILayer LayerParameters
         {
             get { return layerParameters; }
             private set
@@ -75,7 +75,7 @@ namespace dms.view_models
             Layers = new ConvNNLayer[ilayers.Length];
             for(int i = 0; i < ilayers.Length; i++)
             {
-                if (ilayers[i] is ConvNNFullyConnectedLayer)
+                if (ilayers[i] is FullyConnectedLayer)
                 {
                     Layers[i] = new ConvNNLayer
                     {
@@ -86,7 +86,7 @@ namespace dms.view_models
                         Depth = volumes[i].Depth
                     };
                 }
-                else if (ilayers[i] is ConvNNConvolutionLayer)
+                else if (ilayers[i] is ConvolutionLayer)
                 {
                     Layers[i] = new ConvNNLayer
                     {
@@ -97,7 +97,7 @@ namespace dms.view_models
                         Depth = volumes[i].Depth
                     };
                 }
-                else if (ilayers[i] is ConvNNPoolingLayer)
+                else if (ilayers[i] is PoolingLayer)
                 {
                     Layers[i] = new ConvNNLayer
                     {
@@ -111,9 +111,9 @@ namespace dms.view_models
             }
         }
 
-        private IConvNNLayer[] ilayers;
+        private ILayer[] ilayers;
         private ConvNNLayer sel_layer;
         private string selectedLayerType;
-        private IConvNNLayer layerParameters;
+        private ILayer layerParameters;
     }
 }

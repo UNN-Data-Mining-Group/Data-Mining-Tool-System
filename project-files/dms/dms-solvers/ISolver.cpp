@@ -2,18 +2,18 @@
 
 namespace dms::solvers
 {
-	ISolver::ISolver(Int32 inputs, Int32 outputs)
+	ISolver::ISolver(__int64 inputs, __int64 outputs)
 	{
 		inputsCount = inputs;
 		outputsCount = outputs;
 	}
 
-	int ISolver::GetInputsCount()
+	__int64 ISolver::GetInputsCount()
 	{
 		return inputsCount;
 	}
 
-	int ISolver::GetOutputsCount()
+	__int64 ISolver::GetOutputsCount()
 	{
 		return outputsCount;
 	}
