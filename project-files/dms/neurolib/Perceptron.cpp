@@ -6,6 +6,65 @@
 
 using namespace neurolib;
 
+int neurolib::getAllWeightsPerc(float* &dest, void* obj)
+{
+	Perceptron* p = static_cast<Perceptron*>(obj);
+
+	int dest_index = 0;
+	for (int i = 0; i < p->layers - 1; i++)
+	{
+		int dim = (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
+
+		for (int j = 0; j < dim; j++)
+			dest[dest_index++] = p->w[i][j];
+	}
+	return dest_index;
+}
+
+void neurolib::setAllWeightsPerc(const float* src, void* obj)
+{
+	Perceptron* p = static_cast<Perceptron*>(obj);
+
+	int src_index = 0;
+	for (int i = 0; i < p->layers - 1; i++)
+	{
+		int dim = (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
+
+		for (int j = 0; j < dim; j++)
+			p->w[i][j] = src[src_index++];
+	}
+}
+
+int neurolib::solvePerc(float* x, float* y, void* obj)
+{
+	Perceptron* p = static_cast<Perceptron*>(obj);
+	return p->solve(x, y);
+}
+
+int neurolib::getWeightsCountPerc(void* obj)
+{
+	Perceptron* p = static_cast<Perceptron*>(obj);
+	size_t weights_count = 0;
+	for (int i = 0; i < p->layers - 1; i++)
+	{
+		weights_count += (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
+	}
+
+	return weights_count;
+}
+
+void* neurolib::copyPerc(void* obj)
+{
+	Perceptron* p = static_cast<Perceptron*>(obj);
+	return new Perceptron(*p);
+}
+
+void neurolib::freePerc(void* obj)
+{
+	Perceptron* p = static_cast<Perceptron*>(obj);
+	delete p;
+}
+
 Perceptron::Perceptron(Perceptron& p)
 {
 	init(p.neurons, p.has_delay, p.aftypes, p.layers, p.w);

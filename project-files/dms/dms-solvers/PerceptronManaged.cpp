@@ -1,5 +1,6 @@
 #include "PerceptronManaged.h"
 
+using dms::solvers::LearningOperation;
 using namespace dms::solvers::neural_nets;
 using namespace System::Runtime::InteropServices;
 
@@ -78,6 +79,29 @@ array<Single>^ PerceptronManaged::Solve(array<Single>^ x)
 		y[i] = this->y[i];
 	}
 	return y;
+}
+
+std::vector<std::string> PerceptronManaged::getAttributes()
+{
+	return std::vector<std::string>();
+}
+
+std::vector<LearningOperation> PerceptronManaged::getOperations()
+{
+	std::vector<LearningOperation> opers;
+	opers.push_back(LearningOperation{ "getAllWeights", getAllWeightsPerc });
+	opers.push_back(LearningOperation{ "setAllWeights", setAllWeightsPerc });
+	opers.push_back(LearningOperation{ "solve", solvePerc });
+	opers.push_back(LearningOperation{ "getWeightsCount", getWeightsCountPerc });
+	opers.push_back(LearningOperation{ "copySolver", copyPerc });
+	opers.push_back(LearningOperation{ "freeSolver", freePerc });
+
+	return opers;
+}
+
+void* PerceptronManaged::getNativeSolver()
+{
+	return psolver;
 }
 
 PerceptronManaged::~PerceptronManaged()

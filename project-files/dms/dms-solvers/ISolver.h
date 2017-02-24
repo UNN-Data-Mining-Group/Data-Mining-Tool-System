@@ -25,6 +25,7 @@ namespace dms::solvers
 		virtual Int32 GetOutputsCount();
 		virtual std::vector<std::string> getAttributes();
 		virtual std::vector<LearningOperation> getOperations();
+		virtual void* getNativeSolver() = 0;
 
 		virtual ~ISolver();
 	private:
