@@ -3,7 +3,7 @@
 #include "ConvNNTopology.h"
 #include "ConvNN.h"
 
-namespace dms::solvers::neural_nets
+namespace dms::solvers::neural_nets::conv_net
 {
 	public ref class ConvNNManaged : public ISolver
 	{
@@ -19,7 +19,7 @@ namespace dms::solvers::neural_nets
 		float *x;
 		float *y;
 
-		neurolib::ConvNN* solver;
+		nnets_conv::ConvNN* solver;
 		array<array<float>^>^ weights;
 	};
 }

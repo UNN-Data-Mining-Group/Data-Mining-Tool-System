@@ -3,7 +3,7 @@
 #include "PerceptronTopology.h"
 #include "Perceptron.h"
 
-namespace dms::solvers::neural_nets
+namespace dms::solvers::neural_nets::perceptron
 {
 	public ref class PerceptronManaged : public ISolver
 	{
@@ -21,7 +21,7 @@ namespace dms::solvers::neural_nets
 		float* x;
 		float* y;
 
-		neurolib::Perceptron* psolver;
+		nnets_perceptron::Perceptron* psolver;
 		array<array<float>^>^ weights;
 	};
 }

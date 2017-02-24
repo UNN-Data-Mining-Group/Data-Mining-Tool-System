@@ -4,65 +4,63 @@
 #include <iostream>
 #include "mkl_cblas.h"
 
-using namespace neurolib;
+using nnets_perceptron::Perceptron;
+using nnets::ActivationFunctionType;
 
-int neurolib::getAllWeightsPerc(float* &dest, void* obj)
+size_t nnets_perceptron::getAllWeightsPerc(float* &dest, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 
-	int dest_index = 0;
+	size_t dest_index = 0;
 	for (int i = 0; i < p->layers - 1; i++)
 	{
-		int dim = (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
-
-		for (int j = 0; j < dim; j++)
+		for (int j = 0; j < p->w_sizes[i]; j++)
 			dest[dest_index++] = p->w[i][j];
 	}
 	return dest_index;
 }
 
-void neurolib::setAllWeightsPerc(const float* src, void* obj)
+void nnets_perceptron::setAllWeightsPerc(const float* src, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 
 	int src_index = 0;
 	for (int i = 0; i < p->layers - 1; i++)
 	{
-		int dim = (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
-
-		for (int j = 0; j < dim; j++)
+		for (int j = 0; j < p->w_sizes[i]; j++)
 			p->w[i][j] = src[src_index++];
 	}
 }
 
-int neurolib::solvePerc(float* x, float* y, void* obj)
+size_t nnets_perceptron::solvePerc(float* x, float* y, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	return p->solve(x, y);
 }
 
-int neurolib::getWeightsCountPerc(void* obj)
+size_t nnets_perceptron::getWeightsCountPerc(void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	size_t weights_count = 0;
 	for (int i = 0; i < p->layers - 1; i++)
 	{
-		weights_count += (p->neurons[i] + p->has_delay[i]) * p->neurons[i + 1];
+		weights_count += p->w_sizes[i];
 	}
 
 	return weights_count;
 }
 
-void* neurolib::copyPerc(void* obj)
+void* nnets_perceptron::copyPerc(void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	return new Perceptron(*p);
 }
 
-void neurolib::freePerc(void* obj)
+void nnets_perceptron::freePerc(void* &obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	delete p;
+	obj = nullptr;
 }
 
 Perceptron::Perceptron(Perceptron& p)
@@ -70,17 +68,19 @@ Perceptron::Perceptron(Perceptron& p)
 	init(p.neurons, p.has_delay, p.aftypes, p.layers, p.w);
 }
 
-Perceptron::Perceptron(int* neuronsCount, ActivationFunctionType* types, int layersCount, float** weights)
+Perceptron::Perceptron(const int* neuronsCount, 
+	const ActivationFunctionType* types, int layersCount, float** weights)
 {
 	init(neuronsCount, nullptr, types, layersCount, weights);
 }
 
-Perceptron::Perceptron(int* neuronsCount, bool* isDelayOnLayer, ActivationFunctionType* types, int layersCount, float** weights)
+Perceptron::Perceptron(const int* neuronsCount, 
+	const bool* isDelayOnLayer, const ActivationFunctionType* types, int layersCount, float** weights)
 {	
 	init(neuronsCount, isDelayOnLayer, types, layersCount, weights);
 }
 
-int Perceptron::solve(float* x, float* y)
+size_t Perceptron::solve(const float* x, float* y)
 {
 	int inputs = neurons[0];
 	int outputs = neurons[layers-1];
@@ -106,12 +106,12 @@ int Perceptron::solve(float* x, float* y)
 	return outputs;
 }
 
-int Perceptron::getInputsCount()
+size_t Perceptron::getInputsCount()
 {
 	return neurons[0];
 }
 
-int Perceptron::getOutputsCount()
+size_t Perceptron::getOutputsCount()
 {
 	return neurons[layers - 1];
 }
@@ -128,13 +128,16 @@ Perceptron::~Perceptron()
 	{
 		delete[] w[i];
 	}
+
+	delete[] w_sizes;		w_sizes = nullptr;
 	delete[] aftypes;		aftypes = nullptr;
 	delete[] w;				w = nullptr;
 	delete[] has_delay;		has_delay = nullptr;
 	delete[] neurons;		neurons = nullptr;
 }
 
-void Perceptron::check_initializers(int* neurons, bool* has_delay, ActivationFunctionType* afs, int layers, float** weights)
+void Perceptron::check_initializers(const int* neurons, const bool* has_delay,
+	const nnets::ActivationFunctionType* afs, int layers, float** weights)
 {
 	if (layers < 2)
 		throw "too little layers";
@@ -153,42 +156,44 @@ void Perceptron::check_initializers(int* neurons, bool* has_delay, ActivationFun
 			throw "weights memory is not allocated";
 }
 
-void Perceptron::init(int* neurons, bool* has_delay, ActivationFunctionType* types, int layers, float** weights)
+void Perceptron::init(const int* neuronsCount, const bool* isDelayOnLayer,
+	const nnets::ActivationFunctionType* types, int layersCount, float** weights)
 {
-	check_initializers(neurons, has_delay, types, layers, weights);
+	check_initializers(neuronsCount, isDelayOnLayer, types, layersCount, weights);
 
-	this->layers = layers;
-	this->neurons = new int[layers];
+	layers = layersCount;
+	neurons = new int[layers];
 	for(int i = 0; i < layers; i++)
-		this->neurons[i] = neurons[i];
+		this->neurons[i] = neuronsCount[i];
 
-	this->has_delay = new bool[layers - 1];
-	if (has_delay != nullptr)
+	has_delay = new bool[layers - 1];
+	if (isDelayOnLayer != nullptr)
 		for(int i = 0; i < layers - 1; i++)
-			this->has_delay[i] = has_delay[i];
+			has_delay[i] = isDelayOnLayer[i];
 	else
 		for(int i = 0; i < layers - 1; i++)
-			this->has_delay[i] = false;
+			has_delay[i] = false;
 
 	temp_res = new float*[layers];
 	for(int i = 0; i < layers - 1; i++)
 	{
 		temp_res[i] = new float[neurons[i] + this->has_delay[i]];
 
-		if (this->has_delay[i])
+		if (has_delay[i])
 			temp_res[i][neurons[i]] = -1.0f;
 	}
 	temp_res[layers - 1] = new float[neurons[layers - 1]];
 
 	aftypes = new ActivationFunctionType[layers - 1];
 	w = new float*[layers - 1];
+	w_sizes = new size_t[layers - 1];
 	for(int i = 0; i < layers - 1; i++)
 	{
 		aftypes[i] = types[i];
-		int dim = (neurons[i] + this->has_delay[i]) * neurons[i+1];
+		w_sizes[i] = (static_cast<size_t>(neurons[i]) + has_delay[i]) * neurons[i+1];
 
-		w[i] = new float[dim];
-		for(int j = 0; j < dim; j++)
+		w[i] = new float[w_sizes[i]];
+		for(int j = 0; j < w_sizes[i]; j++)
 			w[i][j] = weights[i][j];
 	}
 }

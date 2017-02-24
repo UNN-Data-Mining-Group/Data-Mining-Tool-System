@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using dms.solvers.neural_nets;
+
+using dms.solvers.neural_nets.conv_net;
+using dms.solvers.neural_nets.perceptron;
+using dms.solvers.neural_nets.ward_net;
 
 namespace neuro_test_managed
 {
@@ -40,21 +43,21 @@ namespace neuro_test_managed
         static void AccuracyTestConvNN()
         {
             Console.WriteLine("Accuracy test convNN:");
-            var layers = new List<IConvNNLayer>
+            var layers = new List<ILayer>
             {
-                new ConvNNConvolutionLayer
+                new ConvolutionLayer
                 {
                     FilterWidth = 2, FilterHeight = 2,
                     StrideWidth = 1, StrideHeight = 1,
                     Padding = 1, CountFilters = 2,
                     ActivationFunction = "Identity"
                 },
-                new ConvNNPoolingLayer
+                new PoolingLayer
                 {
                     FilterWidth = 2, FilterHeight = 2,
                     StrideWidth = 1, StrideHeight = 1
                 },
-                new ConvNNFullyConnectedLayer
+                new FullyConnectedLayer
                 {
                     NeuronsCount = 2,
                     ActivationFunction = "Identity"
@@ -98,27 +101,6 @@ namespace neuro_test_managed
         static void AccuracyTestWard()
         {
             Console.WriteLine("Accuracy test ward:");
-            int[][] neurons = new int[][]
-            {
-                new int[] { 2 },
-                new int[] { 2, 1 },
-                new int[] { 1, 1 },
-                new int[] { 1 }
-            };
-            bool[][] delays = new bool[][]
-            {
-                new bool[] { false, false },
-                new bool[] { false, false },
-                new bool[] { false }
-            };
-            string[][] afs = new string[][]
-            {
-                new string[] { "Binary Step", "Identity" },
-                new string[] { "Identity", "Binary Step" },
-                new string[] { "Identity" }
-            };
-            int[] groups = { 2, 2, 1 };
-            int[] conns = { 1, 0 };
             float[][] w =
             {
                 new float[]
@@ -137,7 +119,38 @@ namespace neuro_test_managed
                     1.0f, 1.0f
                 }
             };
-            WardNNManaged wnn = new WardNNManaged(new WardNNTopology(neurons, delays, afs, groups, conns, 4), w);
+            InputLayer input = new InputLayer { NeuronsCount = 2, ForwardConnection = 1 };
+            List<Layer> layers = new List<Layer>
+            {
+                new Layer
+                {
+                    ForwardConnection = 0,
+                    Groups = new List<NeuronsGroup>
+                    {
+                        new NeuronsGroup { NeuronsCount = 2, HasDelay = false, ActivationFunction = "Binary Step"},
+                        new NeuronsGroup { NeuronsCount = 1, HasDelay = false, ActivationFunction = "Identity"}
+                    }
+                },
+                new Layer
+                {
+                    ForwardConnection = 0,
+                    Groups = new List<NeuronsGroup>
+                    {
+                        new NeuronsGroup { NeuronsCount = 1, HasDelay = false, ActivationFunction = "Identity"},
+                        new NeuronsGroup { NeuronsCount = 1, HasDelay = false, ActivationFunction = "Binary Step"}
+                    }
+                },
+                new Layer
+                {
+                    ForwardConnection = 0,
+                    Groups = new List<NeuronsGroup>
+                    {
+                        new NeuronsGroup { NeuronsCount = 1, HasDelay = false, ActivationFunction = "Identity"}
+                    }
+                }
+            };
+
+            WardNNManaged wnn = new WardNNManaged(new WardNNTopology(input, layers), w);
             var y = wnn.Solve(new float[] { 1.0f, 0.0f });
             if (Math.Abs(y[0] - 6.0f) < 1e-6)
             {

@@ -2,37 +2,46 @@
 #include "ISolverDescription.h"
 #include "ActivationFunctionTypes.h"
 
-using namespace System;
-using namespace neurolib;
+using System::Collections::Generic::List;
 
-namespace dms::solvers::neural_nets
+namespace dms::solvers::neural_nets::ward_net
 {
-	[SerializableAttribute]
+	[System::SerializableAttribute]
+	public ref class InputLayer
+	{
+	public: 
+		System::Int64 NeuronsCount;
+		System::Int64 ForwardConnection;
+	};
+
+	[System::SerializableAttribute]
+	public ref class NeuronsGroup
+	{
+	public:
+		System::Int64 NeuronsCount;
+		bool HasDelay;
+		System::String^ ActivationFunction;
+	};
+
+	[System::SerializableAttribute]
+	public ref class Layer
+	{
+	public:
+		List<NeuronsGroup^>^ Groups;
+		System::Int64 ForwardConnection;
+	};
+
+	[System::SerializableAttribute]
 	public ref class WardNNTopology : public ISolverDescription
 	{
 	public:
-		WardNNTopology(array<array<int>^>^ neurons, array<array<bool>^>^ delays, array<array<String^>^>^ afs,
-			array<int>^ groups, array<int>^ additionalConnections, int layers);
-		int getInputsCount();
-		int getOutputsCount();
-		int getLayersCount();
-		int getAdditionalConnections(int* src);
-		int getGroupsCount(int* src);
-		int getActivateFunctionsTypes(ActivationFunctionType** src);
-		int getDelays(bool** src);
-		int getNeuronsCount(int** src);
-
-		array<int>^ GetAdditionalConnections();
-		array<int>^ GetGroupsCount();
-		array<array<String^>^>^ GetActivationFunctions();
-		array<array<bool>^>^ GetDelays();
-		array<array<int>^>^ GetNeuronsCount();
+		WardNNTopology(InputLayer^ input, List<Layer^>^ layers);
+		System::Int64 GetInputsCount();
+		System::Int64 GetOutputsCount();
+		InputLayer^ GetInputLayer();
+		List<Layer^>^ GetLayers();
 	private:
-		int layersCount;
-		array<int>^ addCons;
-		array<int>^ groupsCount;
-		array<array<String^>^>^ afs;
-		array<array<bool>^>^ delays;
-		array<array<int>^>^ neurons;
+		InputLayer^ inputLayer;
+		List<Layer^>^ layers;
 	};
 }

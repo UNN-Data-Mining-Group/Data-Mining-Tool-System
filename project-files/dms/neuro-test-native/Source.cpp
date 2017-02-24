@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cmath>
 
-using namespace neurolib;
+using namespace nnets;
 
 void performance_test();
 void accuracy_test_perc();
@@ -55,7 +55,7 @@ void accuracy_test_perc()
 	int neurons[] = { 3,4,2 };
 	ActivationFunctionType af[] = { ActivationFunctionType::BinaryStep, ActivationFunctionType::Identity };
 
-	Perceptron ps(neurons, af, 3, w);
+	nnets_perceptron::Perceptron ps(neurons, af, 3, w);
 	float x[3] = { 1, 0, 1 };
 	float y[2];
 	float answer[2] = { 5.f / 12, 1.f / 6 };
@@ -81,23 +81,6 @@ void accuracy_test_perc()
 void accuracy_test_ward()
 {
 	std::cout << "Accuracy test ward:";
-	int* neurons[4];
-	int g1[] = { 2 };		neurons[0] = g1;
-	int g2[] = { 2,1 };		neurons[1] = g2;
-	int g3[] = { 1,1 };		neurons[2] = g3;
-	int g4[] = { 1 };		neurons[3] = g4;
-
-	bool* delays[3];
-	bool d2[] = { false, false };		delays[0] = d2;
-	bool d3[] = { false, false };		delays[1] = d3;
-	bool d4[] = { false };				delays[2] = d4;
-	ActivationFunctionType* afs[3];
-	ActivationFunctionType a2[] = { ActivationFunctionType::BinaryStep, ActivationFunctionType::Identity };		afs[0] = a2;
-	ActivationFunctionType a3[] = { ActivationFunctionType::Identity, ActivationFunctionType::BinaryStep };		afs[1] = a3;
-	ActivationFunctionType a4[] = { ActivationFunctionType::Identity };	afs[2] = a4;
-
-	int groups[] = { 2,2,1 };
-	int conns[] = { 1, 0 };
 
 	float* w[3];
 	float l1[] = 
@@ -111,22 +94,56 @@ void accuracy_test_ward()
 	float l2[] =
 	{
 		1.0f, 2.0f, 2.0f, 1.0f, 2.0f,
-		2.0f, 1.0f, 1.0f, 1.0f, 2.0f
+		2.0f, 1.0f, 1.0f, 1.0f, 2.0f,
+		0.5f, 5.0f
 	};
 	w[1] = l2;
 
 	float l3[] =
 	{
-		1.0f, 1.0f
+		1.0f, 1.0f,
+		2.5f
 	};
 	w[2] = l3;
 
-	WardNN wnn(neurons, delays,afs, groups, conns, 4, w);
+	nnets_ward::InputLayer input{ 2, 1 };
+	std::vector<nnets_ward::Layer> layers
+	{
+		nnets_ward::Layer
+		{	
+			0, 
+			std::vector<nnets_ward::NeuronsGroup>
+			{
+				nnets_ward::NeuronsGroup{2, false, ActivationFunctionType::BinaryStep },
+				nnets_ward::NeuronsGroup{1, false, ActivationFunctionType::Identity }
+			} 
+		},
+		nnets_ward::Layer
+		{
+			0,
+			std::vector<nnets_ward::NeuronsGroup>
+			{
+				nnets_ward::NeuronsGroup{ 1, true, ActivationFunctionType::Identity },
+				nnets_ward::NeuronsGroup{ 1, true, ActivationFunctionType::BinaryStep }
+			}
+		},
+		nnets_ward::Layer
+		{
+			0,
+			std::vector<nnets_ward::NeuronsGroup>
+			{
+				nnets_ward::NeuronsGroup{ 1, true, ActivationFunctionType::Identity },
+			}
+		}
+
+	};
+
+	nnets_ward::WardNN wnn(input, layers, w);
 	float x[] = { 1, 0 };
 	float y[] = { 0 };
 	wnn.solve(x, y);
 
-	if (std::abs(y[0] - 6.0f) < 1e-6)
+	if (std::abs(y[0] - 2.0f) < 1e-6)
 		std::cout << "PASS";
 	else
 		std::cout << "FAIL";
@@ -150,12 +167,12 @@ void accuracy_test_conv()
 		0, 0, -0.5, 0
 	};
 	float* w[] = { w1, w2 };
-	std::vector<ConvNNLayer*> layers;
-	layers.push_back(new ConvNNConvolutionLayer{ 2, 2, 1, 1, 1, 2, ActivationFunctionType::Identity });
-	layers.push_back(new ConvNNPoolingLayer{ 2, 2, 1, 1 });
-	layers.push_back(new ConvNNFullyConnectedLayer{ 2, ActivationFunctionType::Identity });
+	std::vector<nnets_conv::Layer*> layers;
+	layers.push_back(new nnets_conv::ConvolutionLayer{ 2, 2, 1, 1, 1, 2, ActivationFunctionType::Identity });
+	layers.push_back(new nnets_conv::PoolingLayer{ 2, 2, 1, 1 });
+	layers.push_back(new nnets_conv::FullyConnectedLayer{ 2, ActivationFunctionType::Identity });
 
-	ConvNN net{ 2, 2, 1, layers, w };
+	nnets_conv::ConvNN net{ 2, 2, 1, layers, w };
 
 	float x[] = { 0.5, 0.3, -0.6, -0.2 };
 	float y[2];
@@ -197,7 +214,7 @@ void performance_test()
 	float y[] = { 0, 0 };
 
 	int N = 1000000;
-	Perceptron* ps = new Perceptron(neurons, has_delay, af, layers, w);
+	nnets_perceptron::Perceptron* ps = new nnets_perceptron::Perceptron(neurons, has_delay, af, layers, w);
 
 	int finish = std::clock();
 	std::cout << "creation time: " << finish - start << std::endl;

@@ -1,26 +1,21 @@
 #pragma once
-#include "ActivationFunctions.h"
+#include "NeuralNetwork.h"
 
-namespace neurolib
+namespace nnets_perceptron
 {
-	struct NeuronsLayer
-	{
-		int NeuronsCount;
-		ActivationFunctionType AfType;
-	};
-
-	int getAllWeightsPerc(float* &dest, void* obj);
+	size_t getAllWeightsPerc(float* &dest, void* obj);
 	void setAllWeightsPerc(const float* src, void* obj);
-	int solvePerc(float* x, float* y, void* obj);
-	int getWeightsCountPerc(void* obj);
+	size_t solvePerc(float* x, float* y, void* obj);
+	size_t getWeightsCountPerc(void* obj);
 	void* copyPerc(void* obj);
-	void freePerc(void* obj);
+	void freePerc(void* &obj);
 
-	class Perceptron
+	class Perceptron : public nnets::NeuralNetwork
 	{
 	public:
 		Perceptron(Perceptron& p);
-		Perceptron(int* neuronsCount, ActivationFunctionType* types, int layersCount, float** weights);
+		Perceptron(const int* neuronsCount, 
+			const nnets::ActivationFunctionType* types, int layersCount, float** weights);
 		/*
 		neuronsCount : array [0..layersCount) - number of neurons in layer
 		isDelayOnLayer : array [0..layersCount-1) - does neurons in layer have bias-neuron connection or not
@@ -29,34 +24,36 @@ namespace neurolib
 		weights : array [0..layersCount-1) of array [n*(m+k)], n - neurons in previous layer, 
 			m - neurons in current layer, k - 1, if current layer has bias-neuron connection and 0 otherwise
 		*/
-		Perceptron(int* neuronsCount, bool* isDelayOnLayer, ActivationFunctionType* types, int layersCount, float** weights);
+		Perceptron(const int* neuronsCount, const bool* isDelayOnLayer, 
+			const nnets::ActivationFunctionType* types, int layersCount, float** weights);
 
 		/*
 		x: array[0..inputs count) - allocated vector of inputs.
 		y: array[0..outputs count) - allocated vector of outputs. After methods execution contains values of output neurons 
 		return value: outputs count
 		*/
-		int solve(float* x, float* y);
-		int getInputsCount();
-		int getOutputsCount();
+		size_t solve(const float* x, float* y) override;
+		size_t getInputsCount() override;
+		size_t getOutputsCount() override;
 
 		~Perceptron();
 	private:
-		void check_initializers(int* neurons, bool* has_delay, ActivationFunctionType* afs, int layers, float** weights);
-		void init(int* neuronsCount, bool* isDelayOnLayer, ActivationFunctionType* types, int layersCount, float** weights);
+		void check_initializers(const int* neurons, const bool* has_delay, 
+			const nnets::ActivationFunctionType* afs, int layers, float** weights);
+		void init(const int* neuronsCount, const bool* isDelayOnLayer, 
+			const nnets::ActivationFunctionType* types, int layersCount, float** weights);
 
 		int layers;
 		int* neurons;
 		bool* has_delay;
-		ActivationFunctionType* aftypes;
+		nnets::ActivationFunctionType* aftypes;
+		size_t* w_sizes;
 		float** w;
 		float** temp_res;
 
-		friend int getAllWeightsPerc(float* &dest, void* obj);
+		friend size_t getAllWeightsPerc(float* &dest, void* obj);
 		friend void setAllWeightsPerc(const float* src, void* obj);
-		friend int solvePerc(float* x, float* y, void* obj);
-		friend int getWeightsCountPerc(void* obj);
-		friend void* copyPerc(void* obj);
-		friend void freePerc(void* obj);
+		friend size_t solvePerc(float* x, float* y, void* obj);
+		friend size_t getWeightsCountPerc(void* obj);
 	};
 }
