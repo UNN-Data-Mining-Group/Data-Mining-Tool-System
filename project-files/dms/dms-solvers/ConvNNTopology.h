@@ -5,20 +5,20 @@
 using System::String;
 using System::Collections::Generic::List;
 
-namespace dms::solvers::neural_nets
+namespace dms::solvers::neural_nets::conv_net
 {
 	[System::SerializableAttribute]
-	public ref struct IConvNNLayer abstract {};
+	public ref struct ILayer abstract {};
 
 	[System::SerializableAttribute]
-	public ref struct ConvNNFullyConnectedLayer : public IConvNNLayer
+	public ref struct FullyConnectedLayer : public ILayer
 	{
 		property int NeuronsCount;
 		property String^ ActivationFunction;
 	};
 
 	[System::SerializableAttribute]
-	public ref struct ConvNNPoolingLayer : public IConvNNLayer
+	public ref struct PoolingLayer : public ILayer
 	{
 		property int FilterWidth;
 		property int FilterHeight;
@@ -27,7 +27,7 @@ namespace dms::solvers::neural_nets
 	};
 
 	[System::SerializableAttribute]
-	public ref struct ConvNNConvolutionLayer : public ConvNNPoolingLayer
+	public ref struct ConvolutionLayer : public PoolingLayer
 	{
 		property int Padding;
 		property int CountFilters;
@@ -44,20 +44,20 @@ namespace dms::solvers::neural_nets
 			int Width, Heigth, Depth;
 		};
 
-		ConvNNTopology(int input_weight, int input_heigth, int input_depth, List<IConvNNLayer^>^ layers);
+		ConvNNTopology(int input_weight, int input_heigth, int input_depth, List<ILayer^>^ layers);
 		
 		int GetInputWidth();
 		int GetInputHeigth();
 		int GetInputDepth();
 		int GetInputsCount();
 		int GetOutputsCount();
-		List<IConvNNLayer^>^ GetLayers();
+		List<ILayer^>^ GetLayers();
 		List<VolumeDimention^>^ GetVolumeDimentions();
 	private:
 		int calcOutputVolume(int input, int filter, int padding, int stride);
 
 		int w, h, d;
-		List<IConvNNLayer^>^ layers;
+		List<ILayer^>^ layers;
 		List<VolumeDimention^>^ layerDimentions;
 	};
 }

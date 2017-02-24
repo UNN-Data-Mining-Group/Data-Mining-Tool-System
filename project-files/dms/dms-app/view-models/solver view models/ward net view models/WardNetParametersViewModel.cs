@@ -7,8 +7,11 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.ward_net;
 using dms.tools;
 using dms.models;
+
+using WardLayer = dms.solvers.neural_nets.ward_net.Layer;
 
 namespace dms.view_models
 {
@@ -19,7 +22,7 @@ namespace dms.view_models
         private bool canDelete;
 
         public int Number { get { return number; } set { number = value; NotifyPropertyChanged(); } }
-        public int NeuronsCount { get; set; }
+        public long NeuronsCount { get; set; }
         public string[] ActivateFunctions { get; }
         public string SelectedAF { get; set; }
         public bool IsUsingW0 { get; set; }
@@ -41,14 +44,14 @@ namespace dms.view_models
     public class WardNetLayerViewModel : ViewmodelBase
     {
         private int number;
-        private int maxAC;
-        private int ac;
+        private long maxAC;
+        private long ac;
         private ActionHandler addGroupHandler;
         private ActionHandler deleteHandler;
 
         public int Number { get { return number; } set { number = value; NotifyPropertyChanged(); } }
-        public int MaxAC { get { return maxAC; } set { maxAC = value; NotifyPropertyChanged(); } }
-        public int AC { get { return ac; } set { ac = value; NotifyPropertyChanged(); } }
+        public long MaxAC { get { return maxAC; } set { maxAC = value; NotifyPropertyChanged(); } }
+        public long AC { get { return ac; } set { ac = value; NotifyPropertyChanged(); } }
         public ICommand Delete { get { return deleteHandler; } }
         public ICommand AddGroup { get { return addGroupHandler; } }
         public ObservableCollection<WardNetGroupViewModel> Groups { get; set; }
@@ -81,8 +84,8 @@ namespace dms.view_models
     public class WardNetParametersViewModel : ViewmodelBase, ISolverParameterViewModel
     {
         private ActionHandler addLayerHandler;
-        private int inputMaxAc;
-        private int inputAc;
+        private long inputMaxAc;
+        private long inputAc;
 
         public event Action CanCreateChanged;
 
@@ -118,9 +121,9 @@ namespace dms.view_models
                 e => true);
         }
 
-        public int InputNeuronsCount { get; set; }
-        public int InputLayerMaxAC { get { return inputMaxAc; } private set { inputMaxAc = value;  NotifyPropertyChanged(); } }
-        public int InputLayerAC { get { return inputAc; } set { inputAc = value; NotifyPropertyChanged(); } }
+        public long InputNeuronsCount { get; set; }
+        public long InputLayerMaxAC { get { return inputMaxAc; } private set { inputMaxAc = value;  NotifyPropertyChanged(); } }
+        public long InputLayerAC { get { return inputAc; } set { inputAc = value; NotifyPropertyChanged(); } }
         public ObservableCollection<WardNetLayerViewModel> HiddenLayers { get; set; }
         public ICommand AddLayer { get { return addLayerHandler; } }
         public WardNetLayerViewModel OutputLayer { get; }
@@ -132,48 +135,48 @@ namespace dms.view_models
 
         public void CreateSolver(string name, models.Task task)
         {
-            int[] g = new int[HiddenLayers.Count + 1];
-            int[] ac = new int[HiddenLayers.Count];
-            bool[][] delays = new bool[HiddenLayers.Count + 1][];
-            string[][] afs = new string[HiddenLayers.Count + 1][];
-            int[][] neurons = new int[HiddenLayers.Count + 2][];
-
-            neurons[0] = new int[1];
-            neurons[0][0] = InputNeuronsCount;
-            ac[0] = InputLayerAC;
-            for(int i = 0; i < HiddenLayers.Count - 1; i++)
+            InputLayer input = new InputLayer
             {
-                ac[i + 1] = HiddenLayers[i].AC;
-            }
-
+                NeuronsCount = InputNeuronsCount,
+                ForwardConnection = InputLayerAC
+            };
+            var layers = new List<WardLayer>();
             for(int i = 0; i < HiddenLayers.Count; i++)
             {
-                int groups = HiddenLayers[i].Groups.Count;
-                g[i] = groups;
-                neurons[i + 1] = new int[groups];
-                delays[i] = new bool[groups];
-                afs[i] = new string[groups];
-
-                for (int j = 0; j < groups; j++)
+                var groups = new List<NeuronsGroup>();
+                for(int j = 0; j < HiddenLayers[i].Groups.Count; j++)
                 {
-                    neurons[i + 1][j] = HiddenLayers[i].Groups[j].NeuronsCount;
-                    delays[i][j] = HiddenLayers[i].Groups[j].IsUsingW0;
-                    afs[i][j] = HiddenLayers[i].Groups[j].SelectedAF;
+                    groups.Add(new NeuronsGroup
+                    {
+                        NeuronsCount = HiddenLayers[i].Groups[j].NeuronsCount,
+                        ActivationFunction = HiddenLayers[i].Groups[j].SelectedAF,
+                        HasDelay = HiddenLayers[i].Groups[j].IsUsingW0
+                    });
                 }
+                layers.Add(new WardLayer
+                {
+                    ForwardConnection = HiddenLayers[i].AC,
+                    Groups = groups
+                });
             }
-            g[HiddenLayers.Count] = OutputLayer.Groups.Count;
-            neurons[HiddenLayers.Count + 1] = new int[OutputLayer.Groups.Count];
-            delays[HiddenLayers.Count] = new bool[OutputLayer.Groups.Count];
-            afs[HiddenLayers.Count] = new string[OutputLayer.Groups.Count];
 
+            var groupsOutput = new List<NeuronsGroup>();
             for (int j = 0; j < OutputLayer.Groups.Count; j++)
             {
-                neurons[HiddenLayers.Count + 1][j] = OutputLayer.Groups[j].NeuronsCount;
-                delays[HiddenLayers.Count][j] = OutputLayer.Groups[j].IsUsingW0;
-                afs[HiddenLayers.Count][j] = OutputLayer.Groups[j].SelectedAF;
+                groupsOutput.Add(new NeuronsGroup
+                {
+                    NeuronsCount = OutputLayer.Groups[j].NeuronsCount,
+                    ActivationFunction = OutputLayer.Groups[j].SelectedAF,
+                    HasDelay = OutputLayer.Groups[j].IsUsingW0
+                });
             }
+            layers.Add(new WardLayer
+            {
+                ForwardConnection = OutputLayer.AC,
+                Groups = groupsOutput
+            });
 
-            WardNNTopology wnn = new WardNNTopology(neurons, delays, afs, g, ac, HiddenLayers.Count + 2);
+            WardNNTopology wnn = new WardNNTopology(input, layers);
 
             TaskSolver ts = new TaskSolver()
             {

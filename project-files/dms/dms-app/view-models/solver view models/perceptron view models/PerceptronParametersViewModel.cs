@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.perceptron;
 using dms.tools;
 using dms.models;
 
