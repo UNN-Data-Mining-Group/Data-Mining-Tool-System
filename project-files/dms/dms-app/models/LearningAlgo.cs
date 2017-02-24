@@ -8,6 +8,13 @@ using dms.learningAlgoritms;
 using dms.solvers;
 namespace dms.models
 {
+
+    [Serializable()]
+    class GeneticParam : ILAParameters
+    {
+        public float[] geneticParams;
+    }
+
     class LearningAlgo
     {
         //     [DllImport("dms-learning-algo.dll")]
@@ -17,6 +24,7 @@ namespace dms.models
         public LearningAlgo()
         {
             lrAlgo = new LearningAlgoritms();
+            geneticParams = new GeneticParam();
             TeacherTypesList = lrAlgo.getTeacherTypesList();
 
 
@@ -74,6 +82,21 @@ namespace dms.models
             set
             {
                 UsedAlgo = value;
+            }
+        }
+
+        private GeneticParam geneticParams;
+        public GeneticParam GeneticParams
+        {
+            get
+            {
+                geneticParams.geneticParams = paramsValue;
+                return geneticParams;
+            }
+            set
+            {
+                geneticParams = value;
+                paramsValue = geneticParams.geneticParams;
             }
         }
     }
