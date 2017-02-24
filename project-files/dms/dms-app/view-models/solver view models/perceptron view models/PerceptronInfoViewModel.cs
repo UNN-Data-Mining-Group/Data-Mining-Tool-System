@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using dms.models;
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.perceptron;
 
 namespace dms.view_models
 {

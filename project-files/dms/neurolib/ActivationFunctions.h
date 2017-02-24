@@ -1,6 +1,6 @@
 #pragma once
 
-namespace neurolib
+namespace nnets
 {
 	enum class ActivationFunctionType
 	{
@@ -28,6 +28,5 @@ namespace neurolib
 #define neurolib_tanh_der(x) (1.0f - std::pow(neurolib_tanh(x), 2))
 
 //Useful constructions
-#define get_activation_function_for_vec(src, activate_function, dest, size) for(size_t _ = 0; _ < size; _++) { dest[_] = activate_function(src[_]); }
 void calc_activation_function(const float* src, size_t size, ActivationFunctionType af, float* dest);
 }

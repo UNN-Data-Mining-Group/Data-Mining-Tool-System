@@ -1,48 +1,57 @@
 #pragma once
-#include "ActivationFunctions.h"
+#include "NeuralNetwork.h"
 #include <vector>
 
-namespace neurolib
+namespace nnets_ward
 {
-	class WardNN
+	struct InputLayer
+	{
+		size_t NeuronsCount;
+		size_t ForwardConnection;
+
+		InputLayer(size_t neuronsCount, size_t forwardConnection) :
+			NeuronsCount(neuronsCount), ForwardConnection(forwardConnection) {}
+	};
+
+	struct NeuronsGroup
+	{
+		size_t NeuronsCount;
+		bool HasDelay;
+		nnets::ActivationFunctionType ActivationFunction;
+		NeuronsGroup(size_t neurons, bool hasDelay, nnets::ActivationFunctionType af) :
+			NeuronsCount(neurons), HasDelay(hasDelay), ActivationFunction(af) {}
+	};
+
+	struct Layer
+	{
+		std::vector<NeuronsGroup> Groups;
+		size_t ForwardConnection;	//indicates, that this layer has additional connection 
+									//to layer stayed forward on (1+ForwardConnection) regarding this.
+									//If ForwardConnection = 0, there is only connection to next layer.
+		Layer(size_t forwardConnection, const std::vector<NeuronsGroup> &groups) :
+			ForwardConnection(forwardConnection), Groups(groups) {}
+	};
+
+	class WardNN : public nnets::NeuralNetwork
 	{
 	public:
 		WardNN(const WardNN& wnn);
-		/*
-		neuronsCount : array [0..layersCount) of array[0..groups count in layer) - number of neurons in group
-		isDelayOnGroup : array [0..layersCount-1) of array[0..groups count in layer) - does neurons in group have bias-neuron connection or not
-		af_types : array [0..layersCount-1) of array[0..groups count in layer) - activation function of neurons in group
-		groupsCount : array[0..layersCount-1) - number of groups in layer. First layer is omitted, it always contains one group
-		additionalLayerConnection : array[0..layersCount-2) - this value indicates, that current layer has connection to layer with number (currentNumber + 1 + value)
-		layersCount : from 2 to inf - number of layers in net
-		weights : array [0..layersCount-1) of array [s*m + n*(m+k)], n - neurons in previous layer,
-		m - neurons in current layer, k(j) = 1, if j-th group has bias-neuron connection and 0 otherwise; k = sum(k(j))
-		s - neurons in grand-previous layer, if this has additional connection to current
-		*/
-		WardNN(int** neuronsCount, bool** isDelayOnGroup, ActivationFunctionType** af_types, int* groupsCount, int* additionalLayerConnection, int layersCount, float** weights);
+		WardNN(InputLayer input, const std::vector<Layer> layers, float** weights);
 
-		/*
-		x: array[0..inputs count) - allocated vector of inputs.
-		y: array[0..outputs count) - allocated vector of outputs. After methods execution contains values of output neurons
-		return value: outputs count
-		*/
-		int solve(float* x, float* y);
-		int getInputsCount();
-		int getOutputsCount();
+		
+		
+		size_t solve(const float* x, float* y) override;
+		size_t getInputsCount() override;
+		size_t getOutputsCount() override;
 
 		~WardNN();
 	private:
-		int inputsCount, layersCount, outputsCount;
-		int* groupsCount;
-		int* neuronsInLayer, *additionalNeurons, *additionalLayerConnection;
-		int** neuronsInGroup;
-		bool** hasDelay;
-		float** w;
-		ActivationFunctionType** af_types;
+		struct Layer;	//internal representation of layers
 
-		float** temp_res;
+		std::vector<Layer> layers;
+		float** w;
 		float* buf_x;
 
-		void init_calc_vars();
+		void alloc_data(float** weights);	//allocation w and buf_x
 	};
 }

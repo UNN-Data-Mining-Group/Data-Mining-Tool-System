@@ -1,12 +1,9 @@
 #include "PerceptronTopology.h"
 
-using System::IntPtr;
-using System::Runtime::InteropServices::Marshal;
-
-namespace dms::solvers::neural_nets
+namespace dms::solvers::neural_nets::perceptron
 {
 	PerceptronTopology::PerceptronTopology(int layers, array<int>^ neurons,
-		array<bool>^ delays, array<String^>^ afs)
+		array<bool>^ delays, array<System::String^>^ afs)
 	{
 		layersCount = layers;
 		if ((neurons->Length != layers) ||
@@ -19,7 +16,7 @@ namespace dms::solvers::neural_nets
 
 		neuronsInLayers = gcnew array<int>(layers);
 		hasLayerDelay = gcnew array<bool>(layers - 1);
-		this->afs = gcnew array<String^>(layers - 1);
+		this->afs = gcnew array<System::String^>(layers - 1);
 
 		for (int i = 0; i < layers; i++)
 		{
@@ -45,11 +42,11 @@ namespace dms::solvers::neural_nets
 	{
 		return hasLayerDelay;
 	}
-	array<String^>^ PerceptronTopology::GetActivationFunctionsNames()
+	array<System::String^>^ PerceptronTopology::GetActivationFunctionsNames()
 	{
 		return afs;
 	}
-	int PerceptronTopology::GetLayersActivateFunctionsTypes(ActivationFunctionType* src)
+	int PerceptronTopology::GetLayersActivateFunctionsTypes(nnets::ActivationFunctionType* src)
 	{
 		for (int i = 0; i < layersCount - 1; i++)
 		{

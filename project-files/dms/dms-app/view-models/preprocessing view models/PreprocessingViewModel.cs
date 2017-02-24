@@ -147,7 +147,7 @@ namespace dms.view_models
                 if (!IsUsingExitingTemplate)
                 {
                     newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
-                        ((Selection)sel).Name + " - " + PreprocessingName,
+                        ((Selection)sel).Name,
                         ((Selection)sel).RowCount, TaskId, taskTemplateId);
                 }
 

@@ -1,126 +1,80 @@
 #pragma once
-#include "ActivationFunctions.h"
+#include "NeuralNetwork.h"
 #include <vector>
 
-namespace neurolib
+namespace nnets_conv
 {
-	enum class ConvNNLayerType
+	enum class LayerType
 	{
 		Convolution,
 		Pooling,
 		FullyConnected
 	};
 
-	struct ConvNNLayer
+	struct Layer
 	{
-		ConvNNLayerType Type;
-		ConvNNLayer(ConvNNLayerType type) : Type(type) {}
+		LayerType Type;
+		Layer(LayerType type) : Type(type) {}
 	};
 
-	struct ConvNNFullyConnectedLayer : public ConvNNLayer
+	struct FullyConnectedLayer : public Layer
 	{
 		int NeuronsCount;
-		ActivationFunctionType ActivationFunction;
+		nnets::ActivationFunctionType ActivationFunction;
 
-		ConvNNFullyConnectedLayer(int neurons, ActivationFunctionType af) :
-			ConvNNLayer(ConvNNLayerType::FullyConnected), NeuronsCount(neurons), ActivationFunction(af) {}
+		FullyConnectedLayer(int neurons, nnets::ActivationFunctionType af) :
+			Layer(LayerType::FullyConnected), 
+			NeuronsCount(neurons), 
+			ActivationFunction(af) {}
 	};
 
-	struct ConvNNPoolingLayer : public ConvNNLayer
+	struct PoolingLayer : public Layer
 	{
 		int FilterWidth, FilterHeight;
 		int StrideWidth, StrideHeight;
 
-		ConvNNPoolingLayer(int fw, int fh, int sw, int sh) :
-			ConvNNLayer(ConvNNLayerType::Pooling), FilterWidth(fw), FilterHeight(fh), StrideWidth(sw), StrideHeight(sh) {}
+		PoolingLayer(int fw, int fh, int sw, int sh) :
+			Layer(LayerType::Pooling), 
+			FilterWidth(fw), FilterHeight(fh), 
+			StrideWidth(sw), StrideHeight(sh) {}
 	};
 
-	struct ConvNNConvolutionLayer : public ConvNNPoolingLayer
+	struct ConvolutionLayer : public PoolingLayer
 	{
 		int Padding;
 		int CountFilters;
-		ActivationFunctionType ActivationFunction;
+		nnets::ActivationFunctionType ActivationFunction;
 
-		ConvNNConvolutionLayer(int fw, int fh, int sw, int sh,
-			int p, int count_f, ActivationFunctionType af) :
-			ConvNNPoolingLayer(fw, fh, sw, sh), 
+		ConvolutionLayer(int fw, int fh, int sw, int sh,
+			int p, int count_f, nnets::ActivationFunctionType af) :
+			PoolingLayer(fw, fh, sw, sh), 
 			Padding(p), CountFilters(count_f), ActivationFunction(af) 
 		{
-			Type = ConvNNLayerType::Convolution;
+			Type = LayerType::Convolution;
 		}
 	};
 
-	class ConvNN
+	class ConvNN : public nnets::NeuralNetwork
 	{
 	public: 
 		//w - number of neurons in output volume by width
 		//h - by height
 		//d - by depth
-		ConvNN(int w, int h, int d, const std::vector<ConvNNLayer*>& layers, float** weights);
+		ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights);
 
-		int solve(float* x, float* y);
-		int getInputsCount();
-		int getOutputsCount();
+		size_t solve(const float* x, float* y) override;
+		size_t getInputsCount() override;
+		size_t getOutputsCount() override;
 
 		~ConvNN() { freeMemory(); }
 	private:
 
 		enum class VolumeType {Convolutional, Activation, Pooling, FullyConnected, Simple};
 
-		struct Volume
-		{
-			int Width, Height, Depth;
-			float* Values;
-			VolumeType Type;
-
-			Volume(int w, int h, int d, VolumeType type)
-			{
-				Width = w;	Height = h;	Depth = d;
-				Values = new float[Width * Height * Depth];
-				Type = type;
-			}
-			~Volume() 
-			{ 
-				delete[] Values; 
-			}
-		};
-
-		struct VolumeActivation : Volume
-		{
-			ActivationFunctionType ActivationFunction;
-
-			VolumeActivation(Volume* prev, ActivationFunctionType af) : 
-				Volume(prev->Width, prev->Height, prev->Depth, VolumeType::Activation)
-			{
-				ActivationFunction = af;
-			}
-		};
-
-		struct VolumePooling : Volume
-		{
-			int FilterWidth, FilterHeight;
-			int StrideWidth, StrideHeight;
-
-			VolumePooling(int w, int h, int d, int fw, int fh, int sw, int sh) : Volume(w, h, d, VolumeType::Pooling)
-			{
-				FilterWidth = fw;	FilterHeight = fh;	StrideWidth = sw; StrideHeight = sh;
-				Type = VolumeType::Pooling;
-			}
-		};
-
-		struct VolumeConvolutional : VolumePooling
-		{
-			int Padding;
-			int CountFilters;
-
-			VolumeConvolutional(int w, int h, int d, 
-				int fw, int fh, 
-				int sw, int sh, int p, int cf) : VolumePooling(w, h, d, fw, fh, sw, sh)
-			{
-				Padding = p;	CountFilters = cf;
-				Type = VolumeType::Convolutional;
-			}
-		};
+		struct Volume;
+		struct VolumeActivation;
+		struct VolumePooling;
+		struct VolumeConvolutional;
 
 		void clearPtrs();
 		void freeMemory();

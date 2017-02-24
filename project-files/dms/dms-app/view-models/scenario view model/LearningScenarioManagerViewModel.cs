@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using dms.tools;
+using dms.models;
+using System.Windows.Controls;
 
 namespace dms.view_models
 {
@@ -13,22 +15,38 @@ namespace dms.view_models
     {
         private ActionHandler createHandler;
         private ActionHandler cancelHandler;
-
+        private LearningAlgo learningAlgo;
         public LearningScenarioViewModel()
         {
             createHandler = new ActionHandler(() => { }, e => false);
             cancelHandler = new ActionHandler(() => { }, e => true);
+            learningAlgo = new LearningAlgo();
             Name = "Сценарий";
             MixSeed = "123";
             TeacherType = TeacherTypesList[0];
             SelectionType = SelectionTypesList[0];
         }
 
+        public string[] ParamsName { get { return learningAlgo.paramsName; } }
+        public float[] ParamsValue
+        {
+            get
+            {
+                return learningAlgo.paramsValue;
+            }
+        }
+
         public string Name { get; set; }
         public string TeacherType { get; set; }
-        public string SelectionType { get; set; }
+        public string SelectionType
+        {            
+            set
+            {
+                learningAlgo.usedAlgo = value;
+            }
+        }
         public string MixSeed { get; set; }
-        public string[] TeacherTypesList { get { return new string[] { "Обучатель 1", "Обучатель 2" }; } }
+        public string[] TeacherTypesList { get { return learningAlgo.teacherTypesList; } }
         public string[] SelectionTypesList { get { return new string[] { "Тестовая/обучающая", "Кроссвалидация" }; } }
         public ICommand CreateCommand { get { return createHandler; } }
         public ICommand CancelHandler { get { return cancelHandler; } }

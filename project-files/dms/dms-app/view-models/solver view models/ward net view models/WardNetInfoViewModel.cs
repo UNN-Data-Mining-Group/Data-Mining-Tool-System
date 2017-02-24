@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.ward_net;
 
 namespace dms.view_models
 {
@@ -12,7 +12,7 @@ namespace dms.view_models
     {
         public string LayerName { get; set; }
         public string GroupName { get; set; }
-        public int NeuronsCount { get; set; }
+        public Int64 NeuronsCount { get; set; }
         public string ActivateFunction { get; set; }
         public bool HasW0 { get; set; }
     }
@@ -27,7 +27,7 @@ namespace dms.view_models
     {
         public string TaskName { get; }
         public string Name { get; }
-        public int CountInputNeurons { get; }
+        public Int64 CountInputNeurons { get; }
         public WardNetGroup[] Groups { get; }
         public AdditionalConnection[] AdditionalConns { get; }
 
@@ -37,64 +37,68 @@ namespace dms.view_models
             Name = solver.Name;
 
             WardNNTopology t = solver.Description as WardNNTopology;
-            var groups = t.GetGroupsCount();
-            var adcons = t.GetAdditionalConnections();
-            var afs = t.GetActivationFunctions();
-            var neurons = t.GetNeuronsCount();
-            var w0s = t.GetDelays();
+            var input_layer = t.GetInputLayer();
+            var layers = t.GetLayers();
 
             int gsize = 0;
-            for(int i = 0; i < t.getLayersCount() - 1; i++)
-                gsize += groups[i];
-
-            CountInputNeurons = neurons[0][0];
-            Groups = new WardNetGroup[gsize];
-
-            int adsize = 0;
-            for (int i = 0; i < adcons.Length; i++)
-                if (adcons[i] > 0)
+            int adsize = (input_layer.ForwardConnection > 0) ? 1 : 0;
+            for (int i = 0; i < layers.Count; i++)
+            {
+                gsize += layers[i].Groups.Count;
+                if (layers[i].ForwardConnection > 0)
                     adsize++;
+            }
 
+            CountInputNeurons = input_layer.NeuronsCount;
+            Groups = new WardNetGroup[gsize];
             AdditionalConns = new AdditionalConnection[adsize];
 
             int gindex = 0;
-            int last_layer_index = t.getLayersCount() - 1;
-            for(int i = 1; i < last_layer_index; i++)
+            int last_layer_index = layers.Count - 1;
+            for(int i = 0; i < last_layer_index; i++)
             {
-                for(int j = 0; j < groups[i-1]; j++)
+                for(int j = 0; j < layers[i].Groups.Count; j++)
                 {
                     Groups[gindex++] = new WardNetGroup
                     {
-                        LayerName = String.Format("{0} слой", i),
+                        LayerName = String.Format("{0} слой", i + 1),
                         GroupName = String.Format("{0} группа", j + 1),
-                        NeuronsCount = neurons[i][j],
-                        ActivateFunction = afs[i-1][j],
-                        HasW0 = w0s[i-1][j]
+                        NeuronsCount = layers[i].Groups[j].NeuronsCount,
+                        ActivateFunction = layers[i].Groups[j].ActivationFunction,
+                        HasW0 = layers[i].Groups[j].HasDelay
                     };
                 }
             }
 
-            for (int j = 0; j < groups[last_layer_index - 1]; j++)
+            for (int j = 0; j < layers[last_layer_index].Groups.Count; j++)
             {
                 Groups[gindex++] = new WardNetGroup
                 {
                     LayerName = "Выходной слой",
                     GroupName = String.Format("{0} группа", j + 1),
-                    NeuronsCount = neurons[last_layer_index][j],
-                    ActivateFunction = afs[last_layer_index - 1][j],
-                    HasW0 = w0s[last_layer_index - 1][j]
+                    NeuronsCount = layers[last_layer_index].Groups[j].NeuronsCount,
+                    ActivateFunction = layers[last_layer_index].Groups[j].ActivationFunction,
+                    HasW0 = layers[last_layer_index].Groups[j].HasDelay
                 };
             }
 
             int adindex = 0;
-            for (int i = 0; i < adcons.Length; i++)
+            if (input_layer.ForwardConnection > 0)
             {
-                if (adcons[i] > 0)
+                AdditionalConns[adindex++] = new AdditionalConnection
+                {
+                    Start = String.Format("Входной слой"),
+                    End = String.Format("{0} слой", input_layer.ForwardConnection + 1)
+                };
+            }
+            for (int i = 0; i < layers.Count; i++)
+            {
+                if (layers[i].ForwardConnection > 0)
                 {
                     AdditionalConns[adindex++] = new AdditionalConnection
                     {
-                        Start = String.Format("{0} слой", i),
-                        End = String.Format("{0} слой", i + adcons[i] + 1)
+                        Start = String.Format("{0} слой", i + 1),
+                        End = String.Format("{0} слой", i + 1 + layers[i].ForwardConnection + 1)
                     };
                 }
             }

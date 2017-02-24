@@ -18,17 +18,18 @@ namespace dms::solvers
 	public ref class ISolver abstract
 	{
 	public:
-		ISolver(Int32 inputs, Int32 outputs);
+		ISolver(__int64 inputs, __int64 outputs);
 
 		virtual array<Single>^ Solve(array<Single>^ x) = 0;
-		virtual Int32 GetInputsCount();
-		virtual Int32 GetOutputsCount();
+		virtual __int64 GetInputsCount();
+		virtual __int64 GetOutputsCount();
 		virtual std::vector<std::string> getAttributes();
 		virtual std::vector<LearningOperation> getOperations();
+		virtual void* getNativeSolver() = 0;
 
 		virtual ~ISolver();
 	private:
-		int inputsCount;
-		int outputsCount;
+		__int64 inputsCount;
+		__int64 outputsCount;
 	};
 }

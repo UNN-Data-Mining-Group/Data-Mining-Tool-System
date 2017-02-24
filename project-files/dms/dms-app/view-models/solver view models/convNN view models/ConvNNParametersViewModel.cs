@@ -8,12 +8,13 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using dms.tools;
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.conv_net;
 
 namespace dms.view_models
 {
     public interface IConvNNLayerParametersVM
     {
-        IConvNNLayer LayerModel { get; }
+        ILayer LayerModel { get; }
         event Func<bool> OnUpdate;
     }
 
@@ -43,11 +44,11 @@ namespace dms.view_models
             OnUpdate?.Invoke();
         }
 
-        public IConvNNLayer LayerModel
+        public ILayer LayerModel
         {
             get
             {
-                return new ConvNNConvolutionLayer
+                return new ConvolutionLayer
                 {
                     FilterWidth = this.FilterWidth,
                     FilterHeight = this.FilterHeight,
@@ -81,11 +82,11 @@ namespace dms.view_models
             OnUpdate?.Invoke();
         }
 
-        public IConvNNLayer LayerModel
+        public ILayer LayerModel
         {
             get
             {
-                return new ConvNNPoolingLayer
+                return new PoolingLayer
                 {
                     FilterWidth = this.FilterWidth,
                     FilterHeight = this.FilterHeight,
@@ -116,11 +117,11 @@ namespace dms.view_models
             OnUpdate?.Invoke();
         }
 
-        public IConvNNLayer LayerModel
+        public ILayer LayerModel
         {
             get
             {
-                return new ConvNNFullyConnectedLayer
+                return new FullyConnectedLayer
                 {
                     NeuronsCount = this.NeuronsCount,
                     ActivationFunction = this.ActivationFunction
@@ -243,7 +244,7 @@ namespace dms.view_models
 
         public void CreateSolver(string name, models.Task task)
         {
-            var layers = new List<IConvNNLayer>();
+            var layers = new List<ILayer>();
             foreach (ConvNNLayerViewModel layerVM in Layers)
             {
                 layers.Add(layerVM.LayerParameters.LayerModel);
@@ -263,7 +264,7 @@ namespace dms.view_models
 
         private bool canCreateTopology()
         {
-            var layers = new List<IConvNNLayer>();
+            var layers = new List<ILayer>();
             try
             {
                 foreach (ConvNNLayerViewModel layerVM in Layers)

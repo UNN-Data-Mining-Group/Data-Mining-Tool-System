@@ -1,105 +1,81 @@
 #include "WardNNManaged.h"
 
-using namespace dms::solvers::neural_nets;
+using namespace dms::solvers::neural_nets::ward_net;
 
 WardNNManaged::WardNNManaged(WardNNTopology^ t, array<array<float>^>^ weights) : 
-	ISolver(t->getInputsCount(), t->getOutputsCount())
+	ISolver(t->GetInputsCount(), t->GetOutputsCount())
 {
 	x = new float[GetInputsCount()];
 	y = new float[GetOutputsCount()];
-
-	int layers = t->getLayersCount();
-	int* groups = new int[layers - 1];
-	t->getGroupsCount(groups);
-
-	int* addCons = new int[layers - 2];
-	t->getAdditionalConnections(addCons);
-
-	int** neurons = new int*[layers];
-	neurons[0] = new int[1];
-	for (int i = 1; i < layers; i++)
-	{
-		neurons[i] = new int[groups[i-1]];
-	}
-	t->getNeuronsCount(neurons);
-
-	array<int>^ neuronsInLayers = gcnew array<int>(layers);
-	neuronsInLayers[0] = neurons[0][0];
-	for (int i = 1; i < layers; i++)
-	{
-		int sum = 0;
-		for (int j = 0; j < groups[i - 1]; j++)
-			sum += neurons[i][j];
-		neuronsInLayers[i] = sum;
-	}
-	array<int>^ addNeurons = gcnew array<int>(layers - 1);
-	for (int i = 0; i < layers - 1; i++)
-	{
-		addNeurons[i] = 0;
-	}
-	for (int i = 0; i < layers - 2; i++)
-	{
-		int conn = addCons[i];
-		if (conn > 0)
-		{
-			addNeurons[i + conn] += neuronsInLayers[i];
-		}
-	}
-
-	bool** delays = new bool*[layers - 1];
-	ActivationFunctionType** afs = new ActivationFunctionType*[layers - 1];
-	for (int i = 0; i < layers - 1; i++)
-	{
-		delays[i] = new bool[groups[i]];
-		afs[i] = new ActivationFunctionType[groups[i]];
-	}
-	t->getDelays(delays);
-	t->getActivateFunctionsTypes(afs);
 	
-	this->weights = gcnew array<array<float>^>(layers - 1);
-	float** w = new float*[layers - 1];
-	for (int i = 0; i < layers - 1; i++)
+	InputLayer^ input = t->GetInputLayer();
+	List<Layer^>^ layers = t->GetLayers();
+
+	this->weights = weights;
+	float** w = new float*[weights->GetLength(0)];
+	for (int i = 0; i < weights->GetLength(0); i++)
 	{
-		int s = addNeurons[i];
-		int n = neuronsInLayers[i];
-		int m = neuronsInLayers[i + 1];
-		int k = 0;
-		for (int j = 0; j < groups[i]; j++)
+		w[i] = new float[weights[i]->Length];
+		for (int j = 0; j < weights[i]->Length; j++)
 		{
-			k += System::Convert::ToInt32(delays[i][j]);
-		}
-		int len = s*m + n* (m + k);
-		this->weights[i] = gcnew array<float>(len);
-		w[i] = new float[len];
-		for (int j = 0; j < len; j++)
-		{
-			w[i][j] = this->weights[i][j] = weights[i][j];
+			w[i][j] = weights[i][j];
 		}
 	}
 
-	wsolver = new neurolib::WardNN(neurons, delays, afs, groups, addCons, layers, w);
-
-	for (int i = 0; i < layers - 1; i++)
+	String^ exMessage = "";
+	bool isCreationSuccessfull = true;
+	try
 	{
-		delete[] w[i];
-		delete[] afs[i];
-		delete[] delays[i];
+		nnets_ward::InputLayer native_input
+		{ 
+			static_cast<size_t>(input->NeuronsCount), 
+			static_cast<size_t>(input->ForwardConnection)
+		};
+		std::vector<nnets_ward::Layer> native_layers;
+		for (int i = 0; i < layers->Count; i++)
+		{
+			List<NeuronsGroup^>^ g = layers[i]->Groups;
+			std::vector<nnets_ward::NeuronsGroup> groups;
+			for (int j = 0; j < g->Count; j++)
+			{
+				groups.push_back(nnets_ward::NeuronsGroup
+				{
+					static_cast<size_t>(g[j]->NeuronsCount),
+					g[j]->HasDelay,
+					ActivationFunctionTypes::getType(g[j]->ActivationFunction)
+				});
+			}
+			native_layers.push_back(nnets_ward::Layer{ static_cast<size_t>(layers[i]->ForwardConnection), groups });
+		}
+	
+		wsolver = new nnets_ward::WardNN(native_input, native_layers, w);
 	}
-	delete[] w;
-	delete[] afs;
-	delete[] delays;
+	catch (char* msg)
+	{
+		isCreationSuccessfull = false;
+		exMessage = gcnew String(msg);
+	}
+	catch (...)
+	{
+		isCreationSuccessfull = false;
+	}
+	finally
+	{
+		for (int i = 0; i < weights->GetLength(0); i++)
+			delete[] w[i];
+		delete[] w;
+	}
 
-	for (int i = 0; i < layers; i++)
-		delete[] neurons[i];
-	delete[] neurons;
-	delete[] groups;
-	delete[] addCons;
+	if (isCreationSuccessfull == false)
+	{
+		throw gcnew System::Exception(exMessage);
+	}
 }
 
 array<Single>^ WardNNManaged::Solve(array<Single>^ x)
 {
-	int inputs = GetInputsCount();
-	int outputs = GetOutputsCount();
+	__int64 inputs = GetInputsCount();
+	__int64 outputs = GetOutputsCount();
 
 	if (x->Length != inputs)
 		throw gcnew System::ArgumentException();
@@ -116,6 +92,11 @@ array<Single>^ WardNNManaged::Solve(array<Single>^ x)
 		y[i] = this->y[i];
 	}
 	return y;
+}
+
+void* WardNNManaged::getNativeSolver()
+{
+	return wsolver;
 }
 
 WardNNManaged::~WardNNManaged()

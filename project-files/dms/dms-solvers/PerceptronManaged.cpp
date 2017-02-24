@@ -1,7 +1,8 @@
 #include "PerceptronManaged.h"
 
-using namespace dms::solvers::neural_nets;
-using namespace System::Runtime::InteropServices;
+using dms::solvers::LearningOperation;
+using dms::solvers::neural_nets::perceptron::PerceptronManaged;
+using dms::solvers::neural_nets::perceptron::PerceptronTopology;
 
 PerceptronManaged::PerceptronManaged(PerceptronTopology^ t, array<array<float>^>^ weights) :
 	ISolver(t->GetInputsCount(), t->GetOutputsCount())
@@ -11,7 +12,7 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t, array<array<float>^>
 	auto ns = t->GetNeuronsInLayersCount();
 	auto hds = t->HasLayersDelayWeight();
 
-	ActivationFunctionType* afs = new ActivationFunctionType[layers - 1];
+	nnets::ActivationFunctionType* afs = new nnets::ActivationFunctionType[layers - 1];
 	t->GetLayersActivateFunctionsTypes(afs);
 
 	this->weights = gcnew array<array<float>^>(layers - 1);
@@ -43,7 +44,7 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t, array<array<float>^>
 		delays[i] = hds[i];
 	}
 
-	psolver = new neurolib::Perceptron(neurons, delays, afs, layers, w);
+	psolver = new nnets_perceptron::Perceptron(neurons, delays, afs, layers, w);
 	x = new float[GetInputsCount()];
 	y = new float[GetOutputsCount()];
 
@@ -60,8 +61,8 @@ PerceptronManaged::PerceptronManaged(PerceptronTopology^ t, array<array<float>^>
 
 array<Single>^ PerceptronManaged::Solve(array<Single>^ x)
 {
-	int inputs = GetInputsCount();
-	int outputs = GetOutputsCount();
+	__int64 inputs = GetInputsCount();
+	__int64 outputs = GetOutputsCount();
 
 	if (x->Length != inputs)
 		throw gcnew System::ArgumentException();
@@ -78,6 +79,29 @@ array<Single>^ PerceptronManaged::Solve(array<Single>^ x)
 		y[i] = this->y[i];
 	}
 	return y;
+}
+
+std::vector<std::string> PerceptronManaged::getAttributes()
+{
+	return std::vector<std::string>();
+}
+
+std::vector<LearningOperation> PerceptronManaged::getOperations()
+{
+	std::vector<LearningOperation> opers;
+	opers.push_back(LearningOperation{ "getAllWeights",		nnets_perceptron::getAllWeightsPerc });
+	opers.push_back(LearningOperation{ "setAllWeights",		nnets_perceptron::setAllWeightsPerc });
+	opers.push_back(LearningOperation{ "solve",				nnets_perceptron::solvePerc });
+	opers.push_back(LearningOperation{ "getWeightsCount",	nnets_perceptron::getWeightsCountPerc });
+	opers.push_back(LearningOperation{ "copySolver",		nnets_perceptron::copyPerc });
+	opers.push_back(LearningOperation{ "freeSolver",		nnets_perceptron::freePerc });
+
+	return opers;
+}
+
+void* PerceptronManaged::getNativeSolver()
+{
+	return psolver;
 }
 
 PerceptronManaged::~PerceptronManaged()

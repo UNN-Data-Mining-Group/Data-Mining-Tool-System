@@ -2,244 +2,207 @@
 #include <mkl_cblas.h>
 #include <cmath>
 
-using namespace neurolib;
+using nnets_ward::WardNN;
+using nnets::ActivationFunctionType;
+
+struct WardNN::Layer
+{
+	std::vector<NeuronsGroup> Groups;
+	const Layer* BackwardConnector;
+	float* Values;			//values after applying activations
+	float* WeightedSums;	//values before activations applied
+	size_t ValuesSize;
+
+	//Constructor for input layer (without groups and activations)
+	Layer(size_t neurons_count) :
+		BackwardConnector(nullptr), ValuesSize(neurons_count)
+	{
+		Groups = std::vector<NeuronsGroup>();
+		Values = new float[ValuesSize];
+		WeightedSums = nullptr;
+	}
+
+	Layer(const Layer& l)
+	{
+		Values = WeightedSums = nullptr;
+
+		Groups = l.Groups;
+		BackwardConnector = l.BackwardConnector;
+		ValuesSize = l.ValuesSize;
+
+		if (l.Values != nullptr)
+		{
+			Values = new float[ValuesSize];
+			for (int i = 0; i < ValuesSize; i++)
+				Values[i] = l.Values[i];
+		}
+
+		if (l.WeightedSums != nullptr)
+		{
+			WeightedSums = new float[ValuesSize];
+			for (int i = 0; i < ValuesSize; i++)
+				WeightedSums[i] = l.WeightedSums[i];
+		}
+	}
+
+	Layer(const std::vector<NeuronsGroup> &groups, const Layer* connector) :
+		BackwardConnector(connector), Groups(groups)
+	{
+		ValuesSize = 0;
+		for (int group = 0; group < Groups.size(); group++)
+		{
+			ValuesSize += groups[group].NeuronsCount;
+		}
+		Values = new float[ValuesSize];
+		WeightedSums = new float[ValuesSize];
+	}
+
+	~Layer()
+	{
+		ValuesSize = 0;
+
+		if (Values != nullptr)
+			delete[] Values;
+		if (WeightedSums != nullptr)
+			delete[] WeightedSums;
+
+		Values = WeightedSums = nullptr;
+	}
+};
 
 WardNN::WardNN(const WardNN& wnn)
 {
-	inputsCount = wnn.inputsCount;
-	layersCount = wnn.layersCount;
-	outputsCount = wnn.outputsCount;
+	layers = wnn.layers;
+	alloc_data(wnn.w);
+}
 
-	groupsCount = new int[layersCount - 1];
-	additionalNeurons = new int[layersCount - 1];
-	additionalLayerConnection = new int[layersCount - 1];
-	hasDelay = new bool*[layersCount - 1];
-	af_types = new ActivationFunctionType*[layersCount - 1];
+WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer> layers,  float** weights)
+{
+	if (input.NeuronsCount < 0)
+		throw "Invalid number of inputs";
 
-	for (int i = 0; i < layersCount - 1; i++)
+	this->layers.push_back(Layer{ input.NeuronsCount }); //input layer, without biases and activations
+	for (int i = 0; i < layers.size(); i++)
+		this->layers.push_back(Layer{ layers[i].Groups, nullptr });
+
+	if (input.ForwardConnection > 0)
+		this->layers[input.ForwardConnection + 1].BackwardConnector = &this->layers[0];
+	for (int i = 0; i < layers.size(); i++)
 	{
-		groupsCount[i] = wnn.groupsCount[i];
-		additionalNeurons[i] = wnn.additionalNeurons[i];
-		additionalLayerConnection[i] = wnn.additionalLayerConnection[i];
-
-		this->af_types[i] = new ActivationFunctionType[groupsCount[i]];
-		hasDelay[i] = new bool[groupsCount[i]];
-		for (int j = 0; j < groupsCount[i]; j++)
-		{
-			this->af_types[i][j] = wnn.af_types[i][j];
-			hasDelay[i][j] = wnn.hasDelay[i][j];
-		}
+		size_t forward_index = layers[i].ForwardConnection;
+		if (forward_index > 0)
+			this->layers[i + forward_index + 1].BackwardConnector = &this->layers[i];
 	}
 
-	neuronsInLayer = new int[layersCount];
-	neuronsInGroup = new int*[layersCount];
-	for (int i = 0; i < layersCount; i++)
-		neuronsInLayer[i] = wnn.neuronsInLayer[i];
+	alloc_data(weights);
+}
 
-	neuronsInGroup[0] = new int[1]; neuronsInGroup[0][0] = wnn.neuronsInGroup[0][0];
-	for (int i = 1; i < layersCount; i++)
+void WardNN::alloc_data(float** weights)
+{
+	size_t buf_x_len = 0;
+	w = new float*[this->layers.size() - 1];
+	for (int i = 1; i < this->layers.size(); i++)
 	{
-		neuronsInGroup[i] = new int[groupsCount[i - 1]];
-		for (int j = 0; j < groupsCount[i - 1]; j++)
-			neuronsInGroup[i][j] = wnn.neuronsInGroup[i][j];
-	}
+		size_t temp = this->layers[i - 1].ValuesSize;
+		if (this->layers[i].BackwardConnector != nullptr)
+			temp += this->layers[i].BackwardConnector->ValuesSize;
 
-	w = new float*[layersCount - 1];
-	for (int i = 0; i < layersCount - 1; i++)
-	{
-		int s = additionalNeurons[i];
-		int n = neuronsInLayer[i];
-		int m = neuronsInLayer[i + 1];
-		int k = 0;
-		for (int j = 0; j < groupsCount[i]; j++)
+		buf_x_len = buf_x_len < temp ? temp : buf_x_len;
+
+		size_t back_size = 0;
+		if (this->layers[i].BackwardConnector != nullptr)
+			back_size = this->layers[i].BackwardConnector->ValuesSize;
+		size_t len = this->layers[i].ValuesSize * (this->layers[i - 1].ValuesSize + back_size);
+
+		for (auto group = this->layers[i].Groups.begin();
+			group != this->layers[i].Groups.end(); group++)
 		{
-			k += hasDelay[i][j];
+			if (group->HasDelay == true)
+				len += group->NeuronsCount;
 		}
-		int len = s*m + n* (m + k);
-		w[i] = new float[len];
+
+		w[i-1] = new float[len];
 		for (int j = 0; j < len; j++)
-		{
-			w[i][j] = wnn.w[i][j];
-		}
+			w[i-1][j] = weights[i-1][j];
 	}
-
-	init_calc_vars();
+	buf_x = new float[buf_x_len];
 }
 
-WardNN::WardNN(int** neuronsCount, bool** isDelayOnGroup, ActivationFunctionType** af_types, int* groupsCount, int* additionalLayerConnection, int layersCount, float** weights)
+size_t WardNN::solve(const float* x, float* y)
 {
-	this->layersCount = layersCount;
-	this->groupsCount = new int[layersCount-1];
-	neuronsInLayer = new int[layersCount];
-	neuronsInGroup = new int*[layersCount];
-	
-	neuronsInGroup[0] = new int[1];
-	neuronsInGroup[0][0] = neuronsCount[0][0];
-	neuronsInLayer[0] = neuronsCount[0][0];
-	for (int i = 1; i < layersCount; i++)
+	Layer* first = &layers[0];
+	Layer* last = &layers[layers.size() - 1];
+
+	for (int i = 0; i < getInputsCount(); i++)
+		first->Values[i] = x[i];
+
+	int w_index = 0;
+	auto prevLayer = layers.begin();
+	auto curLayer = prevLayer + 1;
+	for (; curLayer != layers.end(); curLayer++, prevLayer++, w_index++)
 	{
-		this->groupsCount[i-1] = groupsCount[i-1];
-		int sumNeurons = 0;
-		neuronsInGroup[i] = new int[groupsCount[i-1]];
-		for (int j = 0; j < groupsCount[i-1]; j++)
+		//Computing weighted sum without biases
+		size_t rows = curLayer->ValuesSize;
+		size_t cols = prevLayer->ValuesSize;
+
+		const Layer* backConnector = curLayer->BackwardConnector;
+		size_t x_index = 0;
+		for (size_t prevItem = 0; prevItem < prevLayer->ValuesSize; prevItem++)
+			buf_x[x_index++] = prevLayer->Values[prevItem];
+
+		if (backConnector != nullptr)
 		{
-			neuronsInGroup[i][j] = neuronsCount[i][j];
-			sumNeurons += neuronsCount[i][j];
+			for (size_t backItem = 0; backItem < backConnector->ValuesSize; backItem++)
+				buf_x[x_index++] = backConnector->Values[backItem];
+
+			cols += backConnector->ValuesSize;
 		}
-		neuronsInLayer[i] = sumNeurons;
-	}
-	inputsCount = neuronsInLayer[0];
-	outputsCount = neuronsInLayer[layersCount - 1];
 
-	this->additionalLayerConnection = new int[layersCount - 1];
-	additionalNeurons = new int[layersCount - 1];
-	for (int i = 0; i < layersCount - 1; i++)
-	{
-		additionalNeurons[i] = 0;
-		this->additionalLayerConnection[i] = -1;
-	}
-	for (int i = 0; i < layersCount - 2; i++)
-	{
-		int conn = additionalLayerConnection[i];
-		if (conn > 0)
+		cblas_sgemv(CblasRowMajor, CblasNoTrans,
+			rows, cols, 1.0f, w[w_index],
+			cols, buf_x, 1, 0.0f, curLayer->WeightedSums, 1);
+
+		//Applying biases and activations in groups
+		float* group_values = curLayer->Values;
+		float* group_wsums = curLayer->WeightedSums;
+		float* bias_weights = w[w_index] + rows * cols;
+		for (auto group = curLayer->Groups.begin(); group != curLayer->Groups.end(); group++)
 		{
-			this->additionalLayerConnection[i + conn] = i;
-			additionalNeurons[i + conn] += neuronsInLayer[i];
-		}
-	}
-	hasDelay = new bool*[layersCount - 1];
-	this->af_types = new ActivationFunctionType*[layersCount - 1];
-	for (int i = 0; i < layersCount - 1; i++)
-	{
-		this->af_types[i] = new ActivationFunctionType[groupsCount[i]];
-		hasDelay[i] = new bool[groupsCount[i]];
-		for (int j = 0; j < groupsCount[i]; j++)
-		{
-			this->af_types[i][j] = af_types[i][j];
-			hasDelay[i][j] = isDelayOnGroup[i][j];
-		}
-	}
-
-	w = new float*[layersCount - 1];
-	for (int i = 0; i < layersCount - 1; i++)
-	{
-		int s = additionalNeurons[i];
-		int n = neuronsInLayer[i];
-		int m = neuronsInLayer[i + 1];
-		int k = 0;
-		for (int j = 0; j < groupsCount[i]; j++)
-		{
-			k += hasDelay[i][j];
-		}
-		int len = s*m + n* (m + k);
-		w[i] = new float[len];
-		for (int j = 0; j < len; j++)
-		{
-			w[i][j] = weights[i][j];
-		}
-	}
-
-	init_calc_vars();
-}
-
-int WardNN::solve(float* x, float* y)
-{
-	for (int i = 0; i < inputsCount; i++)
-		temp_res[0][i] = x[i];
-
-	for (int i = 1; i < layersCount; i++)
-	{
-		int k = 0;
-		int d = 0;
-		for (int j = 0; j < groupsCount[i-1]; j++)
-		{
-			const int cols = neuronsInLayer[i - 1] + hasDelay[i - 1][j] + additionalNeurons[i - 1];
-			const int n = neuronsInGroup[i][j];
-
-			int l = 0;
-			for (; l < neuronsInLayer[i - 1]; l++)
+			if (group->HasDelay == true)
 			{
-				buf_x[l] = temp_res[i - 1][l];
+				for (int i = 0; i < group->NeuronsCount; i++)
+					group_wsums[i] -= bias_weights[i];
+
+				bias_weights += group->NeuronsCount;
 			}
-			if (hasDelay[i - 1][j])
-			{
-				buf_x[l] = -1.0f;
-				l++;
-			}
-			const int li = additionalLayerConnection[i - 1];
-			for (int r = 0; l < cols; r++)
-			{
-				buf_x[l] = temp_res[li][r];
-				l++;
-			}
-			float* x_cur = temp_res[i] + d;
-			cblas_sgemv(CblasRowMajor, CblasNoTrans, n, cols, 1.0f, w[i - 1] + k, cols, buf_x, 1, 0.0f, x_cur, 1);
-			calc_activation_function(x_cur, n, af_types[i - 1][j], x_cur);
-			k += n * cols;
-			d += n;
+			nnets::calc_activation_function(group_wsums, 
+				group->NeuronsCount, group->ActivationFunction, group_values);
+			group_values += group->NeuronsCount;
+			group_wsums += group->NeuronsCount;
 		}
+
 	}
 
-	for (int i = 0; i < outputsCount; i++)
-	{
-		y[i] = temp_res[layersCount - 1][i];
-	}
+	for (int i = 0; i < getOutputsCount(); i++)
+		y[i] = last->Values[i];
 
-	return outputsCount;
+	return getOutputsCount();
 }
 
-int WardNN::getInputsCount()
+size_t WardNN::getInputsCount()
 {
-	return inputsCount;
+	return layers[0].ValuesSize;
 }
 
-int WardNN::getOutputsCount()
+size_t WardNN::getOutputsCount()
 {
-	return outputsCount;
+	return layers[layers.size() - 1].ValuesSize;
 }
 
 WardNN::~WardNN()
 {
 	delete[] buf_x;
-	for (int i = 0; i < layersCount; i++)
-	{
-		delete[] temp_res[i];
-		delete[] neuronsInGroup[i];
-	}
-	delete[] temp_res;
-	delete[] neuronsInGroup;
-
-	for (int i = 0; i < layersCount - 1; i++)
-	{
-		delete[] af_types[i];
+	for (int i = 0; i < layers.size() - 1; i++)
 		delete[] w[i];
-		delete[] hasDelay[i];
-	}
-	delete[] af_types;
 	delete[] w;
-	delete[] hasDelay;
-	delete[] neuronsInLayer;
-	delete[] additionalNeurons;
-	delete[] additionalLayerConnection;
-	delete[] groupsCount;
-}
-
-void WardNN::init_calc_vars()
-{
-	temp_res = new float*[layersCount];
-	for (int i = 0; i < layersCount; i++)
-	{
-		temp_res[i] = new float[neuronsInLayer[i]];
-	}
-
-	int buf_x_len = 0;
-	for (int i = 1; i < layersCount; i++)
-	{
-		for (int j = 0; j < groupsCount[i - 1]; j++)
-		{
-			int l = neuronsInLayer[i - 1] + hasDelay[i - 1][j] + additionalNeurons[i - 1];
-			buf_x_len = buf_x_len > l ? buf_x_len : l;
-		}
-	}
-	buf_x = new float[buf_x_len];
 }
