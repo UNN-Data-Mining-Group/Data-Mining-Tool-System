@@ -10,12 +10,12 @@ namespace dms.models
 {
 
     [Serializable()]
-    class GeneticParam : ILAParameters
+    public class GeneticParam : ILAParameters
     {
         public float[] geneticParams;
     }
 
-    class LearningAlgo
+    public class LearningAlgo
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();

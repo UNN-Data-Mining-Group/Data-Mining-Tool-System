@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:dms.gui"
+      xmlns:local="clr-namespace:dms.gui.scenario_view"
       mc:Ignorable="d" >
     <StackPanel>
         <Grid>
@@ -27,7 +27,7 @@
             <Label Content="{Binding TeacherType}" Grid.Row="3" Grid.Column="1"/>
         </Grid>
         <GroupBox Header="Параметры алгоритма обучения">
-            <Label Content="Здесь могли быть ваши параметры"/>
+            <local:GeneticParams></local:GeneticParams>
         </GroupBox>
     </StackPanel>
 </UserControl>

@@ -22,18 +22,28 @@ namespace dms.view_models
             MixSeed = "123";
             TeacherType = TeacherTypesList[0];
             SelectionType = SelectionTypesList[0];
+            ParamsValue = learningAlgo.paramsValue;
+            ID = -1;
         }
 
         public string[] ParamsName { get { return learningAlgo.paramsName; } }
-        public float[] ParamsValue
+        public float[] ParamsValue { get; set; }
+        public GeneticParam GenParam
         {
+            set
+            {
+                ParamsValue = value.geneticParams;
+                learningAlgo.GeneticParams = value;
+            }
             get
             {
-                return learningAlgo.paramsValue;
+                learningAlgo.GeneticParams.geneticParams = ParamsValue;
+                return learningAlgo.GeneticParams;
             }
         }
 
         public string Name { get; set; }
+        public int ID { get; set; }
         public string TeacherType { get; set; }
         public string SelectionType
         {
@@ -51,18 +61,18 @@ namespace dms.view_models
         public string[] TeacherTypesList { get { return learningAlgo.teacherTypesList; } }
         public string[] SelectionTypesList { get { return new string[] { "Тестовая/обучающая", "Кроссвалидация" }; } }
         public ICommand CreateCommand { get { return createHandler; } }
-        public ICommand CancelHandler { get { return cancelHandler; } }
+        public ICommand CancelCommand { get { return cancelHandler; } }
         public event EventHandler OnClose;
 
         public void createScenario() {
             LearningScenario ls = new LearningScenario() {
                 Name = this.Name,
                 LearningAlgorithmName = TeacherType,
-                LAParameters = learningAlgo.GeneticParams,
+                LAParameters = GenParam,
                 SelectionParameters = SelectionType + "," + MixSeed
             };
-
             ls.save();
+            ID = ls.ID;
             OnClose?.Invoke(this, null);
         }
 
@@ -83,7 +93,7 @@ namespace dms.view_models
             ScenarioList = new ObservableCollection<LearningScenarioViewModel>();
             updateLearningScenariosInfo();
             propertiesHandler = new ActionHandler(() => requestShowLearningScenario?.Invoke(SelectedScenario), e => SelectedScenario != null);
-            deleteHandler = new ActionHandler(() => { }, e => SelectedScenario != null);
+            deleteHandler = new ActionHandler(() => removeLearningScenario(SelectedScenario), e => SelectedScenario != null);
             createHandler = new ActionHandler(() => requestCreateLearningScenario?.Invoke(), e => true);
         }
 
@@ -111,14 +121,24 @@ namespace dms.view_models
                 ScenarioList.Add(new LearningScenarioViewModel
                 {
                     Name = learningScenario.Name,
-                    SelectionType = learningScenario.SelectionParameters.Split(',')[0]
+                    SelectionType = learningScenario.SelectionParameters.Split(',')[0],
+                    MixSeed = learningScenario.SelectionParameters.Split(',')[1],
+                    TeacherType = learningScenario.LearningAlgorithmName,
+                    GenParam = (GeneticParam)learningScenario.LAParameters,
+                    ID = learningScenario.ID
                 });
             }
+            NotifyPropertyChanged();
         }
 
         private void removeLearningScenario(LearningScenarioViewModel vm)
         {
-            
+            foreach (LearningScenario learningScenario in listLearningScenarion)
+            {
+                if (learningScenario.ID == vm.ID)
+                    learningScenario.delete();
+            }
+            NotifyPropertyChanged();
         }
     }
 }
