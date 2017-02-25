@@ -50,6 +50,12 @@ namespace backProp
 					//Считаем смещение для весов
 					cblas_sgemv(
 						CblasRowMajor, CblasNoTrans, count_neuron_per_layer[k], 1,
+						1.0f, sigma[k],
+						count_neuron_per_layer[k], grads[k],
+						1, 0.0f, sigma[k], 1
+					);
+					cblas_sgemv(
+						CblasRowMajor, CblasNoTrans, count_neuron_per_layer[k], 1,
 						start_lr, sigma[k],
 						count_neuron_per_layer[k], activate_numbers[k],
 						1, 0.0f, delts[k], 1
@@ -68,6 +74,26 @@ namespace backProp
 					);
 					set_next_weights(solver, k, res_weights[k]);
 				}
+				get_next_grads(solver, 0, grads[0]);
+				//Считаем смещение для весов
+				cblas_sgemv(
+					CblasRowMajor, CblasNoTrans, count_neuron_per_layer[0], 1,
+					1.0f, sigma[0],
+					count_neuron_per_layer[0], grads[0],
+					1, 0.0f, sigma[0], 1
+				);
+				cblas_sgemv(
+					CblasRowMajor, CblasNoTrans, count_neuron_per_layer[0], 1,
+					start_lr, sigma[0],
+					count_neuron_per_layer[0], inputs[j],
+					1, 0.0f, delts[0], 1
+				);
+				//Смещаем веса
+				cblas_saxpy(
+					count_neuron_per_layer[0],
+					1.0f, delts[0], 1, res_weights[0], 1
+				);
+				set_next_weights(solver, 0, res_weights[0]);
 			}
 		}
 		return error;
