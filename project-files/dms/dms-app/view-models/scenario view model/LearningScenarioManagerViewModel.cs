@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-
 using dms.tools;
 using dms.models;
-using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace dms.view_models
 {
@@ -16,10 +12,11 @@ namespace dms.view_models
         private ActionHandler createHandler;
         private ActionHandler cancelHandler;
         private LearningAlgo learningAlgo;
+        private String selectionType;
         public LearningScenarioViewModel()
         {
-            createHandler = new ActionHandler(() => { }, e => false);
-            cancelHandler = new ActionHandler(() => { }, e => true);
+            createHandler = new ActionHandler(createScenario, e => true);
+            cancelHandler = new ActionHandler(() => OnClose?.Invoke(this, null), e => true);
             learningAlgo = new LearningAlgo();
             Name = "Сценарий";
             MixSeed = "123";
@@ -39,10 +36,15 @@ namespace dms.view_models
         public string Name { get; set; }
         public string TeacherType { get; set; }
         public string SelectionType
-        {            
+        {
+            get
+            {
+                return selectionType;
+            }
             set
             {
                 learningAlgo.usedAlgo = value;
+                selectionType = value;
             }
         }
         public string MixSeed { get; set; }
@@ -50,6 +52,19 @@ namespace dms.view_models
         public string[] SelectionTypesList { get { return new string[] { "Тестовая/обучающая", "Кроссвалидация" }; } }
         public ICommand CreateCommand { get { return createHandler; } }
         public ICommand CancelHandler { get { return cancelHandler; } }
+        public event EventHandler OnClose;
+
+        public void createScenario() {
+            LearningScenario ls = new LearningScenario() {
+                Name = this.Name,
+                LearningAlgorithmName = TeacherType,
+                LAParameters = learningAlgo.GeneticParams,
+                SelectionParameters = SelectionType + "," + MixSeed
+            };
+
+            ls.save();
+            OnClose?.Invoke(this, null);
+        }
 
     }
 
@@ -59,24 +74,14 @@ namespace dms.view_models
         private ActionHandler propertiesHandler;
         private ActionHandler deleteHandler;
         private ActionHandler createHandler;
+        private LearningScenario learningScenario;
 
         public LearningScenarioManagerViewModel()
         {
-            ScenarioList = new ObservableCollection<LearningScenarioViewModel>() 
-            {
-                new LearningScenarioViewModel 
-                {
-                    Name="Сценарий 1", 
-                    TeacherType = "Обучатель 1", 
-                    SelectionType="Тестовая/обучающая"
-                },
-                new LearningScenarioViewModel 
-                {
-                    Name="Сценарий 2", 
-                    TeacherType = "Обучатель 2", 
-                    SelectionType="Кроссвалидация"
-                },
-            };
+            learningScenario = new LearningScenario();
+            listLearningScenarion = Entity.all(typeof(LearningScenario));
+            ScenarioList = new ObservableCollection<LearningScenarioViewModel>();
+            updateLearningScenariosInfo();
             propertiesHandler = new ActionHandler(() => requestShowLearningScenario?.Invoke(SelectedScenario), e => SelectedScenario != null);
             deleteHandler = new ActionHandler(() => { }, e => SelectedScenario != null);
             createHandler = new ActionHandler(() => requestCreateLearningScenario?.Invoke(), e => true);
@@ -85,6 +90,7 @@ namespace dms.view_models
         public event Action requestCreateLearningScenario;
         public event Action<LearningScenarioViewModel> requestShowLearningScenario;
         public ObservableCollection<LearningScenarioViewModel> ScenarioList { get; private set; }
+        public List<Entity> listLearningScenarion { get; private set; }
         public LearningScenarioViewModel SelectedScenario 
         {
             get { return selectedScenario; }
@@ -98,5 +104,21 @@ namespace dms.view_models
         public ICommand PropertiesCommand { get { return propertiesHandler; } }
         public ICommand DeleteCommand { get { return deleteHandler; } }
         public ICommand CreateCommand { get { return createHandler; } }
+
+        private void updateLearningScenariosInfo() {
+            foreach (LearningScenario learningScenario in listLearningScenarion)
+            {
+                ScenarioList.Add(new LearningScenarioViewModel
+                {
+                    Name = learningScenario.Name,
+                    SelectionType = learningScenario.SelectionParameters.Split(',')[0]
+                });
+            }
+        }
+
+        private void removeLearningScenario(LearningScenarioViewModel vm)
+        {
+            
+        }
     }
 }

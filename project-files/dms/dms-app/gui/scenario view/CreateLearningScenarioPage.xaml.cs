@@ -16,6 +16,7 @@ using Xceed.Wpf.AvalonDock.Controls;
 using Xceed.Wpf.AvalonDock.Layout;
 
 
+using dms.tools;
 using dms.view_models;
 
 
@@ -24,12 +25,23 @@ namespace dms.gui
     /// <summary>
     /// Interaction logic for CreateLearningScenarioPage.xaml
     /// </summary>
-    public partial class CreateLearningScenarioPage : UserControl
+    public partial class CreateLearningScenarioPage : UserControl, IDocumentContent
     {
-        public CreateLearningScenarioPage()
+        public CreateLearningScenarioPage(LearningScenarioViewModel vm)
         {
             InitializeComponent();
-            DataContext = new LearningScenarioViewModel();
+            DataContext = vm;
+            vm.OnClose += OnClose;
+        }
+
+        public LayoutDocument ParentDocument { get; set; }
+        private void OnClose(object sender, EventArgs e)
+        {
+            if (ParentDocument != null)
+            {
+                ParentDocument.Close();
+                ParentDocument = null;
+            }
         }
     }
 }
