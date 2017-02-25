@@ -7,6 +7,56 @@ using nnets::ActivationFunctionType;
 
 #define is_a_positive_and_lower_b(a,b) (static_cast<unsigned int>(a) < static_cast<unsigned int>(b))
 
+size_t nnets_conv::getAllWeightsConv(float* &dest, void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+
+	size_t destIndex = 0;
+	for (int weightsIndex = 0; weightsIndex < cnn->weightsCount; weightsIndex++)
+		for (size_t i = 0; i < cnn->weightsSizes[weightsIndex]; i++)
+			dest[destIndex++] = cnn->weights[weightsIndex][i];
+	return destIndex;
+}
+
+void nnets_conv::setAllWeightsConv(const float* src, void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+
+	size_t srcIndex = 0;
+	for (int weightsIndex = 0; weightsIndex < cnn->weightsCount; weightsIndex++)
+		for (size_t i = 0; i < cnn->weightsSizes[weightsIndex]; i++)
+			cnn->weights[weightsIndex][i] = src[srcIndex++];
+}
+
+size_t nnets_conv::solveConv(const float* x, float* y, void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+	return cnn->solve(x, y);
+}
+
+size_t nnets_conv::getWeightsCountConv(void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+
+	size_t res = 0;
+	for (int i = 0; i < cnn->weightsCount; i++)
+		res += cnn->weightsSizes[i];
+	return res;
+}
+
+void* nnets_conv::copyConv(void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+	return new ConvNN(*cnn);
+}
+
+void nnets_conv::freeConv(void* &obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+	delete cnn;
+	obj = nullptr;
+}
+
 struct ConvNN::Volume
 {
 	int Width, Height, Depth;
@@ -262,6 +312,7 @@ inline void ConvNN::clearPtrs()
 	volumes = nullptr;
 	deconvMatrix = nullptr;
 	weights = nullptr;
+	weightsSizes = nullptr;
 }
 
 inline void ConvNN::freeMemory()
@@ -280,10 +331,73 @@ inline void ConvNN::freeMemory()
 		for (int i = 0; i < weightsCount; i++)
 			delete[] weights[i];
 		delete[] weights;
+		delete[] weightsSizes;
 	}
 	if (deconvMatrix != nullptr) delete[] deconvMatrix;
 
 	clearPtrs();
+}
+
+ConvNN::ConvNN(const ConvNN& cnn)
+{
+	clearPtrs();
+	volumesCount = cnn.volumesCount;
+	weightsCount = cnn.weightsCount;
+
+	weightsSizes = new size_t[weightsCount];
+	weights = new float*[weightsCount];
+
+	for (int i = 0; i < weightsCount; i++)
+	{
+		weightsSizes[i] = cnn.weightsSizes[i];
+		weights[i] = new float[weightsSizes[i]];
+		for (size_t j = 0; j < weightsSizes[i]; j++)
+			weights[i][j] = cnn.weights[i][j];
+	}
+
+	deconvSize = cnn.deconvSize;
+	deconvMatrix = new float[deconvSize];
+
+	volumes = new Volume*[volumesCount];
+	for (int i = 0; i < volumesCount; i++)
+	{
+		switch (cnn.volumes[i]->Type)
+		{
+			case VolumeType::Convolutional:
+			{
+				auto cv = static_cast<VolumeConvolutional*>(cnn.volumes[i]);
+				volumes[i] = new VolumeConvolutional(cv->Width, cv->Height, cv->Depth,
+					cv->FilterWidth, cv->FilterHeight, cv->StrideWidth, cv->StrideHeight,
+					cv->Padding, cv->CountFilters);
+				break;
+			}
+			case VolumeType::Activation:
+			{
+				auto cv = static_cast<VolumeActivation*>(cnn.volumes[i]);
+				volumes[i] = new VolumeActivation(volumes[i - 1], cv->ActivationFunction);
+				break;
+			}
+			case VolumeType::Pooling:
+			{
+				auto cv = static_cast<VolumePooling*>(cnn.volumes[i]);
+				volumes[i] = new VolumePooling(cv->Width, cv->Height, cv->Depth,
+					cv->FilterWidth, cv->FilterHeight, cv->StrideWidth, cv->StrideHeight);
+				break;
+			}
+			case VolumeType::FullyConnected:
+			{
+				Volume* cv = cnn.volumes[i];
+				volumes[i] = new Volume(cv->Width, cv->Height, cv->Depth, cv->Type);
+				break;
+			}
+			case VolumeType::Simple:
+			{
+				Volume* cv = cnn.volumes[i];
+				volumes[i] = new Volume(cv->Width, cv->Height, cv->Depth, cv->Type);
+				break;
+			}
+		}
+	}
 }
 
 ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights)
@@ -382,10 +496,11 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** w
 	deconvMatrix = new float[deconvSize];
 
 	this->weights = new float*[weightsCount];
+	weightsSizes = new size_t[weightsCount];
 	int weightsIndex = 0;
 	for (int i = 0; i < volumesCount; i++)
 	{
-		int size = 0;
+		size_t size = 0;
 		if (volumes[i]->Type == VolumeType::Convolutional)
 		{
 			auto v = static_cast<VolumeConvolutional*>(volumes[i]);
@@ -401,6 +516,7 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** w
 
 		if (size > 0)
 		{
+			weightsSizes[weightsIndex] = size;
 			this->weights[weightsIndex] = new float[size];
 			for (int i = 0; i < size; i++)
 			{
