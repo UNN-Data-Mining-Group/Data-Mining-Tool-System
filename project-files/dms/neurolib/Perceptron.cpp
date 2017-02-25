@@ -13,10 +13,8 @@ size_t nnets_perceptron::getAllWeightsPerc(float* &dest, void* obj)
 
 	size_t dest_index = 0;
 	for (int i = 0; i < p->layers - 1; i++)
-	{
 		for (int j = 0; j < p->w_sizes[i]; j++)
 			dest[dest_index++] = p->w[i][j];
-	}
 	return dest_index;
 }
 
@@ -26,13 +24,11 @@ void nnets_perceptron::setAllWeightsPerc(const float* src, void* obj)
 
 	int src_index = 0;
 	for (int i = 0; i < p->layers - 1; i++)
-	{
 		for (int j = 0; j < p->w_sizes[i]; j++)
 			p->w[i][j] = src[src_index++];
-	}
 }
 
-size_t nnets_perceptron::solvePerc(float* x, float* y, void* obj)
+size_t nnets_perceptron::solvePerc(const float* x, float* y, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
 	return p->solve(x, y);

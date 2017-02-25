@@ -5,7 +5,7 @@ namespace nnets_perceptron
 {
 	size_t getAllWeightsPerc(float* &dest, void* obj);
 	void setAllWeightsPerc(const float* src, void* obj);
-	size_t solvePerc(float* x, float* y, void* obj);
+	size_t solvePerc(const float* x, float* y, void* obj);
 	size_t getWeightsCountPerc(void* obj);
 	void* copyPerc(void* obj);
 	void freePerc(void* &obj);
@@ -53,7 +53,6 @@ namespace nnets_perceptron
 
 		friend size_t getAllWeightsPerc(float* &dest, void* obj);
 		friend void setAllWeightsPerc(const float* src, void* obj);
-		friend size_t solvePerc(float* x, float* y, void* obj);
 		friend size_t getWeightsCountPerc(void* obj);
 	};
 }

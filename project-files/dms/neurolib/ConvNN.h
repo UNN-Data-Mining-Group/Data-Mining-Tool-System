@@ -4,6 +4,13 @@
 
 namespace nnets_conv
 {
+	size_t getAllWeightsConv(float* &dest, void* obj);
+	void setAllWeightsConv(const float* src, void* obj);
+	size_t solveConv(const float* x, float* y, void* obj);
+	size_t getWeightsCountConv(void* obj);
+	void* copyConv(void* obj);
+	void freeConv(void* &obj);
+
 	enum class LayerType
 	{
 		Convolution,
@@ -57,6 +64,7 @@ namespace nnets_conv
 	class ConvNN : public nnets::NeuralNetwork
 	{
 	public: 
+		ConvNN(const ConvNN& cnn);
 		//w - number of neurons in output volume by width
 		//h - by height
 		//d - by depth
@@ -89,12 +97,17 @@ namespace nnets_conv
 			const int stride_h, const int stride_w, float* dest);
 
 		int volumesCount;
-		int weightsCount;
+		int weightsCount;		//size of weights
+		size_t* weightsSizes;	//size of weights[i], i=0..(weightsCount-1)
 		size_t deconvSize;
 
 		Volume** volumes;
 		float* deconvMatrix;				//deconvolved volume for fast conv-operation
 		float** weights;					//weights of convolutional and fully connected volumes
+	
+		friend size_t getAllWeightsConv(float* &dest, void* obj);
+		friend void setAllWeightsConv(const float* src, void* obj);
+		friend size_t getWeightsCountConv(void* obj);
 	};
 }
 
