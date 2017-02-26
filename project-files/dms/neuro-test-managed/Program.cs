@@ -82,7 +82,8 @@ namespace neuro_test_managed
             };
             
             var t = new ConvNNTopology(2, 2, 1, layers);
-            var net = new ConvNNManaged(t, w);
+            var net = new ConvNNManaged(t);
+            net.SetWeights(w);
 
             float[] y = net.Solve(new float[]{ 0.5f, 0.3f, -0.6f, -0.2f });
             float[] answer = new float[] { 0.35f, -0.15f };
@@ -150,7 +151,9 @@ namespace neuro_test_managed
                 }
             };
 
-            WardNNManaged wnn = new WardNNManaged(new WardNNTopology(input, layers), w);
+            WardNNManaged wnn = new WardNNManaged(new WardNNTopology(input, layers));
+            wnn.SetWeights(w);
+
             var y = wnn.Solve(new float[] { 1.0f, 0.0f });
             if (Math.Abs(y[0] - 6.0f) < 1e-6)
             {
@@ -185,7 +188,9 @@ namespace neuro_test_managed
                 }
             };
             
-            PerceptronManaged p = new PerceptronManaged(new PerceptronTopology(3, neurons, delays, afs), w);
+            PerceptronManaged p = new PerceptronManaged(new PerceptronTopology(3, neurons, delays, afs));
+            p.SetWeights(w);
+
             float[] y = p.Solve(new float[] { 1, 0, 1 });
             float[] answer = { 5.0f / 12, 1.0f / 6 };
             float EPS = 1e-5f;
@@ -218,7 +223,8 @@ namespace neuro_test_managed
             Console.WriteLine("topology creation = " + sw.ElapsedMilliseconds);
 
             sw.Start();
-            PerceptronManaged perc = new PerceptronManaged(topology, GenerateWeights(neurons, delays));
+            PerceptronManaged perc = new PerceptronManaged(topology);
+            perc.SetWeights(GenerateWeights(neurons, delays));
             sw.Stop();
             Console.WriteLine("perc creation = " + sw.ElapsedMilliseconds);
 

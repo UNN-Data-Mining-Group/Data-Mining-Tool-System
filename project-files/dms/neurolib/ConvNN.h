@@ -4,7 +4,7 @@
 
 namespace nnets_conv
 {
-	size_t getAllWeightsConv(float* &dest, void* obj);
+	size_t getAllWeightsConv(float* dest, void* obj);
 	void setAllWeightsConv(const float* src, void* obj);
 	size_t solveConv(const float* x, float* y, void* obj);
 	size_t getWeightsCountConv(void* obj);
@@ -68,9 +68,13 @@ namespace nnets_conv
 		//w - number of neurons in output volume by width
 		//h - by height
 		//d - by depth
-		ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights);
+		ConvNN(int w, int h, int d, const std::vector<Layer*>& layers);
 
 		size_t solve(const float* x, float* y) override;
+		void setWeights(float** weights);
+		size_t getWeights(float** weights);
+		int getWeightsMatricesCount();
+		size_t getWeightsMatrixSize(int matrixIndex);
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
@@ -105,7 +109,7 @@ namespace nnets_conv
 		float* deconvMatrix;				//deconvolved volume for fast conv-operation
 		float** weights;					//weights of convolutional and fully connected volumes
 	
-		friend size_t getAllWeightsConv(float* &dest, void* obj);
+		friend size_t getAllWeightsConv(float* dest, void* obj);
 		friend void setAllWeightsConv(const float* src, void* obj);
 		friend size_t getWeightsCountConv(void* obj);
 	};

@@ -23,9 +23,9 @@ namespace dms::solvers
 		return std::vector<std::string>();
 	}
 
-	std::vector<LearningOperation> ISolver::getOperations()
+	std::map<std::string, void*> ISolver::getOperations()
 	{
-		return std::vector<LearningOperation>();
+		return std::map<std::string, void*>();
 	}
 
 	ISolver::~ISolver()
