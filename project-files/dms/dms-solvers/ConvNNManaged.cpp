@@ -79,6 +79,24 @@ array<float>^ ConvNNManaged::Solve(array<float>^ x)
 	return y;
 }
 
+std::vector<std::string> ConvNNManaged::getAttributes()
+{
+	return std::vector<std::string>();
+}
+
+std::map<std::string, void*> ConvNNManaged::getOperations()
+{
+	std::map<std::string, void*> opers;
+	opers["getAllWeights"]		= nnets_conv::getAllWeightsConv;
+	opers["setAllWeights"]		= nnets_conv::setAllWeightsConv;
+	opers["solve"]				= nnets_conv::solveConv;
+	opers["getWeightsCount"]	= nnets_conv::getWeightsCountConv;
+	opers["copySolver"]			= nnets_conv::copyConv;
+	opers["freeSolver"]			= nnets_conv::freeConv;
+
+	return opers;
+}
+
 void* ConvNNManaged::getNativeSolver()
 {
 	return solver;

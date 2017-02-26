@@ -4,7 +4,7 @@
 
 namespace nnets_ward
 {
-	size_t getAllWeightsWard(float* &dest, void* obj);
+	size_t getAllWeightsWard(float* dest, void* obj);
 	void setAllWeightsWard(const float* src, void* obj);
 	size_t solveWard(const float* x, float* y, void* obj);
 	size_t getWeightsCountWard(void* obj);
@@ -60,7 +60,7 @@ namespace nnets_ward
 
 		void alloc_data(float** weights);	//allocation w and buf_x
 
-		friend size_t getAllWeightsWard(float* &dest, void* obj);
+		friend size_t getAllWeightsWard(float* dest, void* obj);
 		friend void setAllWeightsWard(const float* src, void* obj);
 		friend size_t getWeightsCountWard(void* obj);
 	};

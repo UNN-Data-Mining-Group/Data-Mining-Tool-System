@@ -5,7 +5,7 @@
 using nnets_ward::WardNN;
 using nnets::ActivationFunctionType;
 
-size_t nnets_ward::getAllWeightsWard(float* &dest, void* obj)
+size_t nnets_ward::getAllWeightsWard(float* dest, void* obj)
 {
 	WardNN* wnn = static_cast<WardNN*>(obj);
 

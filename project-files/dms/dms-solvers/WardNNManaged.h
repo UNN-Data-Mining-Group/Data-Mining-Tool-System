@@ -9,7 +9,10 @@ namespace dms::solvers::neural_nets::ward_net
 	{
 	public:
 		WardNNManaged(WardNNTopology^ t, array<array<float>^>^ weights);
+
 		virtual array<Single>^ Solve(array<Single>^ x) override;
+		virtual std::vector<std::string> getAttributes() override;
+		virtual std::map<std::string, void*> getOperations() override;
 		virtual void* getNativeSolver() override;
 		virtual ~WardNNManaged();
 

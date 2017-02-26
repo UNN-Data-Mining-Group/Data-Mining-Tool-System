@@ -55,6 +55,8 @@ void accuracy_test_perc()
 	int neurons[] = { 3,4,2 };
 	ActivationFunctionType af[] = { ActivationFunctionType::BinaryStep, ActivationFunctionType::Identity };
 
+
+
 	nnets_perceptron::Perceptron ps(neurons, af, 3, w);
 	float x[3] = { 1, 0, 1 };
 	float y[2];

@@ -12,7 +12,7 @@ namespace dms::solvers::neural_nets::perceptron
 
 		virtual array<Single>^ Solve(array<Single>^ x) override;
 		virtual std::vector<std::string> getAttributes() override;
-		virtual std::vector<LearningOperation> getOperations() override;
+		virtual std::map<std::string, void*> getOperations() override;
 		virtual void* getNativeSolver() override;
 
 		virtual ~PerceptronManaged();

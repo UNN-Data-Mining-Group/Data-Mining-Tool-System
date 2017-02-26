@@ -94,6 +94,24 @@ array<Single>^ WardNNManaged::Solve(array<Single>^ x)
 	return y;
 }
 
+std::vector<std::string> WardNNManaged::getAttributes()
+{
+	return std::vector<std::string>();
+}
+
+std::map<std::string, void*> WardNNManaged::getOperations()
+{
+	std::map<std::string, void*> opers;
+	opers["getAllWeights"]		= nnets_ward::getAllWeightsWard;
+	opers["setAllWeights"]		= nnets_ward::setAllWeightsWard;
+	opers["solve"]				= nnets_ward::solveWard;
+	opers["getWeightsCount"]	= nnets_ward::getWeightsCountWard;
+	opers["copySolver"]			= nnets_ward::copyWard;
+	opers["freeSolver"]			= nnets_ward::freeWard;
+
+	return opers;
+}
+
 void* WardNNManaged::getNativeSolver()
 {
 	return wsolver;

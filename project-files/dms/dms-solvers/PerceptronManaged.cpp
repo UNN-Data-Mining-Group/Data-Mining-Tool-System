@@ -1,6 +1,5 @@
 #include "PerceptronManaged.h"
 
-using dms::solvers::LearningOperation;
 using dms::solvers::neural_nets::perceptron::PerceptronManaged;
 using dms::solvers::neural_nets::perceptron::PerceptronTopology;
 
@@ -86,15 +85,15 @@ std::vector<std::string> PerceptronManaged::getAttributes()
 	return std::vector<std::string>();
 }
 
-std::vector<LearningOperation> PerceptronManaged::getOperations()
+std::map<std::string, void*> PerceptronManaged::getOperations()
 {
-	std::vector<LearningOperation> opers;
-	opers.push_back(LearningOperation{ "getAllWeights",		nnets_perceptron::getAllWeightsPerc });
-	opers.push_back(LearningOperation{ "setAllWeights",		nnets_perceptron::setAllWeightsPerc });
-	opers.push_back(LearningOperation{ "solve",				nnets_perceptron::solvePerc });
-	opers.push_back(LearningOperation{ "getWeightsCount",	nnets_perceptron::getWeightsCountPerc });
-	opers.push_back(LearningOperation{ "copySolver",		nnets_perceptron::copyPerc });
-	opers.push_back(LearningOperation{ "freeSolver",		nnets_perceptron::freePerc });
+	std::map<std::string, void*> opers;
+	opers["getAllWeights"]		= nnets_perceptron::getAllWeightsPerc;
+	opers["setAllWeights"]		= nnets_perceptron::setAllWeightsPerc;
+	opers["solve"]				= nnets_perceptron::solvePerc;
+	opers["getWeightsCount"]	= nnets_perceptron::getWeightsCountPerc;
+	opers["copySolver"]			= nnets_perceptron::copyPerc;
+	opers["freeSolver"]			= nnets_perceptron::freePerc;
 
 	return opers;
 }

@@ -4,7 +4,7 @@
 
 namespace nnets_conv
 {
-	size_t getAllWeightsConv(float* &dest, void* obj);
+	size_t getAllWeightsConv(float* dest, void* obj);
 	void setAllWeightsConv(const float* src, void* obj);
 	size_t solveConv(const float* x, float* y, void* obj);
 	size_t getWeightsCountConv(void* obj);
@@ -105,7 +105,7 @@ namespace nnets_conv
 		float* deconvMatrix;				//deconvolved volume for fast conv-operation
 		float** weights;					//weights of convolutional and fully connected volumes
 	
-		friend size_t getAllWeightsConv(float* &dest, void* obj);
+		friend size_t getAllWeightsConv(float* dest, void* obj);
 		friend void setAllWeightsConv(const float* src, void* obj);
 		friend size_t getWeightsCountConv(void* obj);
 	};

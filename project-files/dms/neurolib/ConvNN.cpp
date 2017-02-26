@@ -7,7 +7,7 @@ using nnets::ActivationFunctionType;
 
 #define is_a_positive_and_lower_b(a,b) (static_cast<unsigned int>(a) < static_cast<unsigned int>(b))
 
-size_t nnets_conv::getAllWeightsConv(float* &dest, void* obj)
+size_t nnets_conv::getAllWeightsConv(float* dest, void* obj)
 {
 	ConvNN* cnn = static_cast<ConvNN*>(obj);
 
