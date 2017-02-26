@@ -57,7 +57,9 @@ void accuracy_test_perc()
 
 
 
-	nnets_perceptron::Perceptron ps(neurons, af, 3, w);
+	nnets_perceptron::Perceptron ps(neurons, af, 3);
+	ps.setWeights(w);
+
 	float x[3] = { 1, 0, 1 };
 	float y[2];
 	float answer[2] = { 5.f / 12, 1.f / 6 };
@@ -140,7 +142,9 @@ void accuracy_test_ward()
 
 	};
 
-	nnets_ward::WardNN wnn(input, layers, w);
+	nnets_ward::WardNN wnn(input, layers);
+	wnn.setWeights(w);
+
 	float x[] = { 1, 0 };
 	float y[] = { 0 };
 	wnn.solve(x, y);
@@ -174,7 +178,8 @@ void accuracy_test_conv()
 	layers.push_back(new nnets_conv::PoolingLayer{ 2, 2, 1, 1 });
 	layers.push_back(new nnets_conv::FullyConnectedLayer{ 2, ActivationFunctionType::Identity });
 
-	nnets_conv::ConvNN net{ 2, 2, 1, layers, w };
+	nnets_conv::ConvNN net{ 2, 2, 1, layers };
+	net.setWeights(w);
 
 	float x[] = { 0.5, 0.3, -0.6, -0.2 };
 	float y[2];
@@ -216,7 +221,8 @@ void performance_test()
 	float y[] = { 0, 0 };
 
 	int N = 1000000;
-	nnets_perceptron::Perceptron* ps = new nnets_perceptron::Perceptron(neurons, has_delay, af, layers, w);
+	nnets_perceptron::Perceptron* ps = new nnets_perceptron::Perceptron(neurons, has_delay, af, layers);
+	ps->setWeights(w);
 
 	int finish = std::clock();
 	std::cout << "creation time: " << finish - start << std::endl;

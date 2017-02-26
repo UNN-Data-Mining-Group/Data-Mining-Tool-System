@@ -124,10 +124,11 @@ struct WardNN::Layer
 WardNN::WardNN(const WardNN& wnn)
 {
 	layers = wnn.layers;
-	alloc_data(wnn.w);
+	alloc_data();
+	setWeights(wnn.w);
 }
 
-WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer> layers,  float** weights)
+WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer> layers)
 {
 	if (input.NeuronsCount < 0)
 		throw "Invalid number of inputs";
@@ -145,10 +146,10 @@ WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer
 			this->layers[i + forward_index + 1].BackwardConnector = &this->layers[i];
 	}
 
-	alloc_data(weights);
+	alloc_data();
 }
 
-void WardNN::alloc_data(float** weights)
+void WardNN::alloc_data()
 {
 	size_t buf_x_len = 0;
 	w = new float*[this->layers.size() - 1];
@@ -177,7 +178,7 @@ void WardNN::alloc_data(float** weights)
 		w_sizes[i - 1] = len;
 		w[i - 1] = new float[len];
 		for (int j = 0; j < len; j++)
-			w[i - 1][j] = weights[i - 1][j];
+			w[i - 1][j] = 0.0f;
 	}
 	buf_x = new float[buf_x_len];
 }
@@ -241,6 +242,42 @@ size_t WardNN::solve(const float* x, float* y)
 		y[i] = last->Values[i];
 
 	return getOutputsCount();
+}
+
+size_t WardNN::getWeights(float** weights)
+{
+	size_t allSize = 0;
+	for (int i = 0; i < layers.size() - 1; i++)
+	{
+		for (size_t j = 0; j < w_sizes[i]; j++)
+		{
+			weights[i][j] = w[i][j];
+			allSize++;
+		}
+	}
+
+	return allSize;
+}
+
+int WardNN::getWeightsMatricesCount()
+{
+	return layers.size() - 1;
+}
+
+size_t WardNN::getWeightsMatrixSize(int matrixIndex)
+{
+	if ((matrixIndex < 0) || (matrixIndex > (layers.size() - 2)))
+		return 0;
+	return w_sizes[matrixIndex];
+}
+
+void WardNN::setWeights(float ** weights)
+{
+	for (int i = 0; i < this->layers.size() - 1; i++)
+	{
+		for (size_t j = 0; j < w_sizes[i]; j++)
+			w[i][j] = weights[i][j];
+	}
 }
 
 size_t WardNN::getInputsCount()

@@ -48,6 +48,9 @@ namespace nnets_perceptron
 		*/
 		size_t solve(const float* x, float* y) override;
 		void setWeights(float** weights);
+		size_t getWeights(float** weights);
+		int getWeightsMatricesCount();
+		size_t getWeightsMatrixSize(int matrixIndex);
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 

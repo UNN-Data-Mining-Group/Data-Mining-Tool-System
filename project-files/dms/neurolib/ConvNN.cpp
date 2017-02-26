@@ -180,6 +180,43 @@ size_t ConvNN::solve(const float* x, float* y)
 	return outputs;
 }
 
+
+size_t ConvNN::getWeights(float** weights)
+{
+	size_t allSize = 0;
+	for (int i = 0; i < weightsCount; i++)
+	{
+		for (size_t j = 0; j < weightsSizes[i]; j++)
+		{
+			weights[i][j] = this->weights[i][j];
+			allSize++;
+		}
+	}
+
+	return allSize;
+}
+
+int ConvNN::getWeightsMatricesCount()
+{
+	return weightsCount;
+}
+
+size_t ConvNN::getWeightsMatrixSize(int matrixIndex)
+{
+	if ((matrixIndex < 0) || (matrixIndex >(weightsCount - 1)))
+		return 0;
+	return weightsSizes[matrixIndex];
+}
+
+void ConvNN::setWeights(float** weights)
+{
+	for (int i = 0; i < weightsCount; i++)
+	{
+		for (size_t j = 0; j < weightsSizes[i]; j++)
+			this->weights[i][j] = weights[i][j];
+	}
+}
+
 void ConvNN::pool_max(const float* source, const int channels,
 	const int height, const int width, const int kernel_h, const int kernel_w,
 	const int stride_h, const int stride_w, float* dest)
@@ -400,7 +437,7 @@ ConvNN::ConvNN(const ConvNN& cnn)
 	}
 }
 
-ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights)
+ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers)
 {
 	clearPtrs();
 
@@ -520,7 +557,7 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** w
 			this->weights[weightsIndex] = new float[size];
 			for (int i = 0; i < size; i++)
 			{
-				this->weights[weightsIndex][i] = weights[weightsIndex][i];
+				this->weights[weightsIndex][i] = 0.0f;
 			}
 			weightsIndex++;
 		}

@@ -43,9 +43,13 @@ namespace nnets_ward
 	{
 	public:
 		WardNN(const WardNN& wnn);
-		WardNN(InputLayer input, const std::vector<Layer> layers, float** weights);
+		WardNN(InputLayer input, const std::vector<Layer> layers);
 		
 		size_t solve(const float* x, float* y) override;
+		void setWeights(float** weights);
+		size_t getWeights(float** weights);
+		int getWeightsMatricesCount();
+		size_t getWeightsMatrixSize(int matrixIndex);
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
@@ -58,7 +62,7 @@ namespace nnets_ward
 		float** w;
 		float* buf_x;
 
-		void alloc_data(float** weights);	//allocation w and buf_x
+		void alloc_data();	//allocation w and buf_x
 
 		friend size_t getAllWeightsWard(float* dest, void* obj);
 		friend void setAllWeightsWard(const float* src, void* obj);

@@ -76,32 +76,19 @@ int nnets_perceptron::getIterationSizes(size_t* sizes, void* obj)
 size_t nnets_perceptron::getWeightsVectors(float** w, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
-
-	size_t allSize = 0;
-	for (int i = 0; i < p->layers - 1; i++)
-	{
-		for (size_t j = 0; j < p->w_sizes[i]; j++)
-		{
-			w[i][j] = p->w[i][j];
-			allSize++;
-		}
-	}
-
-	return allSize;
+	return p->getWeights(w);
 }
 
 int nnets_perceptron::getWeightsVectorsCount(void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
-	return p->layers - 1;
+	return p->getWeightsMatricesCount();
 }
 
 size_t nnets_perceptron::getWeightsVectorSize(int vectorIndex, void* obj)
 {
 	Perceptron* p = static_cast<Perceptron*>(obj);
-	if ((vectorIndex < 0) || (vectorIndex > (p->layers - 2)))
-		return 0;
-	return p->w_sizes[vectorIndex];
+	return p->getWeightsMatrixSize(vectorIndex);
 }
 
 size_t nnets_perceptron::getIterationDerivatives(float* dest, int iterationIndex, void* obj)
@@ -192,6 +179,33 @@ void Perceptron::setWeights(float** weights)
 		for (int j = 0; j < w_sizes[i]; j++)
 			w[i][j] = weights[i][j];
 	}
+}
+
+size_t Perceptron::getWeights(float** weights)
+{
+	size_t allSize = 0;
+	for (int i = 0; i < layers - 1; i++)
+	{
+		for (size_t j = 0; j < w_sizes[i]; j++)
+		{
+			weights[i][j] = w[i][j];
+			allSize++;
+		}
+	}
+
+	return allSize;
+}
+
+int Perceptron::getWeightsMatricesCount()
+{
+	return layers - 1;
+}
+
+size_t Perceptron::getWeightsMatrixSize(int matrixIndex)
+{
+	if ((matrixIndex < 0) || (matrixIndex > (layers - 2)))
+		return 0;
+	return w_sizes[matrixIndex];
 }
 
 size_t Perceptron::getInputsCount()

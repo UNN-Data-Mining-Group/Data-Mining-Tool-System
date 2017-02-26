@@ -5,6 +5,7 @@ using namespace System;
 
 namespace dms::solvers
 {
+	[SerializableAttribute]
 	public ref class ISolver abstract
 	{
 	public:
