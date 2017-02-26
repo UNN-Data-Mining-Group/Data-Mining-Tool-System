@@ -24,7 +24,6 @@ namespace dms.gui.scenario_view
         public GeneticParams()
         {
             InitializeComponent();
-            DataContext = new LearningScenarioViewModel();
         }
     }
 }

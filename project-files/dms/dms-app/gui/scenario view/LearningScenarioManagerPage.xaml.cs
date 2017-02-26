@@ -28,7 +28,7 @@ namespace dms.gui
         {
             InitializeComponent();
             DataContext = vm;
-            vm.requestCreateLearningScenario += () => { var t = new CreateLearningScenarioPage(); OnShowPage?.Invoke("Создание сценария обучения", t); };
+            vm.requestCreateLearningScenario += () => { var t = new CreateLearningScenarioPage(new LearningScenarioViewModel()); OnShowPage?.Invoke("Создание сценария обучения", t); };
             vm.requestShowLearningScenario += (p) => { var t = new LearningScenarioInfoPage(p); OnShowPage?.Invoke(p.Name, t); };
         }
     }
