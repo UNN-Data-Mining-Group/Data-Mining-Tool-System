@@ -38,8 +38,10 @@ namespace dms.view_models
             BaseTemplateList = new string[taskTemplates.Count];
             BaseTemplateListPair = new Pair[taskTemplates.Count];
             int index = 0;
+            bool canCreate = false;
             if (taskTemplates.Count != 0)
             {
+                canCreate = true;
                 foreach (Entity entity in taskTemplates)
             {
                 Pair pair = new Pair();
@@ -92,7 +94,7 @@ namespace dms.view_models
             }
             
             cancelHandler = new ActionHandler(Cancel, o => true);
-            createHandler = new ActionHandler(Create, o => CanUseExitingTemplate && CanCreateTemplate);
+            createHandler = new ActionHandler(Create, o => canCreate && CanUseExitingTemplate && CanCreateTemplate);
             CanUseExitingTemplate = CanCreateTemplate = true;
         }
 
