@@ -23,7 +23,6 @@ namespace dms::solvers::neural_nets::perceptron
 
 		virtual ~PerceptronManaged();
 	private:
-
 		array<array<float>^>^ weights;
 		PerceptronTopology^ t;
 
@@ -33,6 +32,8 @@ namespace dms::solvers::neural_nets::perceptron
 		float* y;
 		[NonSerializedAttribute]
 		nnets_perceptron::Perceptron* psolver;
+
+		bool hasSmoothAfs;
 
 		void initPerceptron();
 	};

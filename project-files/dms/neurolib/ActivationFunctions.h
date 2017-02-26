@@ -30,4 +30,5 @@ namespace nnets
 //Useful constructions
 void calc_activation_function(const float* src, size_t size, ActivationFunctionType af, float* dest);
 void calc_activation_derivatives(const float* src, size_t size, ActivationFunctionType af, float* dest);
+bool has_derivative(ActivationFunctionType af);
 }

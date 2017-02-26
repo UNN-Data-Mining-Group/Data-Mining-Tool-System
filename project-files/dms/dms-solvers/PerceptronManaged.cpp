@@ -74,6 +74,16 @@ void PerceptronManaged::initPerceptron()
 	nnets::ActivationFunctionType* afs = new nnets::ActivationFunctionType[layers - 1];
 	t->GetLayersActivateFunctionsTypes(afs);
 
+	hasSmoothAfs = true;
+	for (int i = 0; i < layers - 1; i++)
+	{
+		if (nnets::has_derivative(afs[i]) == false)
+		{
+			hasSmoothAfs = false;
+			break;
+		}
+	}
+
 	int* neurons = new int[layers];
 	bool* delays = new bool[layers - 1];
 
@@ -119,6 +129,7 @@ std::vector<std::string> PerceptronManaged::getAttributes()
 std::map<std::string, void*> PerceptronManaged::getOperations()
 {
 	std::map<std::string, void*> opers;
+
 	opers["getAllWeights"]		= nnets_perceptron::getAllWeightsPerc;
 	opers["setAllWeights"]		= nnets_perceptron::setAllWeightsPerc;
 	opers["solve"]				= nnets_perceptron::solvePerc;
@@ -126,6 +137,17 @@ std::map<std::string, void*> PerceptronManaged::getOperations()
 	opers["copySolver"]			= nnets_perceptron::copyPerc;
 	opers["freeSolver"]			= nnets_perceptron::freePerc;
 
+	if (hasSmoothAfs == true)
+	{
+		opers["getIterationsCount"]			= nnets_perceptron::getIterationsCount;
+		opers["getIterationSizes"]			= nnets_perceptron::getIterationSizes;
+		opers["getWeightsVectors"]			= nnets_perceptron::getWeightsVectors;
+		opers["getWeightsVectorsCount"]		= nnets_perceptron::getWeightsVectorsCount;
+		opers["getWeightsVectorSize"]		= nnets_perceptron::getWeightsVectorSize;
+		opers["getIterationDerivatives"]	= nnets_perceptron::getIterationDerivatives;
+		opers["getIterationValues"]			= nnets_perceptron::getIterationValues;
+		opers["setWeightsVector"]			= nnets_perceptron::setWeightsVector;
+	}
 	return opers;
 }
 

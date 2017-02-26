@@ -53,3 +53,10 @@ void nnets::calc_activation_derivatives(const float* src, size_t size, Activatio
 		throw "Unexpected activation function type";
 	}
 }
+
+bool nnets::has_derivative(nnets::ActivationFunctionType af)
+{
+	if (af == ActivationFunctionType::BinaryStep)
+		return false;
+	return true;
+}
