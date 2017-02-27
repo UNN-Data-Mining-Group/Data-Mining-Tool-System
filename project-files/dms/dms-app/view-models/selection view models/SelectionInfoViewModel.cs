@@ -40,6 +40,13 @@ namespace dms.view_models
             int index = 0;
             foreach (Entity entity in taskTemplates)
             {
+                List<Entity> sels = TaskTemplate.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateId", "=", entity.ID.ToString())
+                .addCondition("Name", "=", SelectionName), typeof(Selection));
+                if (sels.Count == 0)
+                {
+                    continue;
+                }
                 Pair pair = new Pair();
                 pair.Id = entity.ID;
                 pair.Name = ((TaskTemplate)entity).Name;
@@ -48,8 +55,10 @@ namespace dms.view_models
                 index++;
             }
 
-            updateTable(taskTemplates[0].ID);
-            SelectedPreprocessing = ((TaskTemplate)taskTemplates[0]).Name;
+            updateTable(selection.TaskTemplateID);//taskTemplates[0].ID);
+            TaskTemplate taskTemplate = ((TaskTemplate)dms.services.DatabaseManager.SharedManager.entityById(selection.TaskTemplateID, typeof(TaskTemplate)));
+
+            SelectedPreprocessing = taskTemplate.Name;
             
         }
         
@@ -108,25 +117,28 @@ namespace dms.view_models
             List<Entity> sels = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplateId.ToString())
                 .addCondition("Name", "=", SelectionName), typeof(Selection));
-            List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+            if (sels.Count != 0)
+            {
+                List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", sels[0].ID.ToString()), typeof(SelectionRow));
 
-            int stepRow = 0;
-            foreach (Entity selRow in selectionRows)
-            {
-                List<Entity> valueParam = new List<Entity>();
-                int selectionRowId = selRow.ID;
-                int stepParam = 0;
-                foreach (Entity param in parameters)
+                int stepRow = 0;
+                foreach (Entity selRow in selectionRows)
                 {
-                    int paramId = param.ID;
-                    List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
-                        .addCondition("ParameterID", "=", paramId.ToString()).
-                        addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
-                    originalData[stepRow][stepParam] = ((ValueParameter)value[0]).Value;
-                    stepParam++;
+                    List<Entity> valueParam = new List<Entity>();
+                    int selectionRowId = selRow.ID;
+                    int stepParam = 0;
+                    foreach (Entity param in parameters)
+                    {
+                        int paramId = param.ID;
+                        List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                            .addCondition("ParameterID", "=", paramId.ToString()).
+                            addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
+                        originalData[stepRow][stepParam] = ((ValueParameter)value[0]).Value;
+                        stepParam++;
+                    }
+                    stepRow++;
                 }
-                stepRow++;
             }
         }
     }
