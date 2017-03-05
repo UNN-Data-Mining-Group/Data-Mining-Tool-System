@@ -19,7 +19,12 @@ namespace dms.view_models
         {
             Title = selection.Name;
             parentTask = task.Name;
-            deleteHandler = new ActionHandler(() => vm.UpdateTaskTree(), e => true);
+            deleteHandler = new ActionHandler(
+                () =>
+                {
+                    new dms.services.preprocessing.DataHelper().deleteSelection(selection);
+                    vm.UpdateTaskTree();
+                }, e => true);
             showSelectionInfoHandler = new ActionHandler(
                 () => 
                 {

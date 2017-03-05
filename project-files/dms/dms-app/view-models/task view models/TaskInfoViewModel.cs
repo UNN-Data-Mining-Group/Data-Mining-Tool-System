@@ -64,6 +64,9 @@ namespace dms.view_models
                     if (((TaskTemplate)template).PreprocessingParameters != null)
                     {
                         prepTemplates.Add((TaskTemplate)template);
+                        // really?
+                        Templates[step] = new TemplateViewModel(((TaskTemplate)template).ID, step);
+                        step++;
                     }
                     else
                     {

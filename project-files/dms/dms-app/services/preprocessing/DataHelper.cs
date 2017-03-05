@@ -73,5 +73,22 @@ namespace dms.services.preprocessing
             entity.Value = value;
             return entity;
         }
+
+        public void deleteSelection(Entity selection)
+        {
+            List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", selection.ID.ToString()), typeof(SelectionRow));
+            for (int i = 0; i < selectionRows.Count; i++)
+            {
+                List<Entity> values = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                        .addCondition("SelectionRowID", "=", selectionRows[i].ID.ToString()), typeof(ValueParameter));
+                for (int j = 0; j < values.Count; j++)
+                {
+                    values[j].delete();
+                }
+                selectionRows[i].delete();
+            }
+            selection.delete();
+        }
     }
 }

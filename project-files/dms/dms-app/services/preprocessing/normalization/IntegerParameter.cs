@@ -43,15 +43,7 @@ namespace dms.services.preprocessing.normalization
         public int GetInt(string value)
         {
             int temp = Convert.ToInt32(value);
-
-            if (temp < minValue)
-            {
-                string t = "fgb";
-            }
-            if (temp > maxValue)
-            {
-                string ty = "fdf";
-            }
+            
             if (temp < minValue || temp > maxValue)
                 throw new ArgumentOutOfRangeException();
 
