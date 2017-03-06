@@ -56,8 +56,9 @@ namespace dms.services.preprocessing.normalization
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetNormalizedDouble(value);
-            return Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            return GetInt(value) + 1;
+          //  double val = GetNormalizedDouble(value);
+          //  return Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 
         private readonly int countClasses;

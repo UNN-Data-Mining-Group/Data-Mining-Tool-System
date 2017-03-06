@@ -31,9 +31,9 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Content="Использовать существующий" IsChecked="{Binding IsUsingExitingTemplate}" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding PerformedTemplateList}" SelectedItem="{Binding PerformedTemplate}" Grid.Row="0" Grid.Column="1" Margin="5"/>
-                <Label Content="Создать новый:" Grid.Row="1" Grid.Column="0"/>
-                <TextBox Text="{Binding NewTemplateName}" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                <ComboBox IsEnabled="{Binding IsUsingExitingTemplate}" ItemsSource="{Binding PerformedTemplateList}" SelectedItem="{Binding PerformedTemplate}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                <Label Content="Создать новый:" Grid.Column="0" HorizontalAlignment="Left" Margin="0,30,0,-0.2" Grid.RowSpan="2" Width="184"/>
+                <TextBox IsEnabled="{Binding IsUsingNewTemplate}" Text="{Binding NewTemplateName}" Grid.Row="1" Grid.Column="1" Margin="5"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Преобразование параметров:">

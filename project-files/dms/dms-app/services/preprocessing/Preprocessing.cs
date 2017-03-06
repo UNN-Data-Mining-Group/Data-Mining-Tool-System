@@ -216,10 +216,10 @@ namespace dms.services.preprocessing
                 {
                     if (parameterPosition == 1)
                     {
-                        vec = val;
+                        vec = "1";// val;
                         continue;
                     }
-                    vec = vec + "," + val;
+                    vec = vec + "," + "1";// val;
                     continue;
                 }
                 if (i == 1)
