@@ -99,5 +99,11 @@ namespace dms.models
             }
             return selections;
         }
+
+        public static List<Selection> selectionsOfTaskTemplateId(int taskTemplateId)
+        {
+            return Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(Selection)).Cast<Selection>().ToList();
+        }
     }
 }

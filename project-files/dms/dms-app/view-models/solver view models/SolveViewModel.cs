@@ -17,6 +17,9 @@ namespace dms.view_models
         public string PreprocessingName { get; set; }
         public float TrainMistake { get; set; }
         public float TestMistake { get; set; }
+
+        public models.TaskTemplate TaskTemplate { get; set; }
+        public models.LearnedSolver LearnedSolver { get; set; }
     }
 
     public struct X
@@ -32,16 +35,17 @@ namespace dms.view_models
         public X[] X { get; set; }
         public ObservableCollection<string> Y { get; set; }
 
-        public SolvingInstance(SolveViewModel vm)
+        public SolvingInstance(SolveViewModel vm, models.TaskTemplate template)
         {
             deleteHandler = new ActionHandler(() => vm.DeleteSolvingInstance(this), e => true);
-            X = new X[3]
-                {
-                    new X { ParameterDescription="Параметр 1" },
-                    new X { ParameterDescription="Параметр 2" },
-                    new X { ParameterDescription="Параметр 3" }
-                };
-            Y = new ObservableCollection<string>(new string[2]);
+            List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
+            List<X> inputParams = new List<X>();
+            foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
+            {
+                inputParams.Add(new X { ParameterDescription = par.Name });
+            }
+            X = inputParams.ToArray();
+            Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);
         }
 
         public ICommand DeleteSolvingInstance { get { return deleteHandler; } }
@@ -72,33 +76,35 @@ namespace dms.view_models
         public ICommand SolveCommand { get { return solveHandler; } }
         public ICommand SaveCommand { get { return saveHandler; } }
 
-        public SolveViewModel(string taskName, string solverName)
+        public SolveViewModel(models.Task task, models.TaskSolver solver)
         {
             SolvingList = new ObservableCollection<SolvingInstance>();
-            SolverName = solverName;
-            TaskName = taskName;
-            LearningList = new LearningInfo[] 
+            SolverName = solver.Name;
+            TaskName = task.Name;
+            List<LearningInfo> learningList = new List<LearningInfo>();
+            List <models.LearnedSolver> learnedSolvers = models.LearnedSolver.learnedSolversOfTaskSolverID(solver.ID);
+            foreach (models.LearnedSolver learnedSolver in learnedSolvers)
             {
-                new LearningInfo
+                models.Selection selection = (models.Selection)models.Selection.getById(learnedSolver.SelectionID, typeof(models.Selection));
+                List<models.LearningQuality> qualities = models.LearningQuality.qualitiesOfSolverId(learnedSolver.ID);
+                models.LearningScenario scenario = (models.LearningScenario)models.LearningScenario.getById(learnedSolver.LearningScenarioID, typeof(models.LearningScenario));
+                models.TaskTemplate template = (models.TaskTemplate)models.TaskTemplate.getById(selection.TaskTemplateID, typeof(models.TaskTemplate));
+                models.LearningQuality quality = (qualities != null && qualities.Count > 0) ? qualities[0] : null;
+                learningList.Add(new LearningInfo
                 {
-                    SelectionName ="Выборка 1",
-                    LearningScenarioName = "Сценарий 1",
-                    PreprocessingName ="без преобразования",
-                    TestMistake = 20.5f,
-                    TrainMistake = 12.4f
-                },
-                new LearningInfo
-                {
-                    SelectionName ="Выборка 1",
-                    LearningScenarioName = "Сценарий 2",
-                    PreprocessingName ="Преобразование 1",
-                    TestMistake = 12.2f,
-                    TrainMistake = 8.9f
-                },
-            };
+                    SelectionName = selection.Name,
+                    LearningScenarioName = scenario.Name,
+                    PreprocessingName = template.Name,
+                    TestMistake = (quality != null) ? quality.MistakeTest : 0,
+                    TrainMistake = (quality != null) ? quality.MistakeTrain : 0,
+                    TaskTemplate = template,
+                    LearnedSolver = learnedSolver
+                });
+            }
+            LearningList = learningList.ToArray();
             addHandler = new ActionHandler(() => 
             {
-                SolvingList.Add(new SolvingInstance(this));
+                SolvingList.Add(new SolvingInstance(this, this.SelectedLearning.TaskTemplate));
                 solveHandler.RaiseCanExecuteChanged();
                 saveHandler.RaiseCanExecuteChanged();
             }, e=>SelectedLearning != null);
@@ -116,13 +122,15 @@ namespace dms.view_models
 
         public void Solve()
         {
+            models.LearnedSolver solver = this.SelectedLearning.LearnedSolver;            
             Random r = new Random();
             foreach (var item in SolvingList)
             {
+                float[] y = solver.Soul.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
                 for (int i = 0; i < item.Y.Count; i++)
                 {
                     item.Y[i] = r.NextDouble().ToString();
-                }
+                }                
             }
         }
 

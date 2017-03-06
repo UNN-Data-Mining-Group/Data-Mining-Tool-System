@@ -97,5 +97,11 @@ namespace dms.models
             base.mappingTable().ToList().ForEach(x => mappingTable.Add(x.Key, x.Value));
             return mappingTable;
         }
+
+        public static List<TaskTemplate> templatesOfTaskId(int taskId)
+        {
+            return TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskID", "=", taskId.ToString()), typeof(TaskTemplate)).Cast<TaskTemplate>().ToList();
+        }
     }
 }
