@@ -2,6 +2,15 @@
 #include "NeuralNetwork.h"
 #include <vector>
 
+//#define DEBUG
+
+#ifdef DEBUG
+#include "Timer.h"
+#define DEBUG_STATEMENT(statement) statement
+#else
+#define DEBUG_STATEMENT(statement)
+#endif
+
 namespace nnets_conv
 {
 	size_t getAllWeightsConv(float* dest, void* obj);
@@ -64,6 +73,10 @@ namespace nnets_conv
 	class ConvNN : public nnets::NeuralNetwork
 	{
 	public: 
+#ifdef DEBUG
+		nnets_debug::Timer tim2col, tpool, tact, tsgemm;
+#endif
+
 		ConvNN(const ConvNN& cnn);
 		//w - number of neurons in output volume by width
 		//h - by height
@@ -80,7 +93,6 @@ namespace nnets_conv
 
 		~ConvNN() { freeMemory(); }
 	private:
-
 		enum class VolumeType {Convolutional, Activation, Pooling, FullyConnected, Simple};
 
 		struct Volume;
