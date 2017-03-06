@@ -129,42 +129,54 @@ size_t ConvNN::solve(const float* x, float* y)
 			case VolumeType::Convolutional:
 			{
 				auto cv = static_cast<VolumeConvolutional*>(curVolume);
+				DEBUG_STATEMENT(tim2col.start());
 				im2col(prevVolume->Values, prevVolume->Depth, prevVolume->Height, prevVolume->Width, 
 					cv->FilterHeight, cv->FilterWidth, cv->StrideWidth, cv->StrideHeight, cv->Padding, deconvMatrix);
+				DEBUG_STATEMENT(tim2col.stop());
 
 				int m = cv->Depth;
 				int n = cv->Width * cv->Height;
 				int k = cv->FilterWidth * cv->FilterHeight * prevVolume->Depth;
 
+				DEBUG_STATEMENT(tsgemm.start());
 				cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k,
 					1.0f, weights[weightsIndex++], k, deconvMatrix, n, 0.0f, cv->Values, n);
+				DEBUG_STATEMENT(tsgemm.stop());
 				break;
 			}
 			case VolumeType::FullyConnected:
 			{
+				DEBUG_STATEMENT(tim2col.start());
 				im2col(prevVolume->Values, prevVolume->Depth, prevVolume->Height, prevVolume->Width, 
 					prevVolume->Height, prevVolume->Width, 1, 1, 0, deconvMatrix);
+				DEBUG_STATEMENT(tim2col.stop());
 
 				int m = curVolume->Depth;
 				int n = 1;
 				int k = prevVolume->Width * prevVolume->Height * prevVolume->Depth;
 
+				DEBUG_STATEMENT(tsgemm.start());
 				cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k,
 					1.0f, weights[weightsIndex++], k, deconvMatrix, n, 0.0f, curVolume->Values, n);
+				DEBUG_STATEMENT(tsgemm.stop());
 				break;
 			}
 			case VolumeType::Pooling:
 			{
 				auto pv = static_cast<VolumePooling*>(curVolume);
+				DEBUG_STATEMENT(tpool.start());
 				pool_max(prevVolume->Values, prevVolume->Depth, prevVolume->Height, prevVolume->Width, 
 					pv->FilterHeight, pv->FilterWidth, pv->StrideHeight, pv->StrideWidth, pv->Values);
+				DEBUG_STATEMENT(tpool.stop());
 				break;
 			}
 			case VolumeType::Activation:
 			{
 				auto av = static_cast<VolumeActivation*>(curVolume);
 				size_t size = static_cast<size_t>(prevVolume->Width) * prevVolume->Height * prevVolume->Depth;
+				DEBUG_STATEMENT(tact.start());
 				calc_activation_function(prevVolume->Values, size, av->ActivationFunction, av->Values);
+				DEBUG_STATEMENT(tact.stop());
 				break;
 			}
 		}
@@ -283,25 +295,25 @@ void ConvNN::im2col(const float* source, const int channels,
 
 	const int channel_size = height * width;
 
-	for (int channel = channels; channel--; source += channel_size)
+	for (int channel = 0; channel < channels; channel++)
 	{
 		for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++)
 		{
 			for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++)
 			{
 				int input_row = -padding + kernel_row;
-				for (int output_rows = output_h; output_rows; output_rows--)
+
+				for (int output_rows = 0; output_rows < output_h; output_rows++)
 				{
-					if (!is_a_positive_and_lower_b(input_row, height)) {
-						for (int output_cols = output_w; output_cols; output_cols--)
-						{
-							*(dest++) = 0;
-						}
+					if (!is_a_positive_and_lower_b(input_row, height)) 
+					{
+						memset(dest, 0, sizeof(float) * output_w);
+						dest += output_w;
 					}
 					else
 					{
 						int input_col = -padding + kernel_col;
-						for (int output_col = output_w; output_col; output_col--)
+						for (int output_col = 0; output_col < output_w; output_col++)
 						{
 							if (is_a_positive_and_lower_b(input_col, width))
 							{
@@ -318,6 +330,7 @@ void ConvNN::im2col(const float* source, const int channels,
 				}
 			}
 		}
+		source += channel_size;
 	}
 }
 
