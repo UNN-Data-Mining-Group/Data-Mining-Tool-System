@@ -32,12 +32,16 @@ namespace dms.view_models
             showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask.Name, solver.Name)), e => true);
 =======
             showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask.Name, solver.Name)), e => true);
+<<<<<<< HEAD
             showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask.Name, solver)), e => true);
 >>>>>>> Added custom learning
 =======
             showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask.Name, solver.Name)), e => true);
             showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask.Name, solver)), e => true);
 >>>>>>> Added custom learning
+=======
+            showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask, solver)), e => true);
+>>>>>>> Added work with view
         }
 
         public ViewmodelBase CreateSolverInfoViewModel()

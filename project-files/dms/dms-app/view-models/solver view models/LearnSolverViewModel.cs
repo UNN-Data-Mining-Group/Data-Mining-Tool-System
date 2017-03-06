@@ -10,6 +10,7 @@ using dms.tools;
 using dms.models;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers;
+using System.Globalization;
 
 namespace dms.view_models
 {
@@ -17,14 +18,12 @@ namespace dms.view_models
     {
         private ActionHandler deleteHandler;
         private int number;
-        private string selectedSelection;
-        private string selectedScenario;
 
         public LearningModel(LearnSolverViewModel main)
         {
             deleteHandler = new ActionHandler(() => main.Delete(this), e => true);
-            selectedSelection = Selections[0];
-            selectedScenario = LearningScenarios[0];
+            SelectedSelection = Selections[0];
+            SelectedScenario = LearningScenarios[0];
             SelectedPreprocessing = Preprocessings[0];
             Number = -1;
             LearningScenarioID = -1;
@@ -43,6 +42,7 @@ namespace dms.view_models
                     if (i == 0)
                         SelectionID = ls.ID;
                     nameSelections[i] = ls.Name;
+                    i++;
                 }
                 if (nameSelections.Length == 0)
                     return new string[] { "Нет созданных выборок" };
@@ -59,40 +59,39 @@ namespace dms.view_models
                     if (i == 0)
                         LearningScenarioID = ls.ID;
                     nameLearningScenarios[i] = ls.Name;
+                    i++;
                 }
                 if (nameLearningScenarios.Length == 0)
                     return new string[] { "Нет созданных сценариев" };
                 else return nameLearningScenarios;
             }
         }
-        public string[] Preprocessings { get { return new string[] { "Преобразование 1", "Преобразование 2" }; } }
-        public string SelectedSelection
-        {
+        public string[] Preprocessings {
             get
             {
-                return selectedSelection;
-            }
-            set
-            {
-                selectedSelection = value;
-            }
-        }
-        public string SelectedScenario
-        {
-            get
-            {
-                return selectedScenario;
-            }
-            set
-            {
-                selectedScenario = value;
+                listTaskTemplate = Entity.all(typeof(TaskTemplate));
+                string[] nameTaskTemplate = new string[listTaskTemplate.Count];
+                int i = 0;
+                foreach (TaskTemplate ls in listTaskTemplate)
+                {
+                    if (i == 0)
+                        LearningScenarioID = ls.ID;
+                    nameTaskTemplate[i] = ls.Name;
+                    i++;
+                }
+                if (nameTaskTemplate.Length == 0)
+                    return new string[] { "Нет созданных сценариев" };
+                else return nameTaskTemplate;
             }
         }
+        public string SelectedSelection { get; set; }
+        public string SelectedScenario { get; set; }
         public int SelectionID { get; set; }
         public int LearningScenarioID { get; set; }
         public string SelectedPreprocessing { get; set; }
         public ICommand DeleteCommand { get { return deleteHandler; } }
         public List<Entity> listLearningScenarios { get; private set; }
+        public List<Entity> listTaskTemplate { get; private set; }
         public List<Entity> listSelections { get; private set; }
     }
 
@@ -102,14 +101,14 @@ namespace dms.view_models
         private ActionHandler learnHandler;
         private TaskSolver solver;
 
-        public LearnSolverViewModel(string taskName, TaskSolver taskSolver)
+        public LearnSolverViewModel(models.Task task, TaskSolver taskSolver)
         {
-            TaskName = taskName;
+            TaskName = task.Name;
             SolverName = taskSolver.Name;
             solver = taskSolver;
             LearningList = new ObservableCollection<LearningModel>();
             addHandler = new ActionHandler(() => Add(new LearningModel(this)), e => true);
-            learnHandler = new ActionHandler(customLearningSolver, e => true);
+            learnHandler = new ActionHandler(learnSolver, e => true);
         }
 
         public string TaskName { get; }
@@ -141,28 +140,64 @@ namespace dms.view_models
 
         private void learnSolver() {
             foreach (LearningModel learningModel in LearningList) {
+                TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                .addCondition("Name", "=", learningModel.SelectedPreprocessing), typeof(TaskTemplate))[0];
+                Selection selection = (Selection) Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", taskTemplate.ID.ToString())
+                .addCondition("Name", "=", learningModel.SelectedSelection), typeof(Selection))[0];
+                int countRows = selection.RowCount;
+                LearningScenario learningScenario = (LearningScenario) LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                .addCondition("Name", "=", learningModel.SelectedScenario), typeof(LearningScenario))[0];
+                
+                List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", selection.ID.ToString()), typeof(SelectionRow));
+                List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", selection.TaskTemplateID.ToString()), typeof(dms.models.Parameter));
+                int stepRow = 0;
+                float[][] inputData = new float[countRows][];
+                float[] outputData = new float[countRows];
+                string[] outputDataForStrings = new string[countRows];
+                for (int i = 0; i < countRows; i++)
+                {
+                    inputData[i] = new float[parameters.Count - 1];
+                }
+                foreach (Entity selRow in selectionRows)
+                {
+                    int selectionRowId = selRow.ID;
+                    int stepParam = 0;
+                    foreach (Entity param in parameters)
+                    {
+                        int paramId = param.ID;
+                        List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                            .addCondition("ParameterID", "=", paramId.ToString()).
+                            addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
+                        if (((dms.models.Parameter)param).IsOutput == 1)
+                        {
+
+                            string outputValue = ((ValueParameter)value[0]).Value;
+                            float outputFloat;
+                            if (float.TryParse(outputValue, out outputFloat))
+                                outputData[stepRow] = outputFloat;
+                            else
+                                outputDataForStrings[stepRow] = outputValue;
+
+                        }
+                        else
+                            inputData[stepRow][stepParam] = float.Parse(((ValueParameter)value[0]).Value, CultureInfo.InvariantCulture.NumberFormat);
+                        stepParam++;
+                    }
+                    stepRow++;
+                }
                 LearningAlgo la = new LearningAlgo()
                 {
-                    //GeneticParams = learningModel.LearningScenarios,
-                    
+                    usedAlgo = learningScenario.LearningAlgorithmName,
+                    GeneticParams = (GeneticParam) learningScenario.LAParameters
+
                 };
+                PerceptronTopology topology = Solver.Description as PerceptronTopology;
+                ISolver isolver = new PerceptronManaged(topology);
+                la.startLearn(isolver, inputData, outputData);
             }
-        }
-        private void customLearningSolver() {
-            LearningScenario learningScenarios = (LearningScenario) LearningScenario.getById(1, typeof(LearningScenario));
-            LearningAlgo la = new LearningAlgo()
-            {
-                GeneticParams = (GeneticParam) learningScenarios.LAParameters,
-                usedAlgo = learningScenarios.LearningAlgorithmName
-            };
-            float[][] x = new float[][] 
-            {
-                new float[] { 0, 0.3f, 1f, 5f }
-            };
-            float[] y = new float[] { 2f };
-            PerceptronTopology topology = Solver.Description as PerceptronTopology;
-            ISolver isolver = new PerceptronManaged(topology);
-            la.startLearn(isolver, x, y);
         }
     }
 }
