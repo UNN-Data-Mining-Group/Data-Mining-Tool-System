@@ -6,7 +6,11 @@
              xmlns:local="clr-namespace:dms.gui"
              mc:Ignorable="d" >
     <StackPanel>
-        <Label Content="{Binding Name}" ContentStringFormat="Название дерева решений: {0}"/>
-        <Label Content="Здесь могли быть ваши параметры" HorizontalAlignment="Center"/>
+        <Label ContentStringFormat="Название дерева решений: {0}">
+            <Label x:Name="label" Content="Название дерева"/>
+        </Label>
+        <Label HorizontalAlignment="Center" Width="157">
+            <TextBox x:Name="textBox" Height="23" TextWrapping="Wrap" Width="120"/>
+        </Label>
     </StackPanel>
 </UserControl>

@@ -26,7 +26,7 @@ namespace dms.view_models
             this.solverType = solverType;
             this.solver = solver;
             showSolverInfoHandler = new ActionHandler(() => vm.SendRequestCreateView(CreateSolverInfoViewModel()), e => true);
-            showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask, solver)), e => true);
+            showSolveDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new SolveViewModel(parentTask.Name, solver.Name)), e => true);
             showLearnDialogHandler = new ActionHandler(() => vm.SendRequestCreateView(new LearnSolverViewModel(parentTask.Name, solver.Name)), e => true);
         }
 
@@ -34,7 +34,7 @@ namespace dms.view_models
         {
             if (solver.TypeName.Equals("Perceptron"))
                 return new PerceptronInfoViewModel(parentTask, solver);
-            else if (solverType.Equals("Дерево решений"))
+            else if (solverType.Equals("DecisionTree"))
                 return new DecisionTreeInfoViewModel(parentTask, solver);
             else if (solver.TypeName.Equals("WardNN"))
                 return new WardNetInfoViewModel(parentTask, solver);
