@@ -163,7 +163,8 @@ namespace dms.view_models
                         pp.set(p, prepParam.Type, step);
                         step++;
                     }
-                    taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName + " - " + PreprocessingName, TaskId, pp);
+                    string templateName = (NewTemplateName == null || NewTemplateName == "") ? "New Template" : NewTemplateName;
+                    taskTemplateId = new DataHelper().addTaskTemplate(templateName + " - " + PreprocessingName, TaskId, pp);
                 }
                 bool canAdd = true;
                 foreach (Entity sel in selections)

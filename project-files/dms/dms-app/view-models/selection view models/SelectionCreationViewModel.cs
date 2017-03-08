@@ -134,7 +134,7 @@ namespace dms.view_models
                 taskTemplateId = SelectedTemplate.Id;
             } else
             {
-                string templateName = newTemplateName == null ? "Template" : newTemplateName;
+                string templateName = (newTemplateName == null || newTemplateName == "") ? "Template" : newTemplateName;
                 DataHelper helper = new DataHelper();
 
                 //ppParameters = null для главного шаблона
