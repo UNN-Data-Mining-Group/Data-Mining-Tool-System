@@ -18,19 +18,13 @@
             </StackPanel>
             <Label Content="{Binding TaskName}" ContentStringFormat="Задача: {0}"/>
         </StackPanel>
-        
+
         <StackPanel Orientation="Vertical" Grid.Row="1">
             <StackPanel Orientation="Horizontal">
                 <Label Content="Тип представления:"/>
                 <ComboBox ItemsSource="{Binding PreprocessingList}" SelectedItem="{Binding SelectedPreprocessing}"/>
             </StackPanel>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
-                    <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True"/>
-                </StackPanel>
-            </ScrollViewer>
-            
+            <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True" RowDetailsVisibilityMode="Visible"  Width="600" Height="300"/>
         </StackPanel>
-        
     </Grid>
 </UserControl>
