@@ -12,7 +12,7 @@ int get_count_weights(void* solver)
 
 float* get_weights_(void* solver)
 {
-	float tmp[5];
+	float* tmp = (float*)malloc(sizeof(float)*5);
 	return tmp;
 }
 
