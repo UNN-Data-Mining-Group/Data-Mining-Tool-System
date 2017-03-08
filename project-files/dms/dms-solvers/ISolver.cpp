@@ -6,6 +6,9 @@ namespace dms::solvers
 	{
 		inputsCount = inputs;
 		outputsCount = outputs;
+
+		_attr = new std::vector<std::string>();
+		_opers = new std::map<std::string, void*>();
 	}
 
 	__int64 ISolver::GetInputsCount()
@@ -18,17 +21,19 @@ namespace dms::solvers
 		return outputsCount;
 	}
 
-	std::vector<std::string> ISolver::getAttributes()
+	void* ISolver::getAttributes()
 	{
-		return std::vector<std::string>();
+		return _attr;
 	}
 
-	std::map<std::string, void*> ISolver::getOperations()
+	void* ISolver::getOperations()
 	{
-		return std::map<std::string, void*>();
+		return _opers;
 	}
 
 	ISolver::~ISolver()
 	{
+		delete _attr;
+		delete _opers;
 	}
 }

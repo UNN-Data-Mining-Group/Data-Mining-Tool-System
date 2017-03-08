@@ -12,8 +12,8 @@ namespace dms::solvers::neural_nets::ward_net
 		WardNNManaged(WardNNTopology^ t);
 
 		virtual array<Single>^ Solve(array<Single>^ x) override;
-		virtual std::vector<std::string> getAttributes() override;
-		virtual std::map<std::string, void*> getOperations() override;
+		virtual void* getAttributes() override;
+		virtual void* getOperations() override;
 		virtual void* getNativeSolver() override;
 
 		virtual void FetchNativeParameters() override;
