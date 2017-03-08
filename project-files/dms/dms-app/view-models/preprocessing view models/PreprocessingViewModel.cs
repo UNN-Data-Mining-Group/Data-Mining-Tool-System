@@ -19,7 +19,7 @@ namespace dms.view_models
     }
 
     public class PreprocessingViewModel : ViewmodelBase
-    {
+    { 
         private ActionHandler cancelHandler;
         private ActionHandler createHandler;
         public ICommand CancelCommand { get { return cancelHandler; } }
@@ -32,6 +32,7 @@ namespace dms.view_models
         public PreprocessingViewModel(int taskId, int templateId)
         {
             TaskId = taskId;
+            TaskName = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             //TaskTemplates
             List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskID", "=", taskId.ToString()), typeof(TaskTemplate));
@@ -55,8 +56,9 @@ namespace dms.view_models
             PerformedTemplateList = BaseTemplateList;
             
             IsUsingExitingTemplate = false;
-            TaskName = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
-            PreprocessingName = "Преобразование 1";
+            Random r = new Random();
+            PreprocessingName = "Преобразование " + r.Next(1, 1000);
+            NewTemplateName = "New Template";
             TaskTemplate template = null;
             if (templateId == -1)
             {
@@ -161,7 +163,8 @@ namespace dms.view_models
                         pp.set(p, prepParam.Type, step);
                         step++;
                     }
-                    taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName + " - " + PreprocessingName, TaskId, pp);
+                    string templateName = (NewTemplateName == null || NewTemplateName == "") ? "New Template" : NewTemplateName;
+                    taskTemplateId = new DataHelper().addTaskTemplate(templateName + " - " + PreprocessingName, TaskId, pp);
                 }
                 bool canAdd = true;
                 foreach (Entity sel in selections)

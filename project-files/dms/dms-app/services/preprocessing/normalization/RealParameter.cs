@@ -27,11 +27,11 @@ namespace dms.services.preprocessing.normalization
             if (values == null || values.Count == 0)
                 throw new ArgumentException("values must contain at least one element");
 
-            minValue = maxValue = Convert.ToDouble(values[0].Replace(".", ","));
-            List<double> numbers = new List<double>();
+            minValue = maxValue = Convert.ToSingle(values[0].Replace(".", ","));
+            List<float> numbers = new List<float>();
             foreach (string item in values)
             {
-                double val = Convert.ToDouble(item.Replace(".", ","));
+                float val = Convert.ToSingle(item.Replace(".", ","));
 
                 if (!numbers.Contains(val))
                     numbers.Add(val);
@@ -49,9 +49,9 @@ namespace dms.services.preprocessing.normalization
             countNumbers = -Convert.ToInt32(Math.Log10(MinRange)) + 1;
         }
 
-        public double GetDouble(string value)
+        public float GetFloat(string value)
         {
-            double temp = Convert.ToDouble(value.Replace(".", ","));
+            float temp = Convert.ToSingle(value.Replace(".", ","));
 
             if (temp < minValue || temp > maxValue)
                 throw new ArgumentOutOfRangeException();
@@ -59,19 +59,19 @@ namespace dms.services.preprocessing.normalization
             return temp;
         }
 
-        public double GetNormalizedDouble(string value)
+        public float GetNormalizedFloat(string value)
         {
-            double val = GetDouble(value);
-            return (val - minValue) / (maxValue - minValue);
+            double val = GetFloat(value);
+            return (float)(val - minValue) / (maxValue - minValue);
         }
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetNormalizedDouble(value);
-            return Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            double val = GetNormalizedFloat(value);
+            return Convert.ToInt32(val * Math.Pow(2, countNumbers)) + Convert.ToInt32(minValue);
         }
 
-        private double minValue, maxValue;
+        private float minValue, maxValue;
         private int countNumbers;
     }
 }

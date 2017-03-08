@@ -133,22 +133,21 @@ void WardNNManaged::PushNativeParameters()
 	delete[] w;
 }
 
-std::vector<std::string> WardNNManaged::getAttributes()
+void* WardNNManaged::getAttributes()
 {
-	return std::vector<std::string>();
+	return _attr;
 }
 
-std::map<std::string, void*> WardNNManaged::getOperations()
+void* WardNNManaged::getOperations()
 {
-	std::map<std::string, void*> opers;
-	opers["getAllWeights"]		= nnets_ward::getAllWeightsWard;
-	opers["setAllWeights"]		= nnets_ward::setAllWeightsWard;
-	opers["solve"]				= nnets_ward::solveWard;
-	opers["getWeightsCount"]	= nnets_ward::getWeightsCountWard;
-	opers["copySolver"]			= nnets_ward::copyWard;
-	opers["freeSolver"]			= nnets_ward::freeWard;
+	(*_opers)["getAllWeights"]		= nnets_ward::getAllWeightsWard;
+	(*_opers)["setAllWeights"]		= nnets_ward::setAllWeightsWard;
+	(*_opers)["solve"]				= nnets_ward::solveWard;
+	(*_opers)["getWeightsCount"]	= nnets_ward::getWeightsCountWard;
+	(*_opers)["copySolver"]			= nnets_ward::copyWard;
+	(*_opers)["freeSolver"]			= nnets_ward::freeWard;
 
-	return opers;
+	return _opers;
 }
 
 void* WardNNManaged::getNativeSolver()

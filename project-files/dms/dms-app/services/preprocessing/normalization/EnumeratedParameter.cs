@@ -38,27 +38,26 @@ namespace dms.services.preprocessing.normalization
             return classes.IndexOf(value);
         }
 
-        public double GetNormalizedDouble(string value)
+        public float GetNormalizedFloat(string value)
         {
             int val = GetInt(value);
-            double step = 1.0 / countClasses;
-            double temp = 0.0;
+            float step = (float) 1.0 / countClasses;
+            float temp = 0.0f;
             for (int i = 0; i < countClasses; i++)
             {
                 if (Math.Abs(val - temp) < 1e-10)
                 {
-                    return step / 2.0 + i * step;
+                    return (float)(step / 2.0 + i * step);
                 }
                 temp++;
             }
-            return Double.NaN;
+            return float.NaN;
         }
 
         public int GetNormalizedInt(string value)
         {
-            return GetInt(value) + 1;
-          //  double val = GetNormalizedDouble(value);
-          //  return Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            double val = GetNormalizedFloat(value);
+            return Convert.ToInt32(val * Math.Pow(2, countNumbers));
         }
 
         private readonly int countClasses;

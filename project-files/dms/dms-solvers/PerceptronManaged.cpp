@@ -121,34 +121,32 @@ void PerceptronManaged::PushNativeParameters()
 	delete[] w;
 }
 
-std::vector<std::string> PerceptronManaged::getAttributes()
+void* PerceptronManaged::getAttributes()
 {
-	return std::vector<std::string>();
+	return _attr;
 }
 
-std::map<std::string, void*> PerceptronManaged::getOperations()
+void* PerceptronManaged::getOperations()
 {
-	std::map<std::string, void*> opers;
-
-	opers["getAllWeights"]		= nnets_perceptron::getAllWeightsPerc;
-	opers["setAllWeights"]		= nnets_perceptron::setAllWeightsPerc;
-	opers["solve"]				= nnets_perceptron::solvePerc;
-	opers["getWeightsCount"]	= nnets_perceptron::getWeightsCountPerc;
-	opers["copySolver"]			= nnets_perceptron::copyPerc;
-	opers["freeSolver"]			= nnets_perceptron::freePerc;
+	(*_opers)["getAllWeights"]		= nnets_perceptron::getAllWeightsPerc;
+	(*_opers)["setAllWeights"]		= nnets_perceptron::setAllWeightsPerc;
+	(*_opers)["solve"]				= nnets_perceptron::solvePerc;
+	(*_opers)["getWeightsCount"]	= nnets_perceptron::getWeightsCountPerc;
+	(*_opers)["copySolver"]			= nnets_perceptron::copyPerc;
+	(*_opers)["freeSolver"]			= nnets_perceptron::freePerc;
 
 	if (hasSmoothAfs == true)
 	{
-		opers["getIterationsCount"]			= nnets_perceptron::getIterationsCount;
-		opers["getIterationSizes"]			= nnets_perceptron::getIterationSizes;
-		opers["getWeightsVectors"]			= nnets_perceptron::getWeightsVectors;
-		opers["getWeightsVectorsCount"]		= nnets_perceptron::getWeightsVectorsCount;
-		opers["getWeightsVectorSize"]		= nnets_perceptron::getWeightsVectorSize;
-		opers["getIterationDerivatives"]	= nnets_perceptron::getIterationDerivatives;
-		opers["getIterationValues"]			= nnets_perceptron::getIterationValues;
-		opers["setWeightsVector"]			= nnets_perceptron::setWeightsVector;
+		(*_opers)["getIterationsCount"]			= nnets_perceptron::getIterationsCount;
+		(*_opers)["getIterationSizes"]			= nnets_perceptron::getIterationSizes;
+		(*_opers)["getWeightsVectors"]			= nnets_perceptron::getWeightsVectors;
+		(*_opers)["getWeightsVectorsCount"]		= nnets_perceptron::getWeightsVectorsCount;
+		(*_opers)["getWeightsVectorSize"]		= nnets_perceptron::getWeightsVectorSize;
+		(*_opers)["getIterationDerivatives"]	= nnets_perceptron::getIterationDerivatives;
+		(*_opers)["getIterationValues"]			= nnets_perceptron::getIterationValues;
+		(*_opers)["setWeightsVector"]			= nnets_perceptron::setWeightsVector;
 	}
-	return opers;
+	return _opers;
 }
 
 void* PerceptronManaged::getNativeSolver()

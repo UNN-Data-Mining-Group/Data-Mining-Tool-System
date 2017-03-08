@@ -59,7 +59,10 @@ namespace dms.models
             }
             set
             {
-                ParamsValue = value;
+                for (int i = 0; i < ParamsValue.Length; i++)
+                {
+                    ParamsValue[i] = value[i];
+                }
             }
         }
 
