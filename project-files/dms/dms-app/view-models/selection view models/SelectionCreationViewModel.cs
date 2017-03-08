@@ -105,6 +105,7 @@ namespace dms.view_models
             ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             Random r = new Random();
             SelectionName = "Выборка " + r.Next(1, 1000);
+            NewTemplateName = "New Template";
             HasHeader = false;
             CountRows = 0;
             FilePath = "";
