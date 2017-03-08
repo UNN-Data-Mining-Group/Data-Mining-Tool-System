@@ -8,7 +8,7 @@
     <StackPanel HorizontalAlignment="Left" Width="325">
         <StackPanel Orientation="Horizontal" Margin="5">
             <Label Content="Максимальная глубина дерева:"/>
-            <TextBox x:Name="textBox" TextWrapping="Wrap" Width="161" Text="{Binding MaxDepth}"/>
+            <TextBox x:Name="textBox" TextWrapping="Wrap" Width="161" Text="{Binding MaxTreeDepth}"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

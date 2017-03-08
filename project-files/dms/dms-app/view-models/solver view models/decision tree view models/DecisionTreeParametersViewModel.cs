@@ -12,6 +12,7 @@ namespace dms.view_models
     public class DecisionTreeParametersViewModel : ISolverParameterViewModel
     {
         public event Action CanCreateChanged;
+        public int MaxTreeDepth { get; set; }
 
         public bool CanCreateSolver(string name, models.Task task)
         {
@@ -20,7 +21,7 @@ namespace dms.view_models
 
         public void CreateSolver(string name, models.Task task)
         {
-            int depth = 20;
+            int depth = MaxTreeDepth;
             TreeDescription td = new TreeDescription(depth);
 
             TaskSolver ts = new TaskSolver()
