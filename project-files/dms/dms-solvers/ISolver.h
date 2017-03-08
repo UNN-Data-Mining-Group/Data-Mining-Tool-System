@@ -1,20 +1,11 @@
 #pragma once
 #include <vector>
+#include <map>
 using namespace System;
 
 namespace dms::solvers
 {
-	public struct LearningOperation
-	{
-		std::string name;
-		void* function;
-
-		LearningOperation(std::string name, void* function) :
-			name(name), 
-			function(function) 
-		{}
-	};
-
+	[SerializableAttribute]
 	public ref class ISolver abstract
 	{
 	public:
@@ -24,7 +15,7 @@ namespace dms::solvers
 		virtual __int64 GetInputsCount();
 		virtual __int64 GetOutputsCount();
 		virtual std::vector<std::string> getAttributes();
-		virtual std::vector<LearningOperation> getOperations();
+		virtual std::map<std::string, void*> getOperations();
 		virtual void* getNativeSolver() = 0;
 
 		virtual ~ISolver();

@@ -7,6 +7,56 @@ using nnets::ActivationFunctionType;
 
 #define is_a_positive_and_lower_b(a,b) (static_cast<unsigned int>(a) < static_cast<unsigned int>(b))
 
+size_t nnets_conv::getAllWeightsConv(float* dest, void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+
+	size_t destIndex = 0;
+	for (int weightsIndex = 0; weightsIndex < cnn->weightsCount; weightsIndex++)
+		for (size_t i = 0; i < cnn->weightsSizes[weightsIndex]; i++)
+			dest[destIndex++] = cnn->weights[weightsIndex][i];
+	return destIndex;
+}
+
+void nnets_conv::setAllWeightsConv(const float* src, void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+
+	size_t srcIndex = 0;
+	for (int weightsIndex = 0; weightsIndex < cnn->weightsCount; weightsIndex++)
+		for (size_t i = 0; i < cnn->weightsSizes[weightsIndex]; i++)
+			cnn->weights[weightsIndex][i] = src[srcIndex++];
+}
+
+size_t nnets_conv::solveConv(const float* x, float* y, void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+	return cnn->solve(x, y);
+}
+
+size_t nnets_conv::getWeightsCountConv(void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+
+	size_t res = 0;
+	for (int i = 0; i < cnn->weightsCount; i++)
+		res += cnn->weightsSizes[i];
+	return res;
+}
+
+void* nnets_conv::copyConv(void* obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+	return new ConvNN(*cnn);
+}
+
+void nnets_conv::freeConv(void* &obj)
+{
+	ConvNN* cnn = static_cast<ConvNN*>(obj);
+	delete cnn;
+	obj = nullptr;
+}
+
 struct ConvNN::Volume
 {
 	int Width, Height, Depth;
@@ -79,42 +129,54 @@ size_t ConvNN::solve(const float* x, float* y)
 			case VolumeType::Convolutional:
 			{
 				auto cv = static_cast<VolumeConvolutional*>(curVolume);
+				DEBUG_STATEMENT(tim2col.start());
 				im2col(prevVolume->Values, prevVolume->Depth, prevVolume->Height, prevVolume->Width, 
 					cv->FilterHeight, cv->FilterWidth, cv->StrideWidth, cv->StrideHeight, cv->Padding, deconvMatrix);
+				DEBUG_STATEMENT(tim2col.stop());
 
 				int m = cv->Depth;
 				int n = cv->Width * cv->Height;
 				int k = cv->FilterWidth * cv->FilterHeight * prevVolume->Depth;
 
+				DEBUG_STATEMENT(tsgemm.start());
 				cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k,
 					1.0f, weights[weightsIndex++], k, deconvMatrix, n, 0.0f, cv->Values, n);
+				DEBUG_STATEMENT(tsgemm.stop());
 				break;
 			}
 			case VolumeType::FullyConnected:
 			{
+				DEBUG_STATEMENT(tim2col.start());
 				im2col(prevVolume->Values, prevVolume->Depth, prevVolume->Height, prevVolume->Width, 
 					prevVolume->Height, prevVolume->Width, 1, 1, 0, deconvMatrix);
+				DEBUG_STATEMENT(tim2col.stop());
 
 				int m = curVolume->Depth;
 				int n = 1;
 				int k = prevVolume->Width * prevVolume->Height * prevVolume->Depth;
 
+				DEBUG_STATEMENT(tsgemm.start());
 				cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k,
 					1.0f, weights[weightsIndex++], k, deconvMatrix, n, 0.0f, curVolume->Values, n);
+				DEBUG_STATEMENT(tsgemm.stop());
 				break;
 			}
 			case VolumeType::Pooling:
 			{
 				auto pv = static_cast<VolumePooling*>(curVolume);
+				DEBUG_STATEMENT(tpool.start());
 				pool_max(prevVolume->Values, prevVolume->Depth, prevVolume->Height, prevVolume->Width, 
 					pv->FilterHeight, pv->FilterWidth, pv->StrideHeight, pv->StrideWidth, pv->Values);
+				DEBUG_STATEMENT(tpool.stop());
 				break;
 			}
 			case VolumeType::Activation:
 			{
 				auto av = static_cast<VolumeActivation*>(curVolume);
 				size_t size = static_cast<size_t>(prevVolume->Width) * prevVolume->Height * prevVolume->Depth;
+				DEBUG_STATEMENT(tact.start());
 				calc_activation_function(prevVolume->Values, size, av->ActivationFunction, av->Values);
+				DEBUG_STATEMENT(tact.stop());
 				break;
 			}
 		}
@@ -128,6 +190,43 @@ size_t ConvNN::solve(const float* x, float* y)
 	}
 
 	return outputs;
+}
+
+
+size_t ConvNN::getWeights(float** weights)
+{
+	size_t allSize = 0;
+	for (int i = 0; i < weightsCount; i++)
+	{
+		for (size_t j = 0; j < weightsSizes[i]; j++)
+		{
+			weights[i][j] = this->weights[i][j];
+			allSize++;
+		}
+	}
+
+	return allSize;
+}
+
+int ConvNN::getWeightsMatricesCount()
+{
+	return weightsCount;
+}
+
+size_t ConvNN::getWeightsMatrixSize(int matrixIndex)
+{
+	if ((matrixIndex < 0) || (matrixIndex >(weightsCount - 1)))
+		return 0;
+	return weightsSizes[matrixIndex];
+}
+
+void ConvNN::setWeights(float** weights)
+{
+	for (int i = 0; i < weightsCount; i++)
+	{
+		for (size_t j = 0; j < weightsSizes[i]; j++)
+			this->weights[i][j] = weights[i][j];
+	}
 }
 
 void ConvNN::pool_max(const float* source, const int channels,
@@ -196,25 +295,25 @@ void ConvNN::im2col(const float* source, const int channels,
 
 	const int channel_size = height * width;
 
-	for (int channel = channels; channel--; source += channel_size)
+	for (int channel = 0; channel < channels; channel++)
 	{
 		for (int kernel_row = 0; kernel_row < kernel_h; kernel_row++)
 		{
 			for (int kernel_col = 0; kernel_col < kernel_w; kernel_col++)
 			{
 				int input_row = -padding + kernel_row;
-				for (int output_rows = output_h; output_rows; output_rows--)
+
+				for (int output_rows = 0; output_rows < output_h; output_rows++)
 				{
-					if (!is_a_positive_and_lower_b(input_row, height)) {
-						for (int output_cols = output_w; output_cols; output_cols--)
-						{
-							*(dest++) = 0;
-						}
+					if (!is_a_positive_and_lower_b(input_row, height)) 
+					{
+						memset(dest, 0, sizeof(float) * output_w);
+						dest += output_w;
 					}
 					else
 					{
 						int input_col = -padding + kernel_col;
-						for (int output_col = output_w; output_col; output_col--)
+						for (int output_col = 0; output_col < output_w; output_col++)
 						{
 							if (is_a_positive_and_lower_b(input_col, width))
 							{
@@ -231,6 +330,7 @@ void ConvNN::im2col(const float* source, const int channels,
 				}
 			}
 		}
+		source += channel_size;
 	}
 }
 
@@ -262,6 +362,7 @@ inline void ConvNN::clearPtrs()
 	volumes = nullptr;
 	deconvMatrix = nullptr;
 	weights = nullptr;
+	weightsSizes = nullptr;
 }
 
 inline void ConvNN::freeMemory()
@@ -280,13 +381,76 @@ inline void ConvNN::freeMemory()
 		for (int i = 0; i < weightsCount; i++)
 			delete[] weights[i];
 		delete[] weights;
+		delete[] weightsSizes;
 	}
 	if (deconvMatrix != nullptr) delete[] deconvMatrix;
 
 	clearPtrs();
 }
 
-ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights)
+ConvNN::ConvNN(const ConvNN& cnn)
+{
+	clearPtrs();
+	volumesCount = cnn.volumesCount;
+	weightsCount = cnn.weightsCount;
+
+	weightsSizes = new size_t[weightsCount];
+	weights = new float*[weightsCount];
+
+	for (int i = 0; i < weightsCount; i++)
+	{
+		weightsSizes[i] = cnn.weightsSizes[i];
+		weights[i] = new float[weightsSizes[i]];
+		for (size_t j = 0; j < weightsSizes[i]; j++)
+			weights[i][j] = cnn.weights[i][j];
+	}
+
+	deconvSize = cnn.deconvSize;
+	deconvMatrix = new float[deconvSize];
+
+	volumes = new Volume*[volumesCount];
+	for (int i = 0; i < volumesCount; i++)
+	{
+		switch (cnn.volumes[i]->Type)
+		{
+			case VolumeType::Convolutional:
+			{
+				auto cv = static_cast<VolumeConvolutional*>(cnn.volumes[i]);
+				volumes[i] = new VolumeConvolutional(cv->Width, cv->Height, cv->Depth,
+					cv->FilterWidth, cv->FilterHeight, cv->StrideWidth, cv->StrideHeight,
+					cv->Padding, cv->CountFilters);
+				break;
+			}
+			case VolumeType::Activation:
+			{
+				auto cv = static_cast<VolumeActivation*>(cnn.volumes[i]);
+				volumes[i] = new VolumeActivation(volumes[i - 1], cv->ActivationFunction);
+				break;
+			}
+			case VolumeType::Pooling:
+			{
+				auto cv = static_cast<VolumePooling*>(cnn.volumes[i]);
+				volumes[i] = new VolumePooling(cv->Width, cv->Height, cv->Depth,
+					cv->FilterWidth, cv->FilterHeight, cv->StrideWidth, cv->StrideHeight);
+				break;
+			}
+			case VolumeType::FullyConnected:
+			{
+				Volume* cv = cnn.volumes[i];
+				volumes[i] = new Volume(cv->Width, cv->Height, cv->Depth, cv->Type);
+				break;
+			}
+			case VolumeType::Simple:
+			{
+				Volume* cv = cnn.volumes[i];
+				volumes[i] = new Volume(cv->Width, cv->Height, cv->Depth, cv->Type);
+				break;
+			}
+		}
+	}
+}
+
+ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers)
 {
 	clearPtrs();
 
@@ -382,10 +546,11 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** w
 	deconvMatrix = new float[deconvSize];
 
 	this->weights = new float*[weightsCount];
+	weightsSizes = new size_t[weightsCount];
 	int weightsIndex = 0;
 	for (int i = 0; i < volumesCount; i++)
 	{
-		int size = 0;
+		size_t size = 0;
 		if (volumes[i]->Type == VolumeType::Convolutional)
 		{
 			auto v = static_cast<VolumeConvolutional*>(volumes[i]);
@@ -401,10 +566,11 @@ ConvNN::ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** w
 
 		if (size > 0)
 		{
+			weightsSizes[weightsIndex] = size;
 			this->weights[weightsIndex] = new float[size];
 			for (int i = 0; i < size; i++)
 			{
-				this->weights[weightsIndex][i] = weights[weightsIndex][i];
+				this->weights[weightsIndex][i] = 0.0f;
 			}
 			weightsIndex++;
 		}

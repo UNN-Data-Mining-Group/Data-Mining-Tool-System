@@ -201,6 +201,7 @@
       <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="models\LearningAlgo.cs" />
+    <Compile Include="models\LearningQuality.cs" />
     <Compile Include="services\preprocessing\DataHelper.cs" />
     <Compile Include="services\preprocessing\normalization\EnumeratedParameter.cs" />
     <Compile Include="services\preprocessing\normalization\IntegerParameter.cs" />

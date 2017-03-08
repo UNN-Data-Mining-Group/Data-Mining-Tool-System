@@ -151,6 +151,7 @@
     <ClInclude Include="ActivationFunctionTypes.h" />
     <ClInclude Include="ConvNNManaged.h" />
     <ClInclude Include="ConvNNTopology.h" />
+    <ClInclude Include="INeuralNetwork.h" />
     <ClInclude Include="PerceptronManaged.h" />
     <ClInclude Include="PerceptronTopology.h" />
     <ClInclude Include="ISolver.h" />

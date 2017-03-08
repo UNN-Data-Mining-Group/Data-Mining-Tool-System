@@ -117,5 +117,11 @@ namespace dms.models
             base.mappingTable().ToList().ForEach(x => mappingTable.Add(x.Key, x.Value));
             return mappingTable;
         }
+
+        public static List<Parameter> parametersOfTaskTemplateId(int taskTemplateId)
+        {
+            return Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(Parameter)).Cast<Parameter>().ToList();
+        }
     }
 }

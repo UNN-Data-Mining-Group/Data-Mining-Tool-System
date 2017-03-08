@@ -5,6 +5,57 @@
 using nnets_ward::WardNN;
 using nnets::ActivationFunctionType;
 
+size_t nnets_ward::getAllWeightsWard(float* dest, void* obj)
+{
+	WardNN* wnn = static_cast<WardNN*>(obj);
+
+	size_t destIndex = 0;
+	for (int i = 0; i < wnn->layers.size() - 1; i++)
+		for (size_t j = 0; j < wnn->w_sizes[i]; j++)
+			dest[destIndex++] = wnn->w[i][j];
+
+	return destIndex;
+}
+
+void nnets_ward::setAllWeightsWard(const float* src, void* obj)
+{
+	WardNN* wnn = static_cast<WardNN*>(obj);
+
+	size_t srcIndex = 0;
+	for (int i = 0; i < wnn->layers.size() - 1; i++)
+		for (size_t j = 0; j < wnn->w_sizes[i]; j++)
+			wnn->w[i][j] = src[srcIndex++];
+}
+
+size_t nnets_ward::solveWard(const float* x, float* y, void* obj)
+{
+	WardNN* wnn = static_cast<WardNN*>(obj);
+	return wnn->solve(x, y);
+}
+
+size_t nnets_ward::getWeightsCountWard(void* obj)
+{
+	WardNN* wnn = static_cast<WardNN*>(obj);
+	size_t res = 0;
+	for (int i = 0; i < wnn->layers.size() - 1; i++)
+		res += wnn->w_sizes[i];
+
+	return res;
+}
+
+void* nnets_ward::copyWard(void* obj)
+{
+	WardNN* wnn = static_cast<WardNN*>(obj);
+	return new WardNN(*wnn);
+}
+
+void nnets_ward::freeWard(void* &obj)
+{
+	WardNN* wnn = static_cast<WardNN*>(obj);
+	delete wnn;
+	obj = nullptr;
+}
+
 struct WardNN::Layer
 {
 	std::vector<NeuronsGroup> Groups;
@@ -73,10 +124,11 @@ struct WardNN::Layer
 WardNN::WardNN(const WardNN& wnn)
 {
 	layers = wnn.layers;
-	alloc_data(wnn.w);
+	alloc_data();
+	setWeights(wnn.w);
 }
 
-WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer> layers,  float** weights)
+WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer> layers)
 {
 	if (input.NeuronsCount < 0)
 		throw "Invalid number of inputs";
@@ -94,13 +146,15 @@ WardNN::WardNN(nnets_ward::InputLayer input, const std::vector<nnets_ward::Layer
 			this->layers[i + forward_index + 1].BackwardConnector = &this->layers[i];
 	}
 
-	alloc_data(weights);
+	alloc_data();
 }
 
-void WardNN::alloc_data(float** weights)
+void WardNN::alloc_data()
 {
 	size_t buf_x_len = 0;
 	w = new float*[this->layers.size() - 1];
+	w_sizes = new size_t[this->layers.size() - 1];
+
 	for (int i = 1; i < this->layers.size(); i++)
 	{
 		size_t temp = this->layers[i - 1].ValuesSize;
@@ -121,9 +175,10 @@ void WardNN::alloc_data(float** weights)
 				len += group->NeuronsCount;
 		}
 
-		w[i-1] = new float[len];
+		w_sizes[i - 1] = len;
+		w[i - 1] = new float[len];
 		for (int j = 0; j < len; j++)
-			w[i-1][j] = weights[i-1][j];
+			w[i - 1][j] = 0.0f;
 	}
 	buf_x = new float[buf_x_len];
 }
@@ -187,6 +242,42 @@ size_t WardNN::solve(const float* x, float* y)
 		y[i] = last->Values[i];
 
 	return getOutputsCount();
+}
+
+size_t WardNN::getWeights(float** weights)
+{
+	size_t allSize = 0;
+	for (int i = 0; i < layers.size() - 1; i++)
+	{
+		for (size_t j = 0; j < w_sizes[i]; j++)
+		{
+			weights[i][j] = w[i][j];
+			allSize++;
+		}
+	}
+
+	return allSize;
+}
+
+int WardNN::getWeightsMatricesCount()
+{
+	return layers.size() - 1;
+}
+
+size_t WardNN::getWeightsMatrixSize(int matrixIndex)
+{
+	if ((matrixIndex < 0) || (matrixIndex > (layers.size() - 2)))
+		return 0;
+	return w_sizes[matrixIndex];
+}
+
+void WardNN::setWeights(float ** weights)
+{
+	for (int i = 0; i < this->layers.size() - 1; i++)
+	{
+		for (size_t j = 0; j < w_sizes[i]; j++)
+			w[i][j] = weights[i][j];
+	}
 }
 
 size_t WardNN::getInputsCount()

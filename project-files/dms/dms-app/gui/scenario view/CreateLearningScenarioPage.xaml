@@ -28,7 +28,7 @@
             <ComboBox ItemsSource="{Binding TeacherTypesList}" SelectedItem="{Binding TeacherType}" Grid.Row="3" Grid.Column="1" Margin="5"/>
         </Grid>
         <GroupBox Header="Параметры алгоритма обучения">
-            <local:GeneticParams></local:GeneticParams>
+            <local:GeneticParams x:Name="GenParams"></local:GeneticParams>
         </GroupBox>
         <StackPanel Orientation="Horizontal" CanVerticallyScroll="True">
             <Button Content="Создать" Command="{Binding CreateCommand}" Margin="5" Width="100"/>

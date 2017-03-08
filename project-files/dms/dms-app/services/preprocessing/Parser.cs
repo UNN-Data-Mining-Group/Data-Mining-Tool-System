@@ -72,7 +72,7 @@ namespace dms.services.preprocessing
             {
                 int iter = -1;
                 string line = sr.ReadLine();
-                if (hasHeader)
+                if (line != "" && hasHeader)
                 {
                     ParametersName = line.Split(delimiter);
                     line = sr.ReadLine();
@@ -80,7 +80,7 @@ namespace dms.services.preprocessing
                 string[] values = line.Split(delimiter);
                 CountParameters = values.Length;
                 string[] types = new string[values.Length];
-                while (line != null)
+                while (line != "" && line != null)
                 {
                     iter++;
                     values = line.Split(delimiter);
@@ -161,7 +161,7 @@ namespace dms.services.preprocessing
                 DataHelper helper = new DataHelper();
                 int rowStep = 0;
                 string line = sr.ReadLine();
-                if (HasHeader)
+                if (line != "" && HasHeader)
                 {
                     line = sr.ReadLine();
                 }
@@ -170,7 +170,7 @@ namespace dms.services.preprocessing
                 List<Entity> listSelRow = new List<Entity>(countRows);
                 List<Entity> listParams = new List<Entity>(paramCount * countRows);
                 List<ValueParameter> listValParams = new List<ValueParameter>(paramCount * countRows);
-                while (line != null)
+                while (line != "" && line != null)
                 {
                     rowStep++;
                     SelectionRow entity = helper.addSelectionRow(selectionId, rowStep);

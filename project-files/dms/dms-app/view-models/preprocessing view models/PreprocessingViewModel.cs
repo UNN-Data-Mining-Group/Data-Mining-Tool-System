@@ -38,7 +38,11 @@ namespace dms.view_models
             BaseTemplateList = new string[taskTemplates.Count];
             BaseTemplateListPair = new Pair[taskTemplates.Count];
             int index = 0;
-            foreach (Entity entity in taskTemplates)
+            bool canCreate = false;
+            if (taskTemplates.Count != 0)
+            {
+                canCreate = true;
+                foreach (Entity entity in taskTemplates)
             {
                 Pair pair = new Pair();
                 pair.Id = entity.ID;
@@ -49,8 +53,7 @@ namespace dms.view_models
             }
             PerformedTemplateListPair = BaseTemplateListPair;
             PerformedTemplateList = BaseTemplateList;
-            PerformedTemplate = PerformedTemplateListPair[0]; 
-            BaseTemplate = BaseTemplateListPair[0];
+            
             IsUsingExitingTemplate = false;
             TaskName = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             PreprocessingName = "Преобразование 1";
@@ -58,11 +61,25 @@ namespace dms.view_models
             if (templateId == -1)
             {
                 TemplateId = taskTemplates[0].ID;
-            }else
-            {
-                TemplateId = templateId;
-                template = ((dms.models.TaskTemplate)dms.services.DatabaseManager.SharedManager.entityById(templateId, typeof(dms.models.TaskTemplate)));
-            }
+                PerformedTemplatePair = PerformedTemplateListPair[0];
+                BaseTemplatePair = BaseTemplateListPair[0];
+
+                PerformedTemplate = PerformedTemplateListPair[0].Name;
+                BaseTemplate = BaseTemplateListPair[0].Name;
+             }
+             else
+                {
+                    TemplateId = templateId;
+                    template = ((dms.models.TaskTemplate)dms.services.DatabaseManager.SharedManager.entityById(templateId, typeof(dms.models.TaskTemplate)));
+                    Pair pair = new view_models.PreprocessingViewModel.Pair();
+                    pair.Id = templateId;
+                    pair.Name = template.Name;
+                    PerformedTemplatePair = pair;//PerformedTemplateListPair[0];
+                    BaseTemplatePair = BaseTemplateListPair[0];
+
+                    PerformedTemplate = template.Name; //PerformedTemplateListPair[0].Name;
+                    BaseTemplate = BaseTemplateListPair[0].Name;
+                }
             
             List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", TemplateId.ToString()), typeof(dms.models.Parameter));
@@ -87,10 +104,13 @@ namespace dms.view_models
                 
                 index++;
             }
+            }
             
             cancelHandler = new ActionHandler(Cancel, o => true);
-            createHandler = new ActionHandler(Create, o => CanUseExitingTemplate && CanCreateTemplate);
-            CanUseExitingTemplate = CanCreateTemplate = true;
+            createHandler = new ActionHandler(Create, o => canCreate && CanUseExitingTemplate && CanCreateTemplate);
+            CanUseExitingTemplate = CanCreateTemplate = true;// true;
+            IsUsingExitingTemplate = false;
+         //   CanCreateTemplate = true;
         }
 
         [Serializable()]
@@ -119,53 +139,58 @@ namespace dms.view_models
 
         public void Create()
         {
-            List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", BaseTemplate.Id.ToString()), typeof(Selection));
-            int taskTemplateId;
-            if (IsUsingExitingTemplate)
+            if (BaseTemplate != null)
             {
-                taskTemplateId = TemplateId;
-            }
-            else
-            {
-                PreprocessingTemplate pp = new PreprocessingTemplate();
-                pp.PreprocessingName = PreprocessingName;
-                pp.BaseTemplate = BaseTemplate;
-                int step = 0;
-                foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
-                {
-                    Parameter p = new Parameter(prepParam.ParameterName, prepParam.Type, "");
-                    pp.set(p, prepParam.Type, step);
-                    step++;
-                }
-                taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName + " - " + PreprocessingName, TaskId, pp);
-            }
-            bool canAdd = true;
-            foreach (Entity sel in selections)
-            {
-                int newSelectionId = -1;
-                if (!IsUsingExitingTemplate)
-                {
-                    newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
-                        ((Selection)sel).Name,
-                        ((Selection)sel).RowCount, TaskId, taskTemplateId);
-                }
+                List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", BaseTemplatePair.Id.ToString()), typeof(Selection));
+                int taskTemplateId;
 
-                int index = 0;
-                
-                foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
+                if (IsUsingExitingTemplate)
                 {
-                    int paramId = prepParam.ParameterId;
-                    string prepType = prepParam.Type;
-
-                    int selectionId = sel.ID;
-                    PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId,
-                        prepType, PreprocessingParameters.Count(), index + 1, canAdd);
-                    index++;
-                    
+                    taskTemplateId = TemplateId;
                 }
-                canAdd = false;
+                else
+                {
+                    PreprocessingTemplate pp = new PreprocessingTemplate();
+                    pp.PreprocessingName = PreprocessingName;
+                    pp.BaseTemplate = BaseTemplatePair;
+                    int step = 0;
+                    foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
+                    {
+                        Parameter p = new Parameter(prepParam.ParameterName, prepParam.Type, "");
+                        pp.set(p, prepParam.Type, step);
+                        step++;
+                    }
+                    taskTemplateId = new DataHelper().addTaskTemplate(NewTemplateName + " - " + PreprocessingName, TaskId, pp);
+                }
+                bool canAdd = true;
+                foreach (Entity sel in selections)
+                {
+                    int newSelectionId = -1;
+                    if (!IsUsingExitingTemplate)
+                    {
+                        newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
+                            ((Selection)sel).Name,
+                            ((Selection)sel).RowCount, TaskId, taskTemplateId);
+                    }
+
+                    int index = 0;
+
+                    foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
+                    {
+                        int paramId = prepParam.ParameterId;
+                        string prepType = prepParam.Type;
+
+                        int selectionId = sel.ID;
+                        PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId,
+                            prepType, PreprocessingParameters.Count(), index + 1, canAdd);
+                        index++;
+
+                    }
+                    canAdd = false;
+                }
             }
+            
              OnClose?.Invoke(this, null);
         }
 
@@ -176,8 +201,10 @@ namespace dms.view_models
 
         public string TaskName { get; }
         public string PreprocessingName { get; set; }
-        public Pair BaseTemplate { get; set; }
-        public Pair PerformedTemplate { get; set; }
+        public Pair BaseTemplatePair { get; set; }
+        public Pair PerformedTemplatePair { get; set; }
+        public string BaseTemplate { get; set; }
+        public string PerformedTemplate { get; set; }
         public PreprocessingParameterViewModel[] PreprocessingParameters { get; private set; }
         public Pair[] BaseTemplateListPair { get; private set; }
         public Pair[] PerformedTemplateListPair { get; private set; }
@@ -185,8 +212,12 @@ namespace dms.view_models
         public string[] PerformedTemplateList { get; private set; }
      //   public bool IsUsingExitingTemplate { get; set; }
         public string NewTemplateName { get; set; }
-        public TemplateViewModel BaseTemplateViewModel { get { return new TemplateViewModel(BaseTemplate.Id); } }
-        public TemplateViewModel PerformedTemplateViewModel { get { return new TemplateViewModel(PerformedTemplate.Id, 1); } }
+        public TemplateViewModel BaseTemplateViewModel { get { return new TemplateViewModel(BaseTemplatePair.Id); } }
+        public TemplateViewModel PerformedTemplateViewModel {
+            get {                
+                return new TemplateViewModel(PerformedTemplatePair.Id, 1);
+            }
+        }
         [Serializable]
         public class Pair
         {

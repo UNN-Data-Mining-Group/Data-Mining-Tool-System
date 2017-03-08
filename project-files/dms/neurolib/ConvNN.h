@@ -2,8 +2,24 @@
 #include "NeuralNetwork.h"
 #include <vector>
 
+//#define DEBUG
+
+#ifdef DEBUG
+#include "Timer.h"
+#define DEBUG_STATEMENT(statement) statement
+#else
+#define DEBUG_STATEMENT(statement)
+#endif
+
 namespace nnets_conv
 {
+	size_t getAllWeightsConv(float* dest, void* obj);
+	void setAllWeightsConv(const float* src, void* obj);
+	size_t solveConv(const float* x, float* y, void* obj);
+	size_t getWeightsCountConv(void* obj);
+	void* copyConv(void* obj);
+	void freeConv(void* &obj);
+
 	enum class LayerType
 	{
 		Convolution,
@@ -57,18 +73,26 @@ namespace nnets_conv
 	class ConvNN : public nnets::NeuralNetwork
 	{
 	public: 
+#ifdef DEBUG
+		nnets_debug::Timer tim2col, tpool, tact, tsgemm;
+#endif
+
+		ConvNN(const ConvNN& cnn);
 		//w - number of neurons in output volume by width
 		//h - by height
 		//d - by depth
-		ConvNN(int w, int h, int d, const std::vector<Layer*>& layers, float** weights);
+		ConvNN(int w, int h, int d, const std::vector<Layer*>& layers);
 
 		size_t solve(const float* x, float* y) override;
+		void setWeights(float** weights);
+		size_t getWeights(float** weights);
+		int getWeightsMatricesCount();
+		size_t getWeightsMatrixSize(int matrixIndex);
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
 		~ConvNN() { freeMemory(); }
 	private:
-
 		enum class VolumeType {Convolutional, Activation, Pooling, FullyConnected, Simple};
 
 		struct Volume;
@@ -89,12 +113,17 @@ namespace nnets_conv
 			const int stride_h, const int stride_w, float* dest);
 
 		int volumesCount;
-		int weightsCount;
+		int weightsCount;		//size of weights
+		size_t* weightsSizes;	//size of weights[i], i=0..(weightsCount-1)
 		size_t deconvSize;
 
 		Volume** volumes;
 		float* deconvMatrix;				//deconvolved volume for fast conv-operation
 		float** weights;					//weights of convolutional and fully connected volumes
+	
+		friend size_t getAllWeightsConv(float* dest, void* obj);
+		friend void setAllWeightsConv(const float* src, void* obj);
+		friend size_t getWeightsCountConv(void* obj);
 	};
 }
 

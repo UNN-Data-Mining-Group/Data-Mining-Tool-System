@@ -4,6 +4,13 @@
 
 namespace nnets_ward
 {
+	size_t getAllWeightsWard(float* dest, void* obj);
+	void setAllWeightsWard(const float* src, void* obj);
+	size_t solveWard(const float* x, float* y, void* obj);
+	size_t getWeightsCountWard(void* obj);
+	void* copyWard(void* obj);
+	void freeWard(void* &obj);
+
 	struct InputLayer
 	{
 		size_t NeuronsCount;
@@ -36,11 +43,13 @@ namespace nnets_ward
 	{
 	public:
 		WardNN(const WardNN& wnn);
-		WardNN(InputLayer input, const std::vector<Layer> layers, float** weights);
-
-		
+		WardNN(InputLayer input, const std::vector<Layer> layers);
 		
 		size_t solve(const float* x, float* y) override;
+		void setWeights(float** weights);
+		size_t getWeights(float** weights);
+		int getWeightsMatricesCount();
+		size_t getWeightsMatrixSize(int matrixIndex);
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
@@ -49,9 +58,14 @@ namespace nnets_ward
 		struct Layer;	//internal representation of layers
 
 		std::vector<Layer> layers;
+		size_t* w_sizes;
 		float** w;
 		float* buf_x;
 
-		void alloc_data(float** weights);	//allocation w and buf_x
+		void alloc_data();	//allocation w and buf_x
+
+		friend size_t getAllWeightsWard(float* dest, void* obj);
+		friend void setAllWeightsWard(const float* src, void* obj);
+		friend size_t getWeightsCountWard(void* obj);
 	};
 }
