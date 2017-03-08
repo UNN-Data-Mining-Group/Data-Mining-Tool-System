@@ -14,13 +14,18 @@ namespace dms::solvers
 		virtual array<Single>^ Solve(array<Single>^ x) = 0;
 		virtual __int64 GetInputsCount();
 		virtual __int64 GetOutputsCount();
-		virtual std::vector<std::string> getAttributes();
-		virtual std::map<std::string, void*> getOperations();
+
+		virtual void* /* exactly std::vector<std::string>* */  getAttributes();
+		virtual void* /* exactly std::map<std::string, void*>* */ getOperations();
 		virtual void* getNativeSolver() = 0;
+		virtual std::vector<std::string>* getH() { return nullptr; }
 
 		virtual ~ISolver();
 	private:
 		__int64 inputsCount;
 		__int64 outputsCount;
+	protected:
+		std::vector<std::string>* _attr;
+		std::map<std::string, void*>* _opers;
 	};
 }
