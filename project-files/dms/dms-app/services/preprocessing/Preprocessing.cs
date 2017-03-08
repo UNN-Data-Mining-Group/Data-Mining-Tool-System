@@ -199,7 +199,7 @@ namespace dms.services.preprocessing
         {
             if (type == 1)
             {
-                return p.GetNormalizedDouble(((ValueParameter)value).Value).ToString();
+                return p.GetNormalizedFloat(((ValueParameter)value).Value).ToString();
             } else
             {
                 return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();

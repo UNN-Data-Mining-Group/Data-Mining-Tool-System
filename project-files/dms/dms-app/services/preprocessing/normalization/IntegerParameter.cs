@@ -50,26 +50,26 @@ namespace dms.services.preprocessing.normalization
             return temp;
         }
 
-        public double GetNormalizedDouble(string value)
+        public float GetNormalizedFloat(string value)
         {
             int val = GetInt(value);
-            double step = 1.0 / countValues;
-            double temp = minValue;
+            float step = (float)1.0 / countValues;
+            float temp = minValue;
             for (int i = 0; i < countValues; i++)
             {
                 if (Math.Abs(val - temp) < 1e-10)
                 {
-                    return step / 2.0 + i * step;
+                    return (float) (step / 2.0 + i * step);
                 }
                 temp++;
             }
-            return Double.NaN;
+            return float.NaN;
         }
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetNormalizedDouble(value);
-            return Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            double val = GetNormalizedFloat(value);
+            return Convert.ToInt32(val * Math.Pow(2, countNumbers)) + minValue;
         }
 
         private int minValue, maxValue, countValues, countNumbers;

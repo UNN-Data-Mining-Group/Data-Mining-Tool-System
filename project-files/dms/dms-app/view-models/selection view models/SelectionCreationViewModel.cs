@@ -105,6 +105,7 @@ namespace dms.view_models
             ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
             Random r = new Random();
             SelectionName = "Выборка " + r.Next(1, 1000);
+            NewTemplateName = "New Template";
             HasHeader = false;
             CountRows = 0;
             FilePath = "";
@@ -133,7 +134,7 @@ namespace dms.view_models
                 taskTemplateId = SelectedTemplate.Id;
             } else
             {
-                string templateName = newTemplateName == null ? "Template" : newTemplateName;
+                string templateName = (newTemplateName == null || newTemplateName == "") ? "Template" : newTemplateName;
                 DataHelper helper = new DataHelper();
 
                 //ppParameters = null для главного шаблона
