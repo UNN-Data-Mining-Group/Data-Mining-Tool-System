@@ -39,10 +39,10 @@ namespace dms.view_models
         private ActionHandler addHandler;
         private ActionHandler learnHandler;
 
-        public LearnSolverViewModel(string taskName, string solverName)
+        public LearnSolverViewModel(models.Task task, models.TaskSolver solver)
         {
-            TaskName = taskName;
-            SolverName = solverName;
+            TaskName = task.Name;
+            SolverName = solver.Name;
             LearningList = new ObservableCollection<LearningModel>();
             addHandler = new ActionHandler(() => Add(new LearningModel(this)), e => true);
             learnHandler = new ActionHandler(() => { }, e => true);
