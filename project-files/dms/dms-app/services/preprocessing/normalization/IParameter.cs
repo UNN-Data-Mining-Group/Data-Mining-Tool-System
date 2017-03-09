@@ -10,8 +10,8 @@ namespace dms.services.preprocessing.normalization
     {
         string Type { get; }
         int CountNumbers { get; set; }
-        
-        double GetNormalizedDouble(string value);
+
+        float GetNormalizedFloat(string value);
         int GetNormalizedInt(string value);
     }
 }

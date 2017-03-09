@@ -119,22 +119,21 @@ void ConvNNManaged::PushNativeParameters()
 	delete[] w;
 }
 
-std::vector<std::string> ConvNNManaged::getAttributes()
+void* ConvNNManaged::getAttributes()
 {
-	return std::vector<std::string>();
+	return _attr;
 }
 
-std::map<std::string, void*> ConvNNManaged::getOperations()
+void* ConvNNManaged::getOperations()
 {
-	std::map<std::string, void*> opers;
-	opers["getAllWeights"]		= nnets_conv::getAllWeightsConv;
-	opers["setAllWeights"]		= nnets_conv::setAllWeightsConv;
-	opers["solve"]				= nnets_conv::solveConv;
-	opers["getWeightsCount"]	= nnets_conv::getWeightsCountConv;
-	opers["copySolver"]			= nnets_conv::copyConv;
-	opers["freeSolver"]			= nnets_conv::freeConv;
+	(*_opers)["getAllWeights"]		= nnets_conv::getAllWeightsConv;
+	(*_opers)["setAllWeights"]		= nnets_conv::setAllWeightsConv;
+	(*_opers)["solve"]				= nnets_conv::solveConv;
+	(*_opers)["getWeightsCount"]	= nnets_conv::getWeightsCountConv;
+	(*_opers)["copySolver"]			= nnets_conv::copyConv;
+	(*_opers)["freeSolver"]			= nnets_conv::freeConv;
 
-	return opers;
+	return _opers;
 }
 
 void* ConvNNManaged::getNativeSolver()
