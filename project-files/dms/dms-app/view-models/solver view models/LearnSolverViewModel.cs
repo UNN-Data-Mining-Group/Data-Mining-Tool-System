@@ -197,6 +197,7 @@ namespace dms.view_models
                 PerceptronTopology topology = Solver.Description as PerceptronTopology;
                 ISolver isolver = new PerceptronManaged(topology);
                 la.startLearn(isolver, inputData, outputData);
+                isolver.GetOutputsCount();
             }
         }
     }
