@@ -225,6 +225,7 @@
     <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\SeparationOfDataSet.cs" />
     <Compile Include="view-models\solver view models\SolverCreationViewModel.cs" />
     <Compile Include="view-models\MainWindowViewModel.cs" />
     <Compile Include="view-models\selection view models\ParameterCreationViewModel.cs" />
