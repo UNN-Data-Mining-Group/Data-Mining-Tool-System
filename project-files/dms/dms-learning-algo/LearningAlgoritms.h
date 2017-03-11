@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include <map>
 #include "GeneticAlgo.h"
 using namespace System;
 using namespace dms::solvers;
