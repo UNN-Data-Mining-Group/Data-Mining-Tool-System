@@ -57,10 +57,13 @@ namespace dms.services.preprocessing
             TypeParameter type;
             switch (prepType)
             {
-                case "нормализация 1 (к float)":
+                case "Линейная нормализация 1 (к float)":
                     type = TypeParameter.Real;
                     break;
-                case "нормализация 2 (к int)":
+                case "Нелинейная нормализация 2 (к float)":
+                    type = TypeParameter.Real;
+                    break;
+                case "нормализация 3 (к int)":
                     type = TypeParameter.Int;
                     break;
                 case "бинаризация":
@@ -105,8 +108,9 @@ namespace dms.services.preprocessing
             IParameter p;
             switch (prepType)
             {
-                case "нормализация 1 (к float)":
-                case "нормализация 2 (к int)":
+                case "Линейная нормализация 1 (к float)":
+                case "Нелинейная нормализация 2 (к float)":
+                case "нормализация 3 (к int)":
                     if (param.Type == TypeParameter.Real)
                     {
                         p = new RealParameter(values);
@@ -179,11 +183,14 @@ namespace dms.services.preprocessing
                 string val;
                 switch (prepType)
                 {
-                    case "нормализация 1 (к float)":
+                    case "Линейная нормализация 1 (к float)":
                         val = normalize(1, value, p);
                         break;
-                    case "нормализация 2 (к int)":
+                    case "Нелинейная нормализация 2 (к float)":
                         val = normalize(2, value, p);
+                        break;
+                    case "нормализация 3 (к int)":
+                        val = normalize(3, value, p);
                         break;
                     default:
                         val = "";
@@ -199,7 +206,10 @@ namespace dms.services.preprocessing
         {
             if (type == 1)
             {
-                return p.GetNormalizedFloat(((ValueParameter)value).Value).ToString();
+                return p.GetLinearNormalizedFloat(((ValueParameter)value).Value).ToString();
+            } else if (type == 2)
+            {
+                return p.GetNonlinearNormalizedFloat(((ValueParameter)value).Value).ToString();
             } else
             {
                 return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();

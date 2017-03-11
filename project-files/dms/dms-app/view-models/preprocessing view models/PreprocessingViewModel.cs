@@ -15,7 +15,7 @@ namespace dms.view_models
         public int ParameterId { get; set; }
         public string ParameterName { get; set; }
         public string Type { get; set; }
-        public string[] TypesList { get { return new string[] { "нормализация 1 (к float)", "нормализация 2 (к int)", "бинаризация", "без предобработки" }; } }
+        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "нормализация 3 (к int)", "бинаризация", "без предобработки" }; } }
     }
 
     public class PreprocessingViewModel : ViewmodelBase
