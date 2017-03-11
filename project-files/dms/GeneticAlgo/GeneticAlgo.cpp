@@ -12,7 +12,7 @@ namespace geneticAlgo
 
 
 	float startGeneticAlgo(void** solvers, float** inputs, float* outputs, int count_row, int count_col, 
-		float(*get_res)(void* solver, float* in), void(*set_weights)(void* solver, float* weights),
+		size_t(*get_res)(float* in, float* out, void* solver), void(*set_weights)(float* weights, void* solver),
 		int count_weights, int count_person, int count_epochs, int count_bests, float* res_weights)
 	{
 
@@ -58,6 +58,9 @@ namespace geneticAlgo
 		fout.close();
 #endif // GENETIC_DEBUG
 		float best_err = 0;
+		float** tmp_res = (float**)malloc(count_person*sizeof(float*));
+#if 0
+
 
 		free(res_weights);
 #ifdef GENETIC_DEBUG
@@ -72,15 +75,17 @@ namespace geneticAlgo
 		fout << "Realloc res_weights" << endl;
 		fout.close();
 #endif // GENETIC_DEBUG
+#endif // 0
 
 		for (person_num = 0; person_num < count_person; person_num++)
 		{
+			tmp_res[person_num] = (float*)malloc(sizeof(float));
 			new_weights[person_num] = (float*)malloc(count_weights * sizeof(float));
 			for (weight_num = 0; weight_num < count_weights; weight_num++)
 			{
 				new_weights[person_num][weight_num] = ((float)rand()) / RAND_MAX;
 			}
-			set_weights(solvers[person_num], new_weights[person_num]);
+			set_weights(new_weights[person_num], solvers[person_num]);
 		}
 #ifdef GENETIC_DEBUG
 		fout.open("Genetic_debug.txt", ios::app);
@@ -93,12 +98,11 @@ namespace geneticAlgo
 			for (person_num = 0; person_num < count_person; person_num++)
 			{
 				int row_num;
-				float tmp_res;
 				err[person_num] = 0;
 				for (row_num = 0; row_num < count_row; row_num++)
 				{
-					tmp_res = get_res(solvers[person_num], inputs[row_num]);
-					err[person_num] += (outputs[row_num] - tmp_res) * (outputs[row_num] - tmp_res);
+					get_res( inputs[row_num], tmp_res[person_num],solvers[person_num]);
+					err[person_num] += (outputs[row_num] - tmp_res[person_num][0]) * (outputs[row_num] - tmp_res[person_num][0]);
 				}
 				err[person_num] /= count_row;
 			}
@@ -189,8 +193,8 @@ namespace geneticAlgo
 					tmp_r = (int)new_weights[arr_best_nums[best_num + 1]] & tmp_mask;
 					new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)(tmp_l | tmp_r);
 				}
-				set_weights(solvers[arr_bad_nums[best_num]], new_weights[arr_bad_nums[best_num]]);
-				set_weights(solvers[arr_bad_nums[best_num + 1]], new_weights[arr_bad_nums[best_num + 1]]);
+				set_weights(new_weights[arr_bad_nums[best_num]], solvers[arr_bad_nums[best_num]]);
+				set_weights(new_weights[arr_bad_nums[best_num + 1]], solvers[arr_bad_nums[best_num + 1]]);
 			}
 
 			epoch_num++;
@@ -200,16 +204,44 @@ namespace geneticAlgo
 		{
 			res_weights[weight_num] = new_weights[arr_best_nums[0]][weight_num];
 		}
-
+#ifdef GENETIC_DEBUG
+		fout.open("Genetic_debug.txt", ios::app);
+		fout << "Was set res weights" << endl;
+		fout.close();
+#endif // GENETIC_DEBUG
 		for (person_num = 0; person_num < count_person; person_num++)
 		{
 			free(new_weights[person_num]);
 		}
+#ifdef GENETIC_DEBUG
+		fout.open("Genetic_debug.txt", ios::app);
+		fout << "Remove new weights" << endl;
+		fout.close();
+#endif // GENETIC_DEBUG
 		free(new_weights);
+#ifdef GENETIC_DEBUG
+		fout.open("Genetic_debug.txt", ios::app);
+		fout << "Remove new weights, again" << endl;
+		fout.close();
+#endif // GENETIC_DEBUG
 		free(err);
+#ifdef GENETIC_DEBUG
+		fout.open("Genetic_debug.txt", ios::app);
+		fout << "Remove err" << endl;
+		fout.close();
+#endif // GENETIC_DEBUG
 		free(arr_best_nums);
+#ifdef GENETIC_DEBUG
+		fout.open("Genetic_debug.txt", ios::app);
+		fout << "Remove arr_best_nums" << endl;
+		fout.close();
+#endif // GENETIC_DEBUG
 		free(arr_bad_nums);
-
+#ifdef GENETIC_DEBUG
+		fout.open("Genetic_debug.txt", ios::app);
+		fout << "Remove arr_bad_nums" << endl;
+		fout.close();
+#endif // GENETIC_DEBUG
 		return best_err;
 
 	}

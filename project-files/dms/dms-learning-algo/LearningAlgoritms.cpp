@@ -50,9 +50,34 @@ namespace dms::learningAlgoritms
 		int count_person = params[0];
 		void** solvers = new void*[count_person];
 		int a = 0;
-		for (int  i = 0; i < count_person; i++)
+		std::map<std::string, void*>* operations = (std::map<std::string, void*>*)solver->getOperations();
+		solvers[0] = solver->getNativeSolver();
+
+		typedef size_t(*GetWeightsCount)(void*);
+		GetWeightsCount getWeightsCount = (GetWeightsCount)(*operations)["getWeightsCount"];
+		size_t count_weights = getWeightsCount(solvers[0]);
+		float* res_weights = new float[count_weights];
+
+		typedef size_t(*GetAllWeights)(float*, void*);
+		((GetAllWeights)((*operations)["getAllWeights"]))(res_weights, solvers[0]);
+
+//		(*_opers)["getAllWeights"] = nnets_perceptron::getAllWeightsPerc;
+
+		typedef void(*SetAllWeights)(float*, void*);
+		SetAllWeights set_weights = (SetAllWeights)((*operations)["setAllWeights"]);
+//		(*_opers)["setAllWeights"] = nnets_perceptron::setAllWeightsPerc;
+
+		typedef size_t(*Solve)(float*, float*, void*);
+		Solve get_res = (Solve)((*operations)["solve"]);
+//		(*_opers)["solve"] = nnets_perceptron::solvePerc;
+//		(*_opers)["getWeightsCount"] = nnets_perceptron::getWeightsCountPerc;
+		typedef void*(*CopySolver)(void*);
+		CopySolver copySolver = (CopySolver)((*operations)["copySolver"]);
+//		(*_opers)["copySolver"] = nnets_perceptron::copyPerc;
+//		(*_opers)["freeSolver"] = nnets_perceptron::freePerc;
+		for (int  i = 1; i < count_person; i++)
 		{
-			solvers[i] =(void*) a;
+			solvers[i] = copySolver(solvers[0]);
 		}
 		float** inputs = new float*[train_x->GetLength(0)];
 		float* outputs = new float[train_y->Length];
@@ -68,18 +93,6 @@ namespace dms::learningAlgoritms
 		{
 			outputs[i] = train_y[i];
 		}
-		float* params_ = new float[params->Length];
-		for (int i = 0; i < params->Length; i++)
-		{
-			params_[i] = params[i];
-		}
-		float(*get_res)(void* solver, float* in) = get_res_;
-
-		void(*set_weights)(void* solver, float* weights) = set_weights_;
-
-		float* res_weights = get_weights_(&solver);
-		
-		int count_weights = get_count_weights(&solver);
 
 		int count_epochs = params[1];
 
