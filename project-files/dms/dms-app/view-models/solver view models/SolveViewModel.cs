@@ -7,6 +7,10 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using dms.tools;
+using dms.solvers.neural_nets.perceptron;
+using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.conv_net;
+using dms.solvers.neural_nets.ward_net;
 
 namespace dms.view_models
 {
@@ -32,19 +36,20 @@ namespace dms.view_models
     {
         private ActionHandler deleteHandler;
 
-        public X[] X { get; set; } 
+        public ObservableCollection<X> X { get; set; } 
         public ObservableCollection<string> Y { get; set; }
 
         public SolvingInstance(SolveViewModel vm, models.TaskTemplate template)
         {
             deleteHandler = new ActionHandler(() => vm.DeleteSolvingInstance(this), e => true);
             List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
-            List<X> inputParams = new List<X>();
+            //List<X> inputParams = new List<X>();
+            X = new ObservableCollection<X>();
             foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
             {
-                inputParams.Add(new X { ParameterDescription = par.Name, Value = "1" });
+                X.Add(new X { ParameterDescription = par.Name, Value = "2" });
             }
-            X = inputParams.ToArray();
+            //X = inputParams.ToArray();
             Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);
         }
 
@@ -122,14 +127,30 @@ namespace dms.view_models
 
         public void Solve()
         {
-            models.LearnedSolver solver = this.SelectedLearning.LearnedSolver;            
-            Random r = new Random();
+            models.LearnedSolver solver = this.SelectedLearning.LearnedSolver;
+            INeuralNetwork isolver = null;
+            if (solver.Soul is PerceptronManaged)
+            {
+                isolver = solver.Soul as PerceptronManaged;
+            }
+            else if (solver.Soul is ConvNNManaged)
+            {
+                isolver = solver.Soul as ConvNNManaged;
+            }
+            else if (solver.Soul is WardNNManaged)
+            {
+                isolver = solver.Soul as WardNNManaged;
+            }
+            else
+                throw new EntryPointNotFoundException();
+
+            isolver.PushNativeParameters();
             foreach (var item in SolvingList)
             {
-                float[] y = solver.Soul.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
+                float[] y = isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
                 for (int i = 0; i < item.Y.Count; i++)
                 {
-                    item.Y[i] = r.NextDouble().ToString();
+                    item.Y[i] = Convert.ToString(y[i]);
                 }                
             } 
         }
