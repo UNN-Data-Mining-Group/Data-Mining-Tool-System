@@ -13,6 +13,8 @@ using dms.solvers;
 using System.Globalization;
 using dms.view_models.solver_view_models;
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.conv_net;
+using dms.solvers.neural_nets.ward_net;
 
 namespace dms.view_models
 {
@@ -201,8 +203,24 @@ namespace dms.view_models
                     }
                     stepRow++;
                 }
-                PerceptronTopology topology = Solver.Description as PerceptronTopology;
-                INeuralNetwork isolver = new PerceptronManaged(topology);
+                INeuralNetwork isolver = null;
+                if (Solver.Description is PerceptronManaged)
+                {
+                    PerceptronTopology topology = Solver.Description as PerceptronTopology;
+                    isolver = new PerceptronManaged(topology);
+                }
+                else if (Solver.Description is ConvNNManaged)
+                {
+                    //ConvNNTopology topology = Solver.Description as ConvNNManaged;
+                    //isolver = new ConvNNManaged(topology);
+                }
+                else if (Solver.Description is WardNNManaged)
+                {
+                    //WardNNTopology topology = Solver.Description as WardNNManaged;
+                    //isolver = new WardNNManaged(topology);
+                }
+                else
+                    throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
                 s.separationAndLearn();
                 LearnedSolver ls = new LearnedSolver()

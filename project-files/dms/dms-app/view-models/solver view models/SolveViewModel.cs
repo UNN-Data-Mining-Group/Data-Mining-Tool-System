@@ -11,6 +11,8 @@ using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.ward_net;
+using dms.models;
+using dms.solvers;
 
 namespace dms.view_models
 {
@@ -128,23 +130,14 @@ namespace dms.view_models
         public void Solve()
         {
             models.LearnedSolver solver = this.SelectedLearning.LearnedSolver;
-            INeuralNetwork isolver = null;
-            if (solver.Soul is PerceptronManaged)
-            {
-                isolver = solver.Soul as PerceptronManaged;
-            }
-            else if (solver.Soul is ConvNNManaged)
-            {
-                isolver = solver.Soul as ConvNNManaged;
-            }
-            else if (solver.Soul is WardNNManaged)
-            {
-                isolver = solver.Soul as WardNNManaged;
-            }
-            else
-                throw new EntryPointNotFoundException();
 
-            isolver.PushNativeParameters();
+            ISolver isolver = FactorySolver(this.SelectedLearning.LearnedSolver);
+            //if (solver.Soul is INeuralNetwork)
+            //{
+            //    INeuralNetwork isolver = solver.Soul as INeuralNetwork;
+            //    isolver.PushNativeParameters();
+            //}
+
             foreach (var item in SolvingList)
             {
                 float[] y = isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
@@ -153,6 +146,18 @@ namespace dms.view_models
                     item.Y[i] = Convert.ToString(y[i]);
                 }                
             } 
+        }
+
+        public ISolver FactorySolver(LearnedSolver ls)
+        {
+            LearnedSolver solver = this.SelectedLearning.LearnedSolver;
+            if (solver.Soul is INeuralNetwork)
+            {
+                INeuralNetwork isolver = solver.Soul as INeuralNetwork;
+                isolver.PushNativeParameters();
+                return isolver;
+            }
+            else throw new EntryPointNotFoundException();
         }
 
         public string[] Solutions { get { return new string[] { "Решение 1", "Решение 2" }; } }
