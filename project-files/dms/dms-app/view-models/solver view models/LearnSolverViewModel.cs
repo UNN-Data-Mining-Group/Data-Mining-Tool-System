@@ -12,6 +12,7 @@ using dms.solvers.neural_nets.perceptron;
 using dms.solvers;
 using System.Globalization;
 using dms.view_models.solver_view_models;
+using dms.solvers.neural_nets;
 
 namespace dms.view_models
 {
@@ -201,7 +202,7 @@ namespace dms.view_models
                     stepRow++;
                 }
                 PerceptronTopology topology = Solver.Description as PerceptronTopology;
-                ISolver isolver = new PerceptronManaged(topology);
+                INeuralNetwork isolver = new PerceptronManaged(topology);
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
                 s.separationAndLearn();
                 LearnedSolver ls = new LearnedSolver()

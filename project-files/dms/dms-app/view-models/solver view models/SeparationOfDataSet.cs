@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using dms.solvers;
+using dms.solvers.neural_nets;
 
 namespace dms.view_models.solver_view_models
 {
@@ -12,7 +13,7 @@ namespace dms.view_models.solver_view_models
     {
         private float mistakeTrain = 0;
         private float mistakeTest = 0;
-        public SeparationOfDataSet(solvers.ISolver solver, LearningScenario learnignScenario, float [][]x, float []y)
+        public SeparationOfDataSet(INeuralNetwork solver, LearningScenario learnignScenario, float [][]x, float []y)
         {
             ISolver = solver;
             LS = learnignScenario;
@@ -36,7 +37,7 @@ namespace dms.view_models.solver_view_models
         }
         public LearningScenario LS { get; private set; }
         public float[] OutputData { get; private set; }
-        public ISolver ISolver { get; private set; }
+        public INeuralNetwork ISolver { get; private set; }
 
         public void separationAndLearn()
         {
@@ -73,6 +74,7 @@ namespace dms.view_models.solver_view_models
                 };
 
                 la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+                ISolver.FetchNativeParameters();
                 int sizeTrainDataset = trainInputDataset.Length;
                 for (int i = 0; i < sizeTrainDataset; i++)
                 {
@@ -124,6 +126,7 @@ namespace dms.view_models.solver_view_models
             };
 
             la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+            ISolver.FetchNativeParameters();
             mistakeTrain = 0;
             for(int i = 0; i < sizeTrainDataset; i++)
             {

@@ -74,7 +74,7 @@ namespace dms.view_models
                 selectedLearning = value;
                 addHandler.RaiseCanExecuteChanged();
                 SolvingList.Clear();
-            }
+            } 
         }
         public ObservableCollection<SolvingInstance> SolvingList { get; }
         public ICommand AddSolvingInstance { get { return addHandler; } }
