@@ -12,6 +12,8 @@ namespace dms.view_models
 {
     public class PreprocessingParameterViewModel
     {
+        public int Position { get; set; }
+        public int Id { get; set; }
         public int ParameterId { get; set; }
         public string ParameterName { get; set; }
         public string Type { get; set; }
@@ -157,13 +159,54 @@ namespace dms.view_models
                     pp.PreprocessingName = PreprocessingName;
                     pp.BaseTemplate = BaseTemplatePair;
                     int step = 0;
+                    //
+                    PreprocessingParameterViewModel[] preprocessingParametersTemp = null;
+                    bool flag = false;
+                    int index = 0;
+
+                    List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                                .addCondition("TaskTemplateID", "=", BaseTemplatePair.Id.ToString())
+                                .addCondition("IsOutput", "=", "0"), typeof(models.Parameter));
+                    preprocessingParametersTemp = new PreprocessingParameterViewModel[parameters.Count + PreprocessingParameters.Count() - 1];
+
                     foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
                     {
-                        Parameter p = new Parameter(prepParam.ParameterName, prepParam.Type, "");
-                        pp.set(p, prepParam.Type, step);
-                        step++;
+                        string prepType = prepParam.Type;
+                        if (prepType.Equals("бинаризация"))
+                        {
+                            int i = 0;
+                            foreach (Entity entity in parameters)
+                            {
+                                flag = true;
+                                Parameter p = new Parameter(prepParam.ParameterName, prepType, "");
+                                pp.set(p, prepType, step);
+                                step++;
+                                preprocessingParametersTemp[index] = new PreprocessingParameterViewModel();
+                                preprocessingParametersTemp[index].Position = i;
+                                preprocessingParametersTemp[index].Id = prepParam.ParameterId;
+                                preprocessingParametersTemp[index].ParameterId = entity.ID;
+                                preprocessingParametersTemp[index].ParameterName = ((dms.models.Parameter)entity).Name;
+                                preprocessingParametersTemp[index].Type = "бинаризация";
+                                i++;
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            preprocessingParametersTemp[index] = prepParam;
+                            index++;
+                            Parameter p = new Parameter(prepParam.ParameterName, prepType, "");
+                            pp.set(p, prepType, step);
+                            step++;
+                        }
                     }
+                    if (flag)
+                    {
+                        PreprocessingParameters = preprocessingParametersTemp;
+                    }
+                     
                     string templateName = (NewTemplateName == null || NewTemplateName == "") ? "New Template" : NewTemplateName;
+                    // 
                     taskTemplateId = new DataHelper().addTaskTemplate(templateName + " - " + PreprocessingName, TaskId, pp);
                 }
                 bool canAdd = true;
@@ -180,13 +223,19 @@ namespace dms.view_models
                     int index = 0;
 
                     foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
-                    {
+                    {//?????
+                        int pos = index + 1;
                         int paramId = prepParam.ParameterId;
                         string prepType = prepParam.Type;
+                        if ("бинаризация".Equals(prepType))
+                        {
+                            paramId = prepParam.Id;
+                            pos = prepParam.Position;
+                        }
 
                         int selectionId = sel.ID;
                         PreprocessingManager.PrepManager.executePreprocessing(taskTemplateId, newSelectionId, selectionId, paramId,
-                            prepType, PreprocessingParameters.Count(), index + 1, canAdd);
+                            prepType, PreprocessingParameters.Count(), pos, canAdd);
                         index++;
 
                     }
