@@ -58,6 +58,8 @@ namespace dms.view_models.solver_view_models
             int folds = 5;
             for (int k = 0; k < folds; k++)
             {
+                float kMistakeTrain = 0;
+                float kMistakeTest = 0;
                 float[][] trainInputDataset = GetInputTrainData(InputData, folds, k);
                 float[][] testInputDataset = GetInputTestData(InputData, folds, k);
                 float[] trainOutputDataset = GetOutputTrainData(OutputData, folds, k);
@@ -77,10 +79,10 @@ namespace dms.view_models.solver_view_models
                     float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
                     if (expectedOutputDataset[0] != trainOutputDataset[i])
                     {
-                        mistakeTrain++;
+                        kMistakeTrain++;
                     }
                 }
-                mistakeTrain /= sizeTrainDataset;
+                kMistakeTrain /= sizeTrainDataset;
                 
                 int sizeTestDataset = trainOutputDataset.Length;
                 for (int i = 0; i < sizeTestDataset; i++)
@@ -88,11 +90,16 @@ namespace dms.view_models.solver_view_models
                     float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
                     if (expectedOutputDataset[0] != testOutputDataset[i])
                     {
-                        mistakeTest++;
+                        kMistakeTest++;
                     }
                 }
-                mistakeTest /= sizeTestDataset;
+                kMistakeTest /= sizeTestDataset;
+
+                mistakeTrain += kMistakeTrain;
+                mistakeTest += kMistakeTest;
             }
+            mistakeTrain /= folds;
+            mistakeTest /= folds;
         }
 
         public void simpleSeparation()

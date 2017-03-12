@@ -215,7 +215,7 @@ namespace dms.view_models
 
                 LearningQuality lq = new LearningQuality()
                 {
-                    ID = ls.ID,
+                    LearnedSolverID = ls.ID,
                     MistakeTrain = Convert.ToInt32(s.MistakeTrain),
                     MistakeTest = Convert.ToInt32(s.MistakeTest),
 
