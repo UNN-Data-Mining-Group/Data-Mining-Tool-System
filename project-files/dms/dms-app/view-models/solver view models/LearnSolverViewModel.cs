@@ -200,17 +200,10 @@ namespace dms.view_models
                     }
                     stepRow++;
                 }
-                LearningAlgo la = new LearningAlgo()
-                {
-                    usedAlgo = learningScenario.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam) learningScenario.LAParameters
-
-                };
                 PerceptronTopology topology = Solver.Description as PerceptronTopology;
                 ISolver isolver = new PerceptronManaged(topology);
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
                 s.separationAndLearn();
-                la.startLearn(isolver, inputData, outputData);
                 LearnedSolver ls = new LearnedSolver()
                 {
                     SelectionID = selection.ID,
@@ -219,6 +212,15 @@ namespace dms.view_models
                     Soul = isolver
                 };
                 ls.save();
+
+                LearningQuality lq = new LearningQuality()
+                {
+                    ID = ls.ID,
+                    MistakeTrain = Convert.ToInt32(s.MistakeTrain),
+                    MistakeTest = Convert.ToInt32(s.MistakeTest),
+
+                };
+                lq.save();
             }
         }
     }
