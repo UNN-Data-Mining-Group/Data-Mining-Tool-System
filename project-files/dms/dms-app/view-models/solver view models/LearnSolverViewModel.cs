@@ -208,7 +208,7 @@ namespace dms.view_models
                 {
                     SelectionID = selection.ID,
                     LearningScenarioID = learningScenario.ID,
-                    TaskSolverID = taskTemplate.ID,
+                    TaskSolverID = Solver.ID,
                     Soul = isolver
                 };
                 ls.save();
@@ -217,8 +217,7 @@ namespace dms.view_models
                 {
                     LearnedSolverID = ls.ID,
                     MistakeTrain = Convert.ToInt32(s.MistakeTrain),
-                    MistakeTest = Convert.ToInt32(s.MistakeTest),
-
+                    MistakeTest = Convert.ToInt32(s.MistakeTest)
                 };
                 lq.save();
             }

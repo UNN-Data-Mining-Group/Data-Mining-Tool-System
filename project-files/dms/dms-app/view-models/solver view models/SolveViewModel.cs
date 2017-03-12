@@ -32,7 +32,7 @@ namespace dms.view_models
     {
         private ActionHandler deleteHandler;
 
-        public X[] X { get; set; }
+        public X[] X { get; set; } 
         public ObservableCollection<string> Y { get; set; }
 
         public SolvingInstance(SolveViewModel vm, models.TaskTemplate template)
@@ -42,7 +42,7 @@ namespace dms.view_models
             List<X> inputParams = new List<X>();
             foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
             {
-                inputParams.Add(new X { ParameterDescription = par.Name });
+                inputParams.Add(new X { ParameterDescription = par.Name, Value = "1" });
             }
             X = inputParams.ToArray();
             Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);
@@ -92,7 +92,7 @@ namespace dms.view_models
                 models.LearningQuality quality = (qualities != null && qualities.Count > 0) ? qualities[0] : null;
                 learningList.Add(new LearningInfo
                 {
-                    SelectionName = selection.Name,
+                    SelectionName = selection.Name, 
                     LearningScenarioName = scenario.Name,
                     PreprocessingName = template.Name,
                     TestMistake = (quality != null) ? quality.MistakeTest : 0,
@@ -131,7 +131,7 @@ namespace dms.view_models
                 {
                     item.Y[i] = r.NextDouble().ToString();
                 }                
-            }
+            } 
         }
 
         public string[] Solutions { get { return new string[] { "Решение 1", "Решение 2" }; } }
