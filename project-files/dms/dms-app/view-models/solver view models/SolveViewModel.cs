@@ -129,15 +129,7 @@ namespace dms.view_models
 
         public void Solve()
         {
-            models.LearnedSolver solver = this.SelectedLearning.LearnedSolver;
-
             ISolver isolver = FactorySolver(this.SelectedLearning.LearnedSolver);
-            //if (solver.Soul is INeuralNetwork)
-            //{
-            //    INeuralNetwork isolver = solver.Soul as INeuralNetwork;
-            //    isolver.PushNativeParameters();
-            //}
-
             foreach (var item in SolvingList)
             {
                 float[] y = isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
@@ -157,6 +149,7 @@ namespace dms.view_models
                 isolver.PushNativeParameters();
                 return isolver;
             }
+            // New ifelse will be added for desicion tree;
             else throw new EntryPointNotFoundException();
         }
 
