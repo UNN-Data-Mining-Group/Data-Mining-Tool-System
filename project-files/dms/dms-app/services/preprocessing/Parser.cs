@@ -66,7 +66,7 @@ namespace dms.services.preprocessing
             return type;
         }
 
-        public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader)
+        public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader, float enumPercent)
         {
             using (StreamReader sr = new StreamReader(filePath))
             {
@@ -77,9 +77,21 @@ namespace dms.services.preprocessing
                     ParametersName = line.Split(delimiter);
                     line = sr.ReadLine();
                 }
+
                 string[] values = line.Split(delimiter);
                 CountParameters = values.Length;
-                string[] types = new string[values.Length];
+                string[] types = new string[CountParameters];
+
+                //
+                List<string> [] differentValues = new List<string>[CountParameters];
+                List<int>[] counts = new List<int>[CountParameters];
+                for (int i = 0; i < CountParameters; i++)
+                {
+                    differentValues[i] = new List<string>();
+                    counts[i] = new List<int>();
+                }
+                //
+
                 while (line != "" && line != null)
                 {
                     iter++;
@@ -87,6 +99,16 @@ namespace dms.services.preprocessing
                     int index = 0;
                     foreach (string value in values)
                     {
+                        if (differentValues[index].Contains(value))
+                        {
+                            int i = differentValues[index].IndexOf(value);
+                            counts[index][i] += 1;
+                        }
+                        else
+                        {
+                            differentValues[index].Add(value);
+                            counts[index].Add(1);//[differentValues[index].Count - 1] = 1;
+                        }
                         Type type = value.GetType();
                         int intValue = 0;
                         float doubleValue = 0;
@@ -127,6 +149,22 @@ namespace dms.services.preprocessing
 
                 countRows = iter + 1;
                 CountRows = countRows;
+                float percent = 50 * countRows / 100;
+                for (int i = 0; i < CountParameters; i++)
+                {
+                    int size = differentValues[i].Count;
+                    for (int j = 0; j < size; j++)
+                    {
+                        if (counts[i][j]  >= percent)
+                        {
+                            string value = differentValues[i][j];
+                            Type type = value.GetType();
+                            types[i] = convertToType(type.Name);
+                            break;
+                        }                        
+                    }
+                }
+                
                 return types;
             }
         }
