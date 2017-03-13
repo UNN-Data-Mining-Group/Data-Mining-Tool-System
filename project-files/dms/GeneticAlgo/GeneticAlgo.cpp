@@ -13,7 +13,7 @@ namespace geneticAlgo
 
 	float startGeneticAlgo(void** solvers, float** inputs, float* outputs, int count_row, int count_col, 
 		size_t(*get_res)(float* in, float* out, void* solver), void(*set_weights)(float* weights, void* solver),
-		int count_weights, int count_person, int count_epochs, int count_bests, float* res_weights)
+		int count_weights, int count_person, int count_epochs, int count_bests, float mutation_percent, float* res_weights)
 	{
 
 #ifdef GENETIC_DEBUG
@@ -165,17 +165,32 @@ namespace geneticAlgo
 #endif // GENETIC_DEBUG
 			for (best_num = 0; best_num < count_bests; best_num += 2)
 			{
-				int tmp_mask, tmp_l, tmp_r;
+				int tmp_mask, tmp_l, tmp_r, mut_mask;
+				float is_mut;
 				for (weight_num = 0; weight_num < count_weights; weight_num++)
 				{
 					tmp_mask = rand();
 					tmp_l = (int)new_weights[arr_best_nums[best_num]] & tmp_mask;
 					tmp_r = (int)new_weights[arr_best_nums[best_num + 1]] & (!tmp_mask);
 					new_weights[arr_bad_nums[best_num]][weight_num] = (float)(tmp_l | tmp_r);
+					is_mut = rand() / RAND_MAX;
+					if (is_mut < mutation_percent)
+					{
+						mut_mask = rand();
+						new_weights[arr_bad_nums[best_num]][weight_num] = (float)((int)new_weights[arr_bad_nums[best_num]][weight_num] ^ mut_mask);
+					}
+
 
 					tmp_l = (int)new_weights[arr_best_nums[best_num]] & (!tmp_mask);
 					tmp_r = (int)new_weights[arr_best_nums[best_num + 1]] & tmp_mask;
 					new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)(tmp_l | tmp_r);
+					is_mut = rand() / RAND_MAX;
+					if (is_mut < mutation_percent)
+					{
+						mut_mask = rand();
+						new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)((int)new_weights[arr_bad_nums[best_num + 1]][weight_num] ^ mut_mask);
+					}
+
 				}
 				set_weights(new_weights[arr_bad_nums[best_num]], solvers[arr_bad_nums[best_num]]);
 				set_weights(new_weights[arr_bad_nums[best_num + 1]], solvers[arr_bad_nums[best_num + 1]]);

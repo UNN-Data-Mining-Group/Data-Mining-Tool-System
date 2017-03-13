@@ -108,9 +108,11 @@ namespace dms::learningAlgoritms
 
 		int count_bests = params[2];
 
+		float mutation_percent = params[3];
+
 		return startGeneticAlgo(solvers, inputs, outputs, train_y->Length, train_x[0]->Length,
 			get_res, set_weights, count_weights, count_person, count_epochs,
-			 count_bests, res_weights);
+			 count_bests, mutation_percent, res_weights);
 	}
 	
 
