@@ -4,6 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:dms.gui"
-             mc:Ignorable="d">
-    <Label Content="Здесь могли быть ваши параметры" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+             mc:Ignorable="d" Width="326" HorizontalAlignment="Left">
+    <StackPanel HorizontalAlignment="Left" Width="325">
+        <StackPanel Orientation="Horizontal" Margin="5">
+            <Label Content="Максимальная глубина дерева:"/>
+            <TextBox x:Name="textBox" TextWrapping="Wrap" Width="161" Text="{Binding MaxTreeDepth}"/>
+        </StackPanel>
+    </StackPanel>
 </UserControl>
