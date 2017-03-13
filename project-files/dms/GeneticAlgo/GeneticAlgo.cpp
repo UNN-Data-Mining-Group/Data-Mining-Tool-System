@@ -59,23 +59,7 @@ namespace geneticAlgo
 #endif // GENETIC_DEBUG
 		float best_err = 0;
 		float** tmp_res = (float**)malloc(count_person*sizeof(float*));
-#if 0
 
-
-		free(res_weights);
-#ifdef GENETIC_DEBUG
-		fout.open("Genetic_debug.txt", ios::app);
-		fout << "Free res_weights" << endl;
-		fout.close();
-#endif // GENETIC_DEBUG
-
-		res_weights = (float*)malloc(count_weights * sizeof(float));
-#ifdef GENETIC_DEBUG
-		fout.open("Genetic_debug.txt", ios::app);
-		fout << "Realloc res_weights" << endl;
-		fout.close();
-#endif // GENETIC_DEBUG
-#endif // 0
 
 		for (person_num = 0; person_num < count_person; person_num++)
 		{
