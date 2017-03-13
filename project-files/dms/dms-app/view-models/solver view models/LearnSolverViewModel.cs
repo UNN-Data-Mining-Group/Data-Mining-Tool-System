@@ -126,6 +126,8 @@ namespace dms.view_models
             learnHandler = new ActionHandler(learnSolver, e => LearningList.All(lm => lm.CanSolve));
         }
 
+        public event EventHandler OnClose;
+
         public string TaskName { get; }
         public string SolverName { get; }
         public TaskSolver Solver {
@@ -204,20 +206,20 @@ namespace dms.view_models
                     stepRow++;
                 }
                 INeuralNetwork isolver = null;
-                if (Solver.Description is PerceptronManaged)
+                if (Solver.Description is PerceptronTopology)
                 {
                     PerceptronTopology topology = Solver.Description as PerceptronTopology;
                     isolver = new PerceptronManaged(topology);
                 }
-                else if (Solver.Description is ConvNNManaged)
+                else if (Solver.Description is ConvNNTopology)
                 {
-                    //ConvNNTopology topology = Solver.Description as ConvNNManaged;
-                    //isolver = new ConvNNManaged(topology);
+                    ConvNNTopology topology = Solver.Description as ConvNNTopology;
+                    isolver = new ConvNNManaged(topology);
                 }
-                else if (Solver.Description is WardNNManaged)
+                else if (Solver.Description is WardNNTopology)
                 {
-                    //WardNNTopology topology = Solver.Description as WardNNManaged;
-                    //isolver = new WardNNManaged(topology);
+                    WardNNTopology topology = Solver.Description as WardNNTopology;
+                    isolver = new WardNNManaged(topology);
                 }
                 else
                     throw new EntryPointNotFoundException();
@@ -240,6 +242,7 @@ namespace dms.view_models
                 };
                 lq.save();
             }
+            OnClose?.Invoke(this, null);
         }
     }
 }
