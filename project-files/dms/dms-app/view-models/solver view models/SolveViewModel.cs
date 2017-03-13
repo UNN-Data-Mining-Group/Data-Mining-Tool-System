@@ -142,10 +142,9 @@ namespace dms.view_models
 
         public ISolver FactorySolver(LearnedSolver ls)
         {
-            LearnedSolver solver = this.SelectedLearning.LearnedSolver;
-            if (solver.Soul is INeuralNetwork)
+            if (ls.Soul is INeuralNetwork)
             {
-                INeuralNetwork isolver = solver.Soul as INeuralNetwork;
+                INeuralNetwork isolver = ls.Soul as INeuralNetwork;
                 isolver.PushNativeParameters();
                 return isolver;
             }
