@@ -11,6 +11,10 @@ using dms.models;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers;
 using System.Globalization;
+using dms.view_models.solver_view_models;
+using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.conv_net;
+using dms.solvers.neural_nets.ward_net;
 
 namespace dms.view_models
 {
@@ -28,7 +32,8 @@ namespace dms.view_models
             Number = -1;
             LearningScenarioID = -1;
             SelectionID = -1;
-        }
+            CanSolve = true;
+    }
 
         public int Number { get { return number; } set { number = value; NotifyPropertyChanged(); } }
         public string[] Selections {
@@ -45,7 +50,10 @@ namespace dms.view_models
                     i++;
                 }
                 if (nameSelections.Length == 0)
+                {
+                    CanSolve = false;
                     return new string[] { "Нет созданных выборок" };
+                }
                 else return nameSelections;
             }
         }
@@ -62,7 +70,10 @@ namespace dms.view_models
                     i++;
                 }
                 if (nameLearningScenarios.Length == 0)
+                {
+                    CanSolve = false;
                     return new string[] { "Нет созданных сценариев" };
+                }
                 else return nameLearningScenarios;
             }
         }
@@ -80,11 +91,15 @@ namespace dms.view_models
                     i++;
                 }
                 if (nameTaskTemplate.Length == 0)
+                {
+                    CanSolve = false;
                     return new string[] { "Нет созданных сценариев" };
+                }
                 else return nameTaskTemplate;
             }
         }
         public string SelectedSelection { get; set; }
+        public bool CanSolve { get; set; }
         public string SelectedScenario { get; set; }
         public int SelectionID { get; set; }
         public int LearningScenarioID { get; set; }
@@ -108,8 +123,10 @@ namespace dms.view_models
             solver = taskSolver;
             LearningList = new ObservableCollection<LearningModel>();
             addHandler = new ActionHandler(() => Add(new LearningModel(this)), e => true);
-            learnHandler = new ActionHandler(learnSolver, e => true);
+            learnHandler = new ActionHandler(learnSolver, e => LearningList.All(lm => lm.CanSolve));
         }
+
+        public event EventHandler OnClose;
 
         public string TaskName { get; }
         public string SolverName { get; }
@@ -188,16 +205,44 @@ namespace dms.view_models
                     }
                     stepRow++;
                 }
-                LearningAlgo la = new LearningAlgo()
+                INeuralNetwork isolver = null;
+                if (Solver.Description is PerceptronTopology)
                 {
-                    usedAlgo = learningScenario.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam) learningScenario.LAParameters
-
+                    PerceptronTopology topology = Solver.Description as PerceptronTopology;
+                    isolver = new PerceptronManaged(topology);
+                }
+                else if (Solver.Description is ConvNNTopology)
+                {
+                    ConvNNTopology topology = Solver.Description as ConvNNTopology;
+                    isolver = new ConvNNManaged(topology);
+                }
+                else if (Solver.Description is WardNNTopology)
+                {
+                    WardNNTopology topology = Solver.Description as WardNNTopology;
+                    isolver = new WardNNManaged(topology);
+                }
+                else
+                    throw new EntryPointNotFoundException();
+                SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
+                s.separationAndLearn();
+                LearnedSolver ls = new LearnedSolver()
+                {
+                    SelectionID = selection.ID,
+                    LearningScenarioID = learningScenario.ID,
+                    TaskSolverID = Solver.ID,
+                    Soul = isolver
                 };
-                PerceptronTopology topology = Solver.Description as PerceptronTopology;
-                ISolver isolver = new PerceptronManaged(topology);
-                la.startLearn(isolver, inputData, outputData);
+                ls.save();
+
+                LearningQuality lq = new LearningQuality()
+                {
+                    LearnedSolverID = ls.ID,
+                    MistakeTrain = Convert.ToInt32(s.MistakeTrain),
+                    MistakeTest = Convert.ToInt32(s.MistakeTest)
+                };
+                lq.save();
             }
+            OnClose?.Invoke(this, null);
         }
     }
 }
