@@ -28,13 +28,25 @@ namespace dms.view_models
         public models.LearnedSolver LearnedSolver { get; set; }
     }
 
-    public struct X
+    public class X : ViewmodelBase
     {
-        public string Value { get; set; }
+        private string value;
+        public string Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+                this.value = value;
+            }
+        }
         public string ParameterDescription { get; set; }
     }
 
-    public class SolvingInstance
+    public class SolvingInstance : ViewmodelBase
     {
         private ActionHandler deleteHandler;
 
@@ -49,7 +61,7 @@ namespace dms.view_models
             X = new ObservableCollection<X>();
             foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
             {
-                X.Add(new X { ParameterDescription = par.Name, Value = "2" });
+                X.Add(new X { ParameterDescription = par.Name });
             }
             //X = inputParams.ToArray();
             Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);

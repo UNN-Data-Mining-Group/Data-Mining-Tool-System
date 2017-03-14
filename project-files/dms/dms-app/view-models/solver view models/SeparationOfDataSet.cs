@@ -86,7 +86,7 @@ namespace dms.view_models.solver_view_models
                 }
                 kMistakeTrain /= sizeTrainDataset;
                 
-                int sizeTestDataset = trainOutputDataset.Length;
+                int sizeTestDataset = testOutputDataset.Length;
                 for (int i = 0; i < sizeTestDataset; i++)
                 {
                     float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
