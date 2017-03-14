@@ -57,13 +57,11 @@ namespace dms.view_models
         {
             deleteHandler = new ActionHandler(() => vm.DeleteSolvingInstance(this), e => true);
             List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
-            //List<X> inputParams = new List<X>();
             X = new ObservableCollection<X>();
             foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
             {
                 X.Add(new X { ParameterDescription = par.Name });
             }
-            //X = inputParams.ToArray();
             Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);
         }
 
