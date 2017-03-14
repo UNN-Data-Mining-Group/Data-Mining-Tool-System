@@ -161,8 +161,5 @@ namespace dms.view_models
             // New ifelse will be added for desicion tree;
             else throw new EntryPointNotFoundException();
         }
-
-        public string[] Solutions { get { return new string[] { "Решение 1", "Решение 2" }; } }
-        public string SelectedSolution { get; set; }
     }
 }
