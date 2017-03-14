@@ -28,11 +28,16 @@ namespace dms::learningAlgoritms
 		TeacherTypesList = gcnew array<String^>(2);
 		TeacherTypesList[0] = "Генетический алгоритм";
 		TeacherTypesList[1] = "Обратное распространение ошибки";
+		ParamsNames = gcnew array<String^>(4);
+		ParamsNames[0] = "Количество особей";
+		ParamsNames[1] = "Количество эпох";
+		ParamsNames[2] = "Количество особей для скрещивания";
+		ParamsNames[3] = "Коэффициент мутации";
 		params = gcnew array< float >(4);
-		params[0] = 1.0f;
-		params[1] = 0.4f;
-		params[2] = 0.5f;
-		params[3] = 5.0f;		
+		params[0] = 100.0f;
+		params[1] = 100.0f;
+		params[2] = 50.0f;
+		params[3] = 0.2f;		
 	}
 
 	array<System::String^>^ LearningAlgoritms::getTeacherTypesList()
@@ -43,6 +48,11 @@ namespace dms::learningAlgoritms
 	array<float>^ LearningAlgoritms::getParams()
 	{
 		return params;
+	}
+
+	array<System::String^>^ LearningAlgoritms::getParamsNames()
+	{
+		return ParamsNames;
 	}
 
 	float LearningAlgoritms::startLearn(ISolver^ solver, array<array<float>^>^ train_x, array<float>^ train_y)

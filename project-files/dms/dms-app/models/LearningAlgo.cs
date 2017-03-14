@@ -29,7 +29,7 @@ namespace dms.models
 
 
             //new string[] { "Обучатель 1", "Обучатель 2", "Обучатель 3" };
-            ParamsName = new string[] { "Параметр 1", "Параметр 2", "Параметр 3", "Параметр 4" };
+            ParamsName = lrAlgo.getParamsNames();
             
             ParamsValue = lrAlgo.getParams(); //new float[] { 0, 0.3f, 1f, 5f };
             
