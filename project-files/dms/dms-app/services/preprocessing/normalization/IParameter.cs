@@ -11,7 +11,8 @@ namespace dms.services.preprocessing.normalization
         string Type { get; }
         int CountNumbers { get; set; }
 
-        float GetNormalizedFloat(string value);
+        float GetLinearNormalizedFloat(string value);
+        float GetNonlinearNormalizedFloat(string value);
         int GetNormalizedInt(string value);
     }
 }

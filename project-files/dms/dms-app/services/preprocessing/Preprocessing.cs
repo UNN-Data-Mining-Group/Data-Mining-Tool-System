@@ -55,16 +55,21 @@ namespace dms.services.preprocessing
             List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", selectionId.ToString()), typeof(SelectionRow));
             TypeParameter type;
+            bool flag = false;
             switch (prepType)
             {
-                case "нормализация 1 (к float)":
+                case "Линейная нормализация 1 (к float)":
                     type = TypeParameter.Real;
                     break;
-                case "нормализация 2 (к int)":
+                case "Нелинейная нормализация 2 (к float)":
+                    type = TypeParameter.Real;
+                    break;
+                case "нормализация 3 (к int)":
                     type = TypeParameter.Int;
                     break;
                 case "бинаризация":
-                    type = TypeParameter.Enum;
+                    flag = true;
+                    type = TypeParameter.Int;// Enum;
                     break;
                 case "без предобработки":
                     type = param.Type;
@@ -76,8 +81,16 @@ namespace dms.services.preprocessing
             int newParamId;
             if (canAdd)
             {
-                newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
-                taskTemplateId, param.Index, param.IsOutput, type);
+                if (flag)
+                {
+                    newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
+               taskTemplateId, param.Index, param.IsOutput + 1, type);
+                }
+               else
+                {
+                    newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
+               taskTemplateId, param.Index, param.IsOutput, type);
+                }
                 pars.Add(newParamId);
             }
             else
@@ -105,8 +118,9 @@ namespace dms.services.preprocessing
             IParameter p;
             switch (prepType)
             {
-                case "нормализация 1 (к float)":
-                case "нормализация 2 (к int)":
+                case "Линейная нормализация 1 (к float)":
+                case "Нелинейная нормализация 2 (к float)":
+                case "нормализация 3 (к int)":
                     if (param.Type == TypeParameter.Real)
                     {
                         p = new RealParameter(values);
@@ -157,9 +171,18 @@ namespace dms.services.preprocessing
 
             int index = 0;
             List<Entity> listValues = new List<Entity>();
+
+            List<string> valueStr = new List<string>();
             foreach (Entity value in values)
             {
-                string val = binarization(value, paramCount, parameterPosition);
+                valueStr.Add(((ValueParameter)value).Value);
+            }
+            EnumeratedParameter p = new EnumeratedParameter(valueStr);
+            
+            foreach (Entity value in values)
+            {
+                int i = p.GetInt(((ValueParameter)value).Value);
+                string val = binarization(value, i, parameterPosition);
                 listValues.Add(helper.addValueParameter(selectionRows[index].ID, paramId, val));
                 index++;
             }
@@ -179,11 +202,14 @@ namespace dms.services.preprocessing
                 string val;
                 switch (prepType)
                 {
-                    case "нормализация 1 (к float)":
+                    case "Линейная нормализация 1 (к float)":
                         val = normalize(1, value, p);
                         break;
-                    case "нормализация 2 (к int)":
+                    case "Нелинейная нормализация 2 (к float)":
                         val = normalize(2, value, p);
+                        break;
+                    case "нормализация 3 (к int)":
+                        val = normalize(3, value, p);
                         break;
                     default:
                         val = "";
@@ -199,18 +225,29 @@ namespace dms.services.preprocessing
         {
             if (type == 1)
             {
-                return p.GetNormalizedFloat(((ValueParameter)value).Value).ToString();
+                return p.GetLinearNormalizedFloat(((ValueParameter)value).Value).ToString();
+            } else if (type == 2)
+            {
+                return p.GetNonlinearNormalizedFloat(((ValueParameter)value).Value).ToString();
             } else
             {
                 return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();
             }
         }
 
-        private string binarization(Entity value, int parameterCount, int parameterPosition)
+        private string binarization(Entity value, int index, int parameterPosition)
         {
-            string vec = "";
-            string val = ((ValueParameter)value).Value;
-            for (int i = 1; i <= parameterCount; i++)
+          //  string vec = "";
+            string val = ((ValueParameter)value).Value; 
+            if (index.Equals(parameterPosition))
+            {
+                return "1";
+            }else
+            {
+                return "0";
+            }
+            
+       /*     for (int i = 1; i <= parameterCount; i++)
             {
                 if (i == parameterPosition)
                 {
@@ -230,7 +267,7 @@ namespace dms.services.preprocessing
                 vec = vec + ", 0";
             }
             return vec;
-        }
+*/        }
 
         private string withoutPreprocessing(Entity value)
         {
