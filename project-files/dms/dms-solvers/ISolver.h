@@ -18,7 +18,6 @@ namespace dms::solvers
 		virtual void* /* exactly std::vector<std::string>* */  getAttributes();
 		virtual void* /* exactly std::map<std::string, void*>* */ getOperations();
 		virtual void* getNativeSolver() = 0;
-		virtual std::vector<std::string>* getH() { return nullptr; }
 
 		virtual ~ISolver();
 	private:
