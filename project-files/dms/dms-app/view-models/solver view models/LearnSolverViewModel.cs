@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-
-using dms.tools;
-using dms.models;
-using dms.solvers.neural_nets.perceptron;
-using dms.solvers;
-using System.Globalization;
-using dms.view_models.solver_view_models;
+﻿using dms.models;
 using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
+using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets.ward_net;
+using dms.tools;
+using dms.view_models.solver_view_models;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+using System.Windows.Input;
 
 namespace dms.view_models
 {
@@ -27,8 +23,9 @@ namespace dms.view_models
         private string[] preprocessing;
         private string[] selections;
 
-        public LearningModel(LearnSolverViewModel main)
+        public LearningModel(LearnSolverViewModel main, models.Task task)
         {
+            Task = task;
             deleteHandler = new ActionHandler(() => main.Delete(this), e => true);
             Selections = Selections;
             SelectedSelection = Selections[0];
@@ -45,8 +42,16 @@ namespace dms.view_models
         public string[] Selections {
             get
             {
+
+                List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskID", "=", Convert.ToString(Task.ID)), typeof(TaskTemplate));
                 HashSet<string> setSelections = new HashSet<string>();
-                listSelections = Entity.all(typeof(Selection));
+                List<Selection> listSelections = new List<Selection>();
+                foreach (TaskTemplate tt in taskTemplates)
+                {
+                    listSelections.Add((Selection)Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskTemplateID", "=", Convert.ToString(tt.ID)), typeof(Selection))[0]);
+                }
                 int i = 0;
                 foreach (Selection ls in listSelections)
                 {
@@ -73,7 +78,7 @@ namespace dms.view_models
         }
         public string[] LearningScenarios { get
             {
-                listLearningScenarios = Entity.all(typeof(LearningScenario));
+                List<Entity> listLearningScenarios = Entity.all(typeof(LearningScenario));
                 string[] nameLearningScenarios = new string[listLearningScenarios.Count];
                 int i = 0;
                 foreach (LearningScenario ls in listLearningScenarios)
@@ -97,7 +102,7 @@ namespace dms.view_models
             {
                 List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                     .addCondition("Name", "=", SelectedSelection), typeof(Selection));
-                listTaskTemplate = Entity.all(typeof(TaskTemplate));
+                List<Entity> listTaskTemplate = Entity.all(typeof(TaskTemplate));
                 string[] nameTaskTemplate = new string[selections.Count];
                 int i = 0;
                 foreach (Selection selection in selections)
@@ -136,6 +141,7 @@ namespace dms.view_models
             }
         }
         public bool CanSolve { get; set; }
+        public models.Task Task { get; set; }
         public string SelectedScenario { get; set; }
         public int SelectionID { get; set; }
         public int LearningScenarioID { get; set; }
@@ -152,9 +158,6 @@ namespace dms.view_models
             }
         }
         public ICommand DeleteCommand { get { return deleteHandler; } }
-        public List<Entity> listLearningScenarios { get; private set; }
-        public List<Entity> listTaskTemplate { get; private set; }
-        public List<Entity> listSelections { get; private set; }
     }
 
     public class LearnSolverViewModel : ViewmodelBase
@@ -169,7 +172,7 @@ namespace dms.view_models
             SolverName = taskSolver.Name;
             solver = taskSolver;
             LearningList = new ObservableCollection<LearningModel>();
-            addHandler = new ActionHandler(() => Add(new LearningModel(this)), e => true);
+            addHandler = new ActionHandler(() => Add(new LearningModel(this, task)), e => true);
             learnHandler = new ActionHandler(learnSolver, e => LearningList.All(lm => lm.CanSolve));
         }
 
