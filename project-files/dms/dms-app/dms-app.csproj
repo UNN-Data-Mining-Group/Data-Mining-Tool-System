@@ -429,6 +429,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\desision-tree-lib\decision-tree-lib.csproj">
+      <Project>{57231031-f919-41a6-94b6-7b389e9fe978}</Project>
+      <Name>decision-tree-lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\dms-learning-algo\dms-learning-algo.vcxproj">
       <Project>{6a7958af-d58c-48b6-95d3-887a6d8face7}</Project>
       <Name>dms-learning-algo</Name>
