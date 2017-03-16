@@ -22,39 +22,53 @@ namespace dms.view_models
     {
         private ActionHandler deleteHandler;
         private int number;
+        private string selectedSelection;
+        private string selectedPreprocessing;
+        private string[] preprocessing;
+        private string[] selections;
 
         public LearningModel(LearnSolverViewModel main)
         {
             deleteHandler = new ActionHandler(() => main.Delete(this), e => true);
+            Selections = Selections;
             SelectedSelection = Selections[0];
             SelectedScenario = LearningScenarios[0];
-            SelectedPreprocessing = Preprocessings[0];
+            Preprocessings = Preprocessings;
+            selectedPreprocessing = Preprocessings[0];
             Number = -1;
             LearningScenarioID = -1;
             SelectionID = -1;
             CanSolve = true;
-    }
+        }
 
         public int Number { get { return number; } set { number = value; NotifyPropertyChanged(); } }
         public string[] Selections {
             get
             {
+                HashSet<string> setSelections = new HashSet<string>();
                 listSelections = Entity.all(typeof(Selection));
-                string[] nameSelections = new string[listSelections.Count];
                 int i = 0;
                 foreach (Selection ls in listSelections)
                 {
                     if (i == 0)
                         SelectionID = ls.ID;
-                    nameSelections[i] = ls.Name;
+                    setSelections.Add(ls.Name);
                     i++;
                 }
-                if (nameSelections.Length == 0)
+                if (setSelections.Count == 0)
                 {
                     CanSolve = false;
                     return new string[] { "Нет созданных выборок" };
                 }
-                else return nameSelections;
+                else
+                {
+                    return setSelections.ToArray();
+                }
+            }
+            set
+            {
+                selections = value;
+                NotifyPropertyChanged("Selections");
             }
         }
         public string[] LearningScenarios { get
@@ -77,33 +91,66 @@ namespace dms.view_models
                 else return nameLearningScenarios;
             }
         }
-        public string[] Preprocessings {
+        public string[] Preprocessings
+        {
             get
             {
+                List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                    .addCondition("Name", "=", SelectedSelection), typeof(Selection));
                 listTaskTemplate = Entity.all(typeof(TaskTemplate));
-                string[] nameTaskTemplate = new string[listTaskTemplate.Count];
+                string[] nameTaskTemplate = new string[selections.Count];
                 int i = 0;
-                foreach (TaskTemplate ls in listTaskTemplate)
+                foreach (Selection selection in selections)
                 {
+                    TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.getById(selection.TaskTemplateID, typeof(TaskTemplate));
                     if (i == 0)
-                        LearningScenarioID = ls.ID;
-                    nameTaskTemplate[i] = ls.Name;
+                        LearningScenarioID = taskTemplate.ID;
+                    nameTaskTemplate[i] = taskTemplate.Name;
                     i++;
                 }
                 if (nameTaskTemplate.Length == 0)
                 {
                     CanSolve = false;
-                    return new string[] { "Нет созданных сценариев" };
+                    return new string[] { "Нет созданных преобразований" };
                 }
                 else return nameTaskTemplate;
             }
+            set
+            {
+                preprocessing = value;
+                NotifyPropertyChanged("Preprocessings");
+            }
         }
-        public string SelectedSelection { get; set; }
+        public string SelectedSelection
+        {
+            get
+            {
+                return selectedSelection;
+            }
+            set
+            {
+                selectedSelection = value;
+                NotifyPropertyChanged("SelectedSelection");
+                Preprocessings = Preprocessings;
+                SelectedPreprocessing = Preprocessings[0];
+            }
+        }
         public bool CanSolve { get; set; }
         public string SelectedScenario { get; set; }
         public int SelectionID { get; set; }
         public int LearningScenarioID { get; set; }
-        public string SelectedPreprocessing { get; set; }
+        public string SelectedPreprocessing
+        {
+            get
+            {
+                return selectedPreprocessing;
+            }
+            set
+            {
+                selectedPreprocessing = value;
+                NotifyPropertyChanged("SelectedPreprocessing");
+            }
+        }
         public ICommand DeleteCommand { get { return deleteHandler; } }
         public List<Entity> listLearningScenarios { get; private set; }
         public List<Entity> listTaskTemplate { get; private set; }
