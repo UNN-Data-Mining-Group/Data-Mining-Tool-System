@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("desision-tree-lib")]
+[assembly: AssemblyTitle("decision-tree-lib")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("desision-tree-lib")]
+[assembly: AssemblyProduct("decision-tree-lib")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("57231031-f919-41a6-94b6-7b389e9fe978")]
+[assembly: Guid("33f1e3b3-a234-4fe0-bd5b-fa04ad0c9dd2")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //
