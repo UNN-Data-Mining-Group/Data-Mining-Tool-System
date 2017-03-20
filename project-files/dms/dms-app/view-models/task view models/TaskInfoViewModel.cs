@@ -96,7 +96,7 @@ namespace dms.view_models
                 SelectedTemplate = Templates[0];
             }
 
-            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task.ID, SelectedPreprocessing.PerformedTemplateId)), o => SelectedPreprocessing != null);
+            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task, SelectedPreprocessing.PerformedTemplateId)), o => SelectedPreprocessing != null);
         }
 
         public string TaskName { get; }

@@ -20,6 +20,11 @@ namespace dms.services.preprocessing.normalization
             }
         }
 
+        public List<string> getClasses()
+        {
+            return classes;
+        }
+
         public EnumeratedParameter(List<string> values)
         {
             classes = new List<string>();
@@ -64,8 +69,8 @@ namespace dms.services.preprocessing.normalization
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetLinearNormalizedFloat(value);
-            return Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            //double val = GetLinearNormalizedFloat(value);
+            return GetInt(value);//Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 
         public string GetFromNormalized(int value)
