@@ -15,7 +15,7 @@ namespace dms.view_models
             Content = new ObservableCollection<TreeSection>();
             for (int i = 0; i < trees.Length; i++)
             {
-                Content.Add(new SolverLeaf(task, trees[i], "Дерево решений", vm));
+                Content.Add(new SolverLeaf(task, trees[i], "DecisionTree", vm));
             }
         }
     }

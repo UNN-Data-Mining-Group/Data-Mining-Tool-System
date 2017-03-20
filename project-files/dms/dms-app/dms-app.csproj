@@ -225,6 +225,7 @@
     <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\SeparationOfDataSet.cs" />
     <Compile Include="view-models\solver view models\SolverCreationViewModel.cs" />
     <Compile Include="view-models\MainWindowViewModel.cs" />
     <Compile Include="view-models\selection view models\ParameterCreationViewModel.cs" />
@@ -428,6 +429,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\decision-tree-lib\decision-tree-lib.csproj">
+      <Project>{33f1e3b3-a234-4fe0-bd5b-fa04ad0c9dd2}</Project>
+      <Name>decision-tree-lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\dms-learning-algo\dms-learning-algo.vcxproj">
       <Project>{6a7958af-d58c-48b6-95d3-887a6d8face7}</Project>
       <Name>dms-learning-algo</Name>

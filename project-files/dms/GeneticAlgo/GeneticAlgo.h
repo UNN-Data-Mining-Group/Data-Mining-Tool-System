@@ -5,6 +5,6 @@
 namespace geneticAlgo
 {
 	float startGeneticAlgo(void** solvers, float** inputs, float* outputs, int count_row, int count_col,
-		float(*get_res)(void* solver, float* in), void(*set_weights)(void* solver, float* weights),
+		size_t(*get_res)( float* in, float* out, void* solver), void(*set_weights)(float* weights,void* solver),
 		int count_weights, int count_person, int count_epochs, int count_bests, float* res_weights);
 }

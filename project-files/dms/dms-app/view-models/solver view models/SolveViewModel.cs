@@ -7,6 +7,12 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using dms.tools;
+using dms.solvers.neural_nets.perceptron;
+using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.conv_net;
+using dms.solvers.neural_nets.ward_net;
+using dms.models;
+using dms.solvers;
 
 namespace dms.view_models
 {
@@ -22,29 +28,40 @@ namespace dms.view_models
         public models.LearnedSolver LearnedSolver { get; set; }
     }
 
-    public struct X
+    public class X : ViewmodelBase
     {
-        public string Value { get; set; }
+        private string value;
+        public string Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+                this.value = value;
+            }
+        }
         public string ParameterDescription { get; set; }
     }
 
-    public class SolvingInstance
+    public class SolvingInstance : ViewmodelBase
     {
         private ActionHandler deleteHandler;
 
-        public X[] X { get; set; }
+        public ObservableCollection<X> X { get; set; } 
         public ObservableCollection<string> Y { get; set; }
 
         public SolvingInstance(SolveViewModel vm, models.TaskTemplate template)
         {
             deleteHandler = new ActionHandler(() => vm.DeleteSolvingInstance(this), e => true);
             List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
-            List<X> inputParams = new List<X>();
+            X = new ObservableCollection<X>();
             foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
             {
-                inputParams.Add(new X { ParameterDescription = par.Name });
+                X.Add(new X { ParameterDescription = par.Name });
             }
-            X = inputParams.ToArray();
             Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);
         }
 
@@ -69,7 +86,7 @@ namespace dms.view_models
                 selectedLearning = value;
                 addHandler.RaiseCanExecuteChanged();
                 SolvingList.Clear();
-            }
+            } 
         }
         public ObservableCollection<SolvingInstance> SolvingList { get; }
         public ICommand AddSolvingInstance { get { return addHandler; } }
@@ -92,7 +109,7 @@ namespace dms.view_models
                 models.LearningQuality quality = (qualities != null && qualities.Count > 0) ? qualities[0] : null;
                 learningList.Add(new LearningInfo
                 {
-                    SelectionName = selection.Name,
+                    SelectionName = selection.Name, 
                     LearningScenarioName = scenario.Name,
                     PreprocessingName = template.Name,
                     TestMistake = (quality != null) ? quality.MistakeTest : 0,
@@ -122,19 +139,27 @@ namespace dms.view_models
 
         public void Solve()
         {
-            models.LearnedSolver solver = this.SelectedLearning.LearnedSolver;            
-            Random r = new Random();
+            ISolver isolver = FactorySolver(this.SelectedLearning.LearnedSolver);
             foreach (var item in SolvingList)
             {
-                float[] y = solver.Soul.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
+                float[] y = isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
                 for (int i = 0; i < item.Y.Count; i++)
                 {
-                    item.Y[i] = r.NextDouble().ToString();
+                    item.Y[i] = Convert.ToString(y[i]);
                 }                
-            }
+            } 
         }
 
-        public string[] Solutions { get { return new string[] { "Решение 1", "Решение 2" }; } }
-        public string SelectedSolution { get; set; }
+        public ISolver FactorySolver(LearnedSolver ls)
+        {
+            if (ls.Soul is INeuralNetwork)
+            {
+                INeuralNetwork isolver = ls.Soul as INeuralNetwork;
+                isolver.PushNativeParameters();
+                return isolver;
+            }
+            // New ifelse will be added for desicion tree;
+            else throw new EntryPointNotFoundException();
+        }
     }
 }
