@@ -172,7 +172,7 @@ namespace dms.view_models
             CanCreateTemplate = true;
 
             Parameters.Clear();
-            string[] paramTypes = PreprocessingManager.PrepManager.getParametersTypes(FilePath, delimiter.ToCharArray()[0], HasHeader);
+            string[] paramTypes = PreprocessingManager.PrepManager.getParametersTypes(FilePath, delimiter.ToCharArray()[0], HasHeader, EnumPercent);
             string[] parametersName = null;
             if (HasHeader)
             {

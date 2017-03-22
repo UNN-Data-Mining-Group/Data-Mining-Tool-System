@@ -38,6 +38,8 @@ namespace dms.services.preprocessing.normalization
 
             countValues = (maxValue - minValue) + 1;
             countNumbers = Convert.ToInt32(Math.Log10(2 * countValues)) + 1;
+
+            centerValue = (minValue + maxValue) / 2;
         }
 
         public int GetInt(string value)
@@ -50,28 +52,69 @@ namespace dms.services.preprocessing.normalization
             return temp;
         }
 
-        public float GetNormalizedFloat(string value)
+/*        public float GetNormalizedFloat(string value)
         {
-            int val = GetInt(value);
-            float step = (float)1.0 / countValues;
-            float temp = minValue;
-            for (int i = 0; i < countValues; i++)
-            {
-                if (Math.Abs(val - temp) < 1e-10)
-                {
-                    return (float) (step / 2.0 + i * step);
-                }
-                temp++;
-            }
+            float val = (float) GetInt(value);
+               float step = (float)1.0 / countValues;
+               float temp = minValue;
+               for (int i = 0; i < countValues; i++)
+               {
+                   if (Math.Abs(val - temp) < 1e-10)
+                   {
+                       return (float) (step / 2.0 + i * step);
+                   }
+                   temp++;
+               }
             return float.NaN;
+            return (val - minValue) / (maxValue - minValue);
+        }*/
+
+        public float GetLinearNormalizedFloat(string value)
+        {
+            float val = GetInt(value);
+            return (float)(val - minValue) / (maxValue - minValue);
+        }
+
+        public float GetNonlinearNormalizedFloat(string value)
+        {
+            float val = GetInt(value);
+            return (float)(1 / (Math.Exp(-a * (val - centerValue)) + 1));
         }
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetNormalizedFloat(value);
-            return Convert.ToInt32(val * Math.Pow(2, countNumbers)) + minValue;
+            double val = GetLinearNormalizedFloat(value);
+            return Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 
-        private int minValue, maxValue, countValues, countNumbers;
+        public string GetFromNormalized(int value)
+        {
+            return GetFromLinearNormalized((float)(value / Math.Pow(10, countNumbers)));
+        }
+
+        public string GetFromLinearNormalized(float value)
+        {
+            if (value < 0.0f)
+                value = 0.0f;
+            else if (value > 1.0f)
+                value = 1.0f;
+
+            float size = maxValue - minValue;
+            return Convert.ToString(minValue + value * size);
+        }
+
+        public string GetFromNonlinearNormalized(float value)
+        {
+            if (value < 0.0f)
+                value = 0.0f;
+            else if (value > 1.0f)
+                value = 1.0f;
+
+            float output = (float)(centerValue - 1 / a * Math.Log(1 / value - 1));
+            return Convert.ToString(output);
+        }
+
+        private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
+        private int minValue, maxValue, countValues, countNumbers, centerValue;
     }
 }

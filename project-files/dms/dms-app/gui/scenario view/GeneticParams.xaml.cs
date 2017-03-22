@@ -23,7 +23,7 @@ namespace dms.gui.scenario_view
     {
         public GeneticParams()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
     }
 }

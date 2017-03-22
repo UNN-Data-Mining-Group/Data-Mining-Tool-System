@@ -35,9 +35,9 @@ namespace dms.services.preprocessing
             helper.updateTask(taskId, parameterCount, selectionCount);
         }
 
-        public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader)
+        public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader, float enumPercent)
         {
-            return Parser.SelectionParser.getParametersTypes(filePath, delimiter, hasHeader);
+            return Parser.SelectionParser.getParametersTypes(filePath, delimiter, hasHeader, enumPercent);
         }
 
         public string[] getParametersName()

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:dms.gui.scenario_view"
              mc:Ignorable="d" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
@@ -18,11 +19,11 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Label Content="{Binding ParamsName[0]}" Grid.Column="0" Grid.Row="0"/>
-        <TextBox Text="{Binding ParamsValue[0]}" Grid.Column="1" Grid.Row="0"/>
+        <xctk:IntegerUpDown Name="Count_person" Value="{Binding ParamsValue[0]}" Grid.Column="1" Grid.Row="0" Minimum="1"/>
         <Label Content="{Binding ParamsName[1]}" Grid.Column="0" Grid.Row="1"/>
-        <TextBox Text="{Binding ParamsValue[1]}" Grid.Column="1" Grid.Row="1"/>
+        <xctk:IntegerUpDown Name="Count_epoch" Value="{Binding ParamsValue[1]}" Grid.Column="1" Grid.Row="1" Minimum="1"/>
         <Label Content="{Binding ParamsName[2]}" Grid.Column="0" Grid.Row="2"/>
-        <TextBox Text="{Binding ParamsValue[2]}" Grid.Column="1" Grid.Row="2"/>
+        <xctk:IntegerUpDown Name="Count_best" Value="{Binding ParamsValue[2]}" Grid.Column="1" Grid.Row="2" Minimum="1" Maximum="{Binding ElementName=Count_person,Path=Value}"/>
         <Label Content="{Binding ParamsName[3]}" Grid.Column="0" Grid.Row="3"/>
         <TextBox Text="{Binding ParamsValue[3]}" Grid.Column="1" Grid.Row="3"/>
     </Grid>
