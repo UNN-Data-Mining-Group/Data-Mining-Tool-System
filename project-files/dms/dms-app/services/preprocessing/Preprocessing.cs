@@ -207,8 +207,8 @@ namespace dms.services.preprocessing
                 return p.GetNonlinearNormalizedFloat(((ValueParameter)value).Value).ToString();
             } else
             {
-                return "0";
-              //  return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();
+               // return "0";
+                return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();
             }
         }
 

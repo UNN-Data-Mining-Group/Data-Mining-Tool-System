@@ -81,13 +81,12 @@ namespace dms.view_models
                 {
                     PreprocessingViewModel.PreprocessingTemplate pp =
                         (PreprocessingViewModel.PreprocessingTemplate)template.PreprocessingParameters;
-                    Dictionary<Parameter, string> dictionary = pp.get();
-                    Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[dictionary.Count];
-                    int i = 0;
-                    foreach (KeyValuePair<Parameter, string> kp in dictionary)
+                    List<Parameter> parameters = pp.getParameters();
+                    List<string> types = pp.getTypes();
+                    Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[parameters.Count];
+                    for(int i = 0; i < parameters.Count; i++)
                     {
-                        tuple[i] = new Tuple<Parameter, string>(kp.Key, kp.Value);
-                        i++;
+                        tuple[i] = new Tuple<Parameter, string>(parameters[i], types[i]);
                     }
                     PreprocessingList[index] = new Preprocessing(pp.PreprocessingName, pp.BaseTemplate.Name, template.Name, tuple, template.ID);
 

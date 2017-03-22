@@ -70,7 +70,7 @@ namespace dms.services.preprocessing.normalization
         public int GetNormalizedInt(string value)
         {
             //double val = GetLinearNormalizedFloat(value);
-            return GetInt(value);//Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            return GetInt(value) + 1;//Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 
         public string GetFromNormalized(int value)

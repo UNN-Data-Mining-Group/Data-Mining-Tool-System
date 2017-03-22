@@ -13,11 +13,10 @@ namespace dms.view_models
     public class PreprocessingParameterViewModel
     {
         public int Position { get; set; }
-        public int Id { get; set; }
         public int ParameterId { get; set; }
         public string ParameterName { get; set; }
         public string Type { get; set; }
-        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "бинаризация", "без предобработки" }; } }//, "нормализация 3 (к int)"
+        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "нормализация 3 (к int)", "бинаризация", "без предобработки" }; } }
     }
 
     public class PreprocessingViewModel : ViewmodelBase
@@ -40,15 +39,30 @@ namespace dms.view_models
         {
             public string PreprocessingName { get; set; }
             public Pair BaseTemplate { get; set; }
-            public Dictionary<Parameter, string> parameters = new Dictionary<Parameter, string>();
-            public int sizeS;
+            public List<Parameter> parameters = new List<Parameter>();
+            public List<string> types = new List<string>();
 
-            public void set(Parameter p, string type, int index)
+            public void addParameter(Parameter p)
             {
-                parameters.Add(p, type);
+                parameters.Add(p);
             }
 
-            public Dictionary<Parameter, string> get()
+            public void addTypes(List<string> ts)
+            {
+                types = types.Concat(ts).ToList();
+            }
+
+            public List<string> getTypes()
+            {
+                return types;
+            }
+
+            public void addParameters(List<Parameter> ps)
+            {
+                parameters = parameters.Concat(ps).ToList();
+            }
+
+            public List<Parameter> getParameters()
             {
                 return parameters;
             }
@@ -122,9 +136,21 @@ namespace dms.view_models
                     PerformedTemplate = pair;
                 }
 
-                pair.Id = BaseTemplateIdList[0];
-                pair.Name = BaseTemplateList[0];
-                BaseTemplate = pair;
+                TaskTemplate template_temp = ((TaskTemplate)services.DatabaseManager.SharedManager.entityById(TemplateId, typeof(TaskTemplate)));
+                PreprocessingTemplate pt = (PreprocessingTemplate)template_temp.PreprocessingParameters;
+                
+                if (pt == null)
+                {
+                    Pair pair_2 = new Pair();
+                    pair_2.Id = BaseTemplateIdList[0];
+                    pair_2.Name = BaseTemplateList[0];
+                    BaseTemplate = pair_2;
+                }
+                else
+                {
+                    BaseTemplate = pt.BaseTemplate;
+                }
+                
 
                 List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
                     .addCondition("TaskTemplateID", "=", TemplateId.ToString()), typeof(models.Parameter));
@@ -135,6 +161,7 @@ namespace dms.view_models
                     PreprocessingParameters[index] = new PreprocessingParameterViewModel();
                     PreprocessingParameters[index].ParameterId = entity.ID;
                     PreprocessingParameters[index].ParameterName = ((models.Parameter)entity).Name;
+                    PreprocessingParameters[index].Position = ((models.Parameter)entity).Index;
                     if (template == null)
                     {
                         PreprocessingParameters[index].Type = "без предобработки";
@@ -142,9 +169,9 @@ namespace dms.view_models
                     else
                     {
                         PreprocessingTemplate pp = (PreprocessingTemplate) template.PreprocessingParameters;
-                        Dictionary<Parameter, string> dictionary = pp.get();
-                        Parameter[] paramss = dictionary.Keys.ToArray();
-                        PreprocessingParameters[index].Type = paramss[index].Type;
+                        List<Parameter> list = pp.getParameters();
+                        List<string> types = pp.getTypes();
+                        PreprocessingParameters[index].Type = types[index];
                     }
                     index++;
                 }
@@ -158,6 +185,17 @@ namespace dms.view_models
 
         public void Create()
         {
+            if (PerformedTemplate != null)
+            {
+                for (int i = 0; i < PerformedTemplateList.Count(); i++)
+                {
+                    if (PerformedTemplateList[i].Equals(PerformedTemplate.Name))
+                    {
+                        PerformedTemplate.Id = PerformedTemplateIdList[i];
+                        break;
+                    }
+                }
+            }
             if (BaseTemplate != null)
             {
                 for (int i = 0; i < BaseTemplateList.Count(); i++)
@@ -168,85 +206,139 @@ namespace dms.view_models
                         break;
                     }
                 }
+
+                List<Entity> ps = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                            .addCondition("TaskTemplateID", "=", BaseTemplate.Id.ToString()), typeof(models.Parameter));
+                for (int i = 0; i < PreprocessingParameters.Count(); i++)
+                {
+                    PreprocessingParameters[i].ParameterId = ps[i].ID;
+                    PreprocessingParameters[i].ParameterName = ((models.Parameter)ps[i]).Name;
+                }
+
                 List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", BaseTemplate.Id.ToString()), typeof(Selection));
 
-                int taskTemplateId;
+                int newTaskTemplateId;
+                PreprocessingTemplate pp = new PreprocessingTemplate();
                 if (IsUsingExitingTemplate)
                 {
-                    taskTemplateId = TemplateId;
+                    newTaskTemplateId = TemplateId;
                 }
                 else
                 {
-                    PreprocessingTemplate pp = new PreprocessingTemplate();
                     pp.PreprocessingName = PreprocessingName;
                     pp.BaseTemplate = BaseTemplate;
-
-                    List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
-                                .addCondition("TaskTemplateID", "=", BaseTemplate.Id.ToString()), typeof(models.Parameter));
-                    for (int i = 0; i < PreprocessingParameters.Count(); i++)
-                    {
-                        PreprocessingParameters[i].ParameterId = parameters[i].ID;
-                        PreprocessingParameters[i].ParameterName = ((models.Parameter)parameters[i]).Name;
-                    }
-                    string templateName = (NewTemplateName == null || NewTemplateName == "") ? "New Template" : NewTemplateName;
-                     
-                    taskTemplateId = new DataHelper().addTaskTemplate(templateName, Task.ID, pp);
+                    string templateName = (NewTemplateName == null || NewTemplateName == "") ? "New Preprocessing Template" : NewTemplateName;
+                    newTaskTemplateId = new DataHelper().addTaskTemplate(templateName, Task.ID, pp);
                 }
+
+                List<PreprocessingParameterViewModel> preprocessingParametersTemp = new List<PreprocessingParameterViewModel>();
+                List<string> types =  new List<string>();
+                List<Parameter> parameters =  new List<Parameter>();
+
                 foreach (Entity sel in selections)
                 {
-                    int newSelectionId = -1;
-                    if (!IsUsingExitingTemplate)
-                    {
-                        newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
-                            ((Selection)sel).Name,
-                            ((Selection)sel).RowCount, Task.ID, taskTemplateId);
-                    }
-
+                    int newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
+                            ((Selection)sel).Name, ((Selection)sel).RowCount, Task.ID, newTaskTemplateId);
                     int oldSelectionId = sel.ID;
-                    int index = 1;
-                    PreprocessingParameterViewModel[] preprocessingParametersTemp = null;
                     foreach (PreprocessingParameterViewModel prepParam in PreprocessingParameters)
                     {
                         string prepType = prepParam.Type;
                         int oldParamId = prepParam.ParameterId;
-                        int parameterPos = index;
 
                         if ("бинаризация".Equals(prepType))
                         {
-                            List<Entity> newParameters = PreprocessingManager.PrepManager
-                                .getNewParametersForBinarizationType(oldSelectionId, taskTemplateId, oldParamId);
-                            int i = 0;
-                            preprocessingParametersTemp = new PreprocessingParameterViewModel[newParameters.Count];
+                            bool canCreate = true;
+                            List<Entity> newParameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                            .addCondition("TaskTemplateID", "=", newTaskTemplateId.ToString()), typeof(models.Parameter));
+                            List<Entity> newAddedParameters = new List<Entity>();
+                            List<string> classes = PreprocessingManager.PrepManager.getClasses(oldSelectionId, newTaskTemplateId, oldParamId);
                             foreach (Entity entity in newParameters)
                             {
-                                preprocessingParametersTemp[i] = new PreprocessingParameterViewModel();
-                                preprocessingParametersTemp[i].Position = i + 1;
-                              //  preprocessingParametersTemp[i].Id = entity.ID;// prepParam.ParameterId;
-                                preprocessingParametersTemp[i].ParameterId = entity.ID;
-                                preprocessingParametersTemp[i].ParameterName = ((models.Parameter)entity).Name;
-                                preprocessingParametersTemp[i].Type = "бинаризация";
+                                //TypeParameter type = getTypeParameter(prepType, oldParamId);
+                                if (classes.Contains(((models.Parameter)entity).Name))
+                                    //(((models.Parameter)entity).Name.Equals(prepParam.ParameterName)) && ((models.Parameter)entity).Type.Equals(type)) ?????
+                                {
+                                    newAddedParameters.Add(entity);
+                                    canCreate = false;
+                                }
+                            }
+                            if (canCreate)
+                            {
+                                newParameters = PreprocessingManager.PrepManager.getNewParametersForBinarizationType(oldSelectionId, newTaskTemplateId, oldParamId);
+                            }
+                            else
+                            {
+                                newParameters = newAddedParameters;
+                            }
+                            
+                            int i = 0;
+                            foreach (Entity entity in newParameters)
+                            {
+                                PreprocessingParameterViewModel ppVM = new PreprocessingParameterViewModel();
+                                ppVM.Position = i + 1;
+                                ppVM.ParameterId = entity.ID;
+                                ppVM.ParameterName = ((models.Parameter)entity).Name;
+                                ppVM.Type = "бинаризация";
+                                if (canCreate)
+                                {
+                                    preprocessingParametersTemp.Add(ppVM);
+                                    types.Add("бинаризация");
+                                    parameters.Add(new view_models.Parameter(ppVM.ParameterName, ppVM.Type, ((models.Parameter)entity).Comment));
+                                }
+                                
                                 i++;
-                                index++;
-                                //int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId
                                 PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, i - 1, entity.ID);
                                 continue;
                             }
                         }
                         else
                         {
-                            models.Parameter param = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
+                            models.Parameter oldParam = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
+                            
                             TypeParameter type = getTypeParameter(prepType, oldParamId);
-                            int newParamId = new DataHelper().addOneParameter(prepParam.ParameterName, param.Comment, taskTemplateId, prepParam.Position, 
-                                param.IsOutput, type);
-                            PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPos, newParamId);
-                            index++;
+                            bool canCreate = true;
+                            int newParamId = -1;
+                            List<Entity> newParameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                            .addCondition("TaskTemplateID", "=", newTaskTemplateId.ToString()), typeof(models.Parameter));
+                            foreach (Entity entity in newParameters)
+                            {
+                                if (((models.Parameter)entity).Name.Equals(prepParam.ParameterName) && ((models.Parameter)entity).Type.Equals(type))
+                                {
+                                    newParamId = entity.ID;
+                                    canCreate = false;
+                                    break;
+                                }
+                            }
+                            if (canCreate)
+                            {
+                                newParamId = new DataHelper().addOneParameter(prepParam.ParameterName, oldParam.Comment, newTaskTemplateId, prepParam.Position,
+                                    oldParam.IsOutput, type);
+                                PreprocessingParameterViewModel ppVM = new PreprocessingParameterViewModel();
+                                ppVM.ParameterName = prepParam.ParameterName;
+                                ppVM.Position = prepParam.Position;
+                                ppVM.Type = prepParam.Type;
+                                ppVM.ParameterId = newParamId;
+
+                                parameters.Add(new view_models.Parameter(prepParam.ParameterName, prepParam.Type, oldParam.Comment));
+                                types.Add(prepType);
+                                preprocessingParametersTemp.Add(ppVM);
+                            }
+                            
+                            PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, prepParam.Position, newParamId);
                         }
                     }
-                    if (preprocessingParametersTemp != null)
-                    {
-                        PreprocessingParameters = PreprocessingParameters.Concat(preprocessingParametersTemp).ToArray();
-                    }
+                }
+                if (parameters != null && types != null)
+                {
+                    pp.addParameters(parameters);
+                    pp.addTypes(types);
+                    PreprocessingManager.PrepManager.updateTaskTemplate(newTaskTemplateId, pp);
+                }
+
+                if (preprocessingParametersTemp != null)
+                {
+                    PreprocessingParameters = preprocessingParametersTemp.ToArray();
                 }
             }
             

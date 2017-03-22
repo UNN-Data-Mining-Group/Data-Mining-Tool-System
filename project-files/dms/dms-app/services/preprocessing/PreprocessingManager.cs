@@ -35,6 +35,12 @@ namespace dms.services.preprocessing
             helper.updateTask(taskId, parameterCount, selectionCount);
         }
 
+        public void updateTaskTemplate(int taskTemplateId, view_models.PreprocessingViewModel.PreprocessingTemplate pp)
+        {
+            DataHelper helper = new DataHelper();
+            helper.updateTaskTemplate(taskTemplateId, pp);
+        }
+
         public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader, float enumPercent)
         {
             return Parser.SelectionParser.getParametersTypes(filePath, delimiter, hasHeader, enumPercent);
@@ -75,22 +81,8 @@ namespace dms.services.preprocessing
         public List<Entity> getNewParametersForBinarizationType(int oldSelectionId, int newTemplateId, int oldParamId)
         {
             models.Parameter oldParam = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
-            List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
-                .addCondition("SelectionID", "=", oldSelectionId.ToString()), typeof(SelectionRow));
-
-            List<string> oldValuesForOldParamId = new List<string>();
-            foreach (Entity selRow in oldSelectionRows)
-            {
-                int selectionRowId = selRow.ID;
-                List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
-                        .addCondition("ParameterID", "=", oldParamId.ToString()).
-                        addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
-                oldValuesForOldParamId.Add(((ValueParameter)value[0]).Value);
-            }
-
-            EnumeratedParameter p = new EnumeratedParameter(oldValuesForOldParamId);
-            List<string> classes = p.getClasses();
-            List<Entity> listNewParams = new List<Entity>(classes.Count);
+            List<string> classes = getClasses(oldSelectionId, newTemplateId, oldParamId);
+            List <Entity> listNewParams = new List<Entity>(classes.Count);
             int index = 0;
             foreach (string cl in classes)
             {
@@ -111,6 +103,26 @@ namespace dms.services.preprocessing
                 }
             }
             return lst;
+        }
+        public List<string> getClasses(int oldSelectionId, int newTemplateId, int oldParamId)
+        {
+            models.Parameter oldParam = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
+            List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", oldSelectionId.ToString()), typeof(SelectionRow));
+
+            List<string> oldValuesForOldParamId = new List<string>();
+            foreach (Entity selRow in oldSelectionRows)
+            {
+                int selectionRowId = selRow.ID;
+                List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                        .addCondition("ParameterID", "=", oldParamId.ToString()).
+                        addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
+                oldValuesForOldParamId.Add(((ValueParameter)value[0]).Value);
+            }
+
+            EnumeratedParameter p = new EnumeratedParameter(oldValuesForOldParamId);
+            List<string> classes = p.getClasses();
+            return classes;
         }
     }
 }

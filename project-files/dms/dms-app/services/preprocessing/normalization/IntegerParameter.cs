@@ -81,11 +81,11 @@ namespace dms.services.preprocessing.normalization
             return (float)(1 / (Math.Exp(-a * (val - centerValue)) + 1));
         }
 
-/*        public int GetNormalizedInt(string value)
+        public int GetNormalizedInt(string value)
         {
             double val = GetLinearNormalizedFloat(value);
             return Convert.ToInt32(val * Math.Pow(10, countNumbers));
-        }*/
+        }
 
         public string GetFromNormalized(int value)
         {
