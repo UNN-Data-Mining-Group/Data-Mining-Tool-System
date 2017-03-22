@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="decision-tree\DecisionTree.cs" />
+    <Compile Include="decision-tree\DecisionTreeLearning.cs" />
     <Compile Include="decision-tree\GiniCalculator.cs" />
     <Compile Include="decision-tree\LearningClassInfo.cs" />
     <Compile Include="decision-tree\LearningTable.cs" />
