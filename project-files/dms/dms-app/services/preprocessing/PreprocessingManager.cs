@@ -35,6 +35,12 @@ namespace dms.services.preprocessing
             helper.updateTask(taskId, parameterCount, selectionCount);
         }
 
+        public void updateTaskTemplate(int taskTemplateId, view_models.PreprocessingViewModel.PreprocessingTemplate pp)
+        {
+            DataHelper helper = new DataHelper();
+            helper.updateTaskTemplate(taskTemplateId, pp);
+        }
+
         public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader, float enumPercent)
         {
             return Parser.SelectionParser.getParametersTypes(filePath, delimiter, hasHeader, enumPercent);
@@ -67,11 +73,56 @@ namespace dms.services.preprocessing
             return Preprocessing.PreprocessingObj.addNewEntitiesForPreprocessing(selectionName, countRows, taskTemplateId);
         }
 
-        public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, 
-            int paramId, string prepType, int paramCount, int parameterPosition, bool canAdd)
+        public void executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
-            Preprocessing.PreprocessingObj.executePreprocessing(taskTemplateId, newSelectionId, selectionId, 
-                paramId, prepType, paramCount, parameterPosition, canAdd);
+            Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId);
+        }
+
+        public List<Entity> getNewParametersForBinarizationType(int oldSelectionId, int newTemplateId, int oldParamId)
+        {
+            models.Parameter oldParam = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
+            List<string> classes = getClasses(oldSelectionId, newTemplateId, oldParamId);
+            List <Entity> listNewParams = new List<Entity>(classes.Count);
+            int index = 0;
+            foreach (string cl in classes)
+            {
+                index++;
+                models.Parameter parameter = new DataHelper().addParameter(cl, oldParam.Comment, newTemplateId, index, oldParam.IsOutput, TypeParameter.Int);
+                listNewParams.Add(parameter);
+            }
+            DatabaseManager.SharedManager.insertMultipleEntities(listNewParams);
+
+            List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", newTemplateId.ToString()), typeof(models.Parameter));
+            List<Entity> lst = new List<Entity>();
+            foreach(Entity en in parameters)
+            {
+                if (classes.Contains(((models.Parameter) en).Name))
+                {
+                    lst.Add(en);
+                }
+            }
+            return lst;
+        }
+        public List<string> getClasses(int oldSelectionId, int newTemplateId, int oldParamId)
+        {
+            models.Parameter oldParam = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
+            List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", oldSelectionId.ToString()), typeof(SelectionRow));
+
+            List<string> oldValuesForOldParamId = new List<string>();
+            foreach (Entity selRow in oldSelectionRows)
+            {
+                int selectionRowId = selRow.ID;
+                List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                        .addCondition("ParameterID", "=", oldParamId.ToString()).
+                        addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
+                oldValuesForOldParamId.Add(((ValueParameter)value[0]).Value);
+            }
+
+            EnumeratedParameter p = new EnumeratedParameter(oldValuesForOldParamId);
+            List<string> classes = p.getClasses();
+            return classes;
         }
     }
 }

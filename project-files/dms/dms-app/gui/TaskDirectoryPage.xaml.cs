@@ -145,7 +145,7 @@ namespace dms.gui
         private void CreatePreprocessingCreationPage(PreprocessingViewModel obj)
         {
             PreprocessingCreationPage t = new PreprocessingCreationPage(obj);
-            OnShowPage?.Invoke(obj.TaskName + "/Создание преобразования", t);
+            OnShowPage?.Invoke(obj.Task.Name + "/Создание преобразования", t);
         }
 
         public void CreateSolutionCreationPage(CreateSolutionViewModel obj)
