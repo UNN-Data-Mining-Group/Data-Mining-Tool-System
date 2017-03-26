@@ -19,12 +19,12 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Label Content="{Binding ParamsName[0]}" Grid.Column="0" Grid.Row="0"/>
-        <xctk:IntegerUpDown Name="Count_person" Value="{Binding ParamsValue[0]}" Grid.Column="1" Grid.Row="0" Minimum="1"/>
+        <xctk:IntegerUpDown Name="Count_person" Value="{Binding ParamsValue[0]}" Grid.Column="1" Grid.Row="0" Minimum="2"/>
         <Label Content="{Binding ParamsName[1]}" Grid.Column="0" Grid.Row="1"/>
         <xctk:IntegerUpDown Name="Count_epoch" Value="{Binding ParamsValue[1]}" Grid.Column="1" Grid.Row="1" Minimum="1"/>
         <Label Content="{Binding ParamsName[2]}" Grid.Column="0" Grid.Row="2"/>
-        <xctk:IntegerUpDown Name="Count_best" Value="{Binding ParamsValue[2]}" Grid.Column="1" Grid.Row="2" Minimum="1" Maximum="{Binding ElementName=Count_person,Path=Value}"/>
+        <xctk:IntegerUpDown Name="Percent_best" Value="{Binding ParamsValue[2]}" Grid.Column="1" Grid.Row="2" Minimum="1" Maximum="100"/>
         <Label Content="{Binding ParamsName[3]}" Grid.Column="0" Grid.Row="3"/>
-        <TextBox Text="{Binding ParamsValue[3]}" Grid.Column="1" Grid.Row="3"/>
+        <xctk:IntegerUpDown Name="Mutation_percent" Value="{Binding ParamsValue[3]}" Grid.Column="1" Grid.Row="3" Minimum="0" Maximum="100"/>
     </Grid>
 </UserControl>

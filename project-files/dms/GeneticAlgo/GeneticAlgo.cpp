@@ -36,7 +36,7 @@ namespace geneticAlgo
 		fout.close();
 #endif // GENETIC_DEBUG
 
-		int person_num, epoch_num = 0, best_num, weight_num;
+		int person_num, epoch_num, best_num, weight_num;
 		float* err = (float*)malloc(count_person * sizeof(float));
 #ifdef GENETIC_DEBUG
 		fout.open("Genetic_debug.txt", ios::app);
@@ -71,23 +71,53 @@ namespace geneticAlgo
 			}
 			set_weights(new_weights[person_num], solvers[person_num]);
 		}
+		epoch_num = 0;
 #ifdef GENETIC_DEBUG
 		fout.open("Genetic_debug.txt", ios::app);
 		fout << "Created and set new_weights" << endl;
 		fout.close();
 #endif // GENETIC_DEBUG
-
 		while (epoch_num < count_epochs)
 		{
 			for (person_num = 0; person_num < count_person; person_num++)
 			{
 				int row_num;
+#ifdef GENETIC_DEBUG
+				fout.open("Genetic_debug.txt", ios::app);
+				fout << "Strat for person_num =" << person_num << endl;
+				fout.close();
+#endif // GENETIC_DEBUG
 				err[person_num] = 0;
+#ifdef GENETIC_DEBUG
+				fout.open("Genetic_debug.txt", ios::app);
+				fout << "Err =" << err[person_num] << endl;
+				fout.close();
+#endif // GENETIC_DEBUG
 				for (row_num = 0; row_num < count_row; row_num++)
 				{
+#ifdef GENETIC_DEBUG
+					int count_col_tmp = 0;
+					fout.open("Genetic_debug.txt", ios::app);
+					fout << "Strat get res for row_num =" << row_num << endl;
+					for (count_col_tmp = 0; count_col_tmp < count_col; count_col_tmp++)
+					{
+						fout << "Inputs " << count_col_tmp<<" = "<<inputs[row_num][count_col_tmp] << endl;
+					}
+					fout.close();
+#endif // GENETIC_DEBUG
 					get_res( inputs[row_num], tmp_res[person_num],solvers[person_num]);
+#ifdef GENETIC_DEBUG
+					fout.open("Genetic_debug.txt", ios::app);
+					fout << "Finished" << endl;					
+					fout.close();
+#endif // GENETIC_DEBUG
 					err[person_num] += (outputs[row_num] - tmp_res[person_num][0]) * (outputs[row_num] - tmp_res[person_num][0]);
 				}
+#ifdef GENETIC_DEBUG
+				fout.open("Genetic_debug.txt", ios::app);
+				fout << "Finished for person_num =" << person_num << endl;
+				fout.close();
+#endif // GENETIC_DEBUG
 				err[person_num] /= count_row;
 			}
 #ifdef GENETIC_DEBUG
@@ -165,30 +195,32 @@ namespace geneticAlgo
 #endif // GENETIC_DEBUG
 			for (best_num = 0; best_num < count_bests; best_num += 2)
 			{
-				int tmp_mask, tmp_l, tmp_r, mut_mask;
+				int tmp_mask, tmp_l, tmp_r, mut_mask, res_tmp;
 				float is_mut;
 				for (weight_num = 0; weight_num < count_weights; weight_num++)
 				{
 					tmp_mask = rand();
-					tmp_l = (int)new_weights[arr_best_nums[best_num]] & tmp_mask;
-					tmp_r = (int)new_weights[arr_best_nums[best_num + 1]] & (!tmp_mask);
-					new_weights[arr_bad_nums[best_num]][weight_num] = (float)(tmp_l | tmp_r);
+					tmp_l = (*((int*)(&(new_weights[arr_best_nums[best_num]])))) & tmp_mask;
+					tmp_r = (*((int*)(&(new_weights[arr_best_nums[best_num + 1]])))) & (!tmp_mask);
+					res_tmp = (tmp_l | tmp_r);
+					new_weights[arr_bad_nums[best_num]][weight_num] = (float)(*((float*)(&res_tmp)));
 					is_mut = rand() / RAND_MAX;
 					if (is_mut < mutation_percent)
 					{
 						mut_mask = rand();
-						new_weights[arr_bad_nums[best_num]][weight_num] = (float)((int)new_weights[arr_bad_nums[best_num]][weight_num] ^ mut_mask);
+						new_weights[arr_bad_nums[best_num]][weight_num] = (float)((*((int*)(&(new_weights[arr_bad_nums[best_num]][weight_num])))) ^ mut_mask);
 					}
 
 
-					tmp_l = (int)new_weights[arr_best_nums[best_num]] & (!tmp_mask);
-					tmp_r = (int)new_weights[arr_best_nums[best_num + 1]] & tmp_mask;
-					new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)(tmp_l | tmp_r);
+					tmp_l = (*((int*)(&(new_weights[arr_best_nums[best_num]])))) & (!tmp_mask);
+					tmp_r = (*((int*)(&(new_weights[arr_best_nums[best_num + 1]])))) & tmp_mask;
+					res_tmp = (tmp_l | tmp_r);
+					new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)(*((float*)(&res_tmp)));
 					is_mut = rand() / RAND_MAX;
 					if (is_mut < mutation_percent)
 					{
 						mut_mask = rand();
-						new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)((int)new_weights[arr_bad_nums[best_num + 1]][weight_num] ^ mut_mask);
+						new_weights[arr_bad_nums[best_num + 1]][weight_num] = (float)((*((int*)(&(new_weights[arr_bad_nums[best_num + 1]][weight_num])))) ^ mut_mask);
 					}
 
 				}
@@ -202,7 +234,18 @@ namespace geneticAlgo
 		for (weight_num = 0; weight_num < count_weights; weight_num++)
 		{
 			res_weights[weight_num] = new_weights[arr_best_nums[0]][weight_num];
+
 		}
+#ifdef GENETIC_DEBUG
+			fout.open("Genetic_debug.txt", ios::app);
+			fout << "Weights values:" << endl;
+			for (weight_num = 0; weight_num < count_weights; weight_num++)
+			{
+				fout <<res_weights[weight_num] << endl;
+
+			}
+			fout.close();
+#endif // GENETIC_DEBUG
 #ifdef GENETIC_DEBUG
 		fout.open("Genetic_debug.txt", ios::app);
 		fout << "Was set res weights" << endl;
