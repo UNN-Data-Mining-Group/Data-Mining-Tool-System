@@ -20,14 +20,16 @@ namespace dms.view_models
             models.TaskSolver[] per, 
             models.TaskSolver[] des, 
             models.TaskSolver[] wards, 
-            models.TaskSolver[] convnets, string[] solv, 
+            models.TaskSolver[] convnets, 
+            models.TaskSolver[] kohnets,
+            string[] solv, 
             TaskTreeViewModel vm)
         {
             Title = task.Name;
             Content = new ObservableCollection<TreeSection>
             {
                 new SelectionTree(task, sel, vm),
-                new SolverTree(task, per, des, wards, convnets, vm),
+                new SolverTree(task, per, des, wards, convnets, kohnets, vm),
                 new SolutionsTree(Title, solv, vm)
             };
             deleteCommand = new ActionHandler(() => vm.UpdateTaskTree(), e => true);

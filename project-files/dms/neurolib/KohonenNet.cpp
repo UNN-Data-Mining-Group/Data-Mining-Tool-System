@@ -3,10 +3,101 @@
 
 using namespace nnets_kohonen;
 
-NeuronIndex nnets_kohonen::getWinner(const float* x, void* obj)
+int nnets_kohonen::getDistance(int neuron1, int neuron2, void* obj)
 {
 	KohonenNet* kn = static_cast<KohonenNet*>(obj);
-	return kn->getWinner(x);
+
+	NeuronIndex n1 = kn->neuron_index_map[neuron1];
+	NeuronIndex n2 = kn->neuron_index_map[neuron2];
+
+	return n1.distanceTo(n2);
+}
+
+size_t nnets_kohonen::getWeightsMatrixSize(void* obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	return kn->getWeightsMatrixSize();
+}
+
+void nnets_kohonen::setWeights(const float* w, void* obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	kn->setWeights(w);
+}
+
+void nnets_kohonen::setUseNormalization(bool norm, void* obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	kn->setUseNormalization(norm);
+}
+
+void nnets_kohonen::disableNeurons(std::vector<int> neurons, void* obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	std::vector<NeuronIndex> new_neuron_map;
+	std::vector<int> old_new_map;
+
+	for (int j = 0; j < neurons.size(); j++)
+		if ((neurons[j] < 0) || (neurons[j] > kn->neuron_index_map.size()))
+			throw "Neuron index out of range";
+
+	for (int i = 0; i < kn->neuron_index_map.size(); i++)
+	{
+		bool is_disable = false;
+		for (int j = 0; j < neurons.size(); j++)
+		{
+			if (i == neurons[j])
+			{
+				is_disable = true;
+				break;
+			}
+		}
+
+		if (is_disable == false)
+		{
+			new_neuron_map.push_back(kn->neuron_index_map[i]);
+			old_new_map.push_back(i);
+		}
+	}
+
+	delete[] kn->kohonen_layer;
+	kn->kohonen_layer = new float[new_neuron_map.size()];
+
+	float* new_weights = new float[new_neuron_map.size() * kn->x_size];
+	float** new_classes = new float*[new_neuron_map.size()];
+
+	for (int i = 0; i < new_neuron_map.size(); i++)
+	{
+		int old_index = old_new_map[i];
+		for (int j = 0; j < kn->x_size; j++)
+			new_weights[i * kn->x_size + j] = kn->weights[old_index * kn->x_size + j];
+		
+		new_classes[i] = new float[kn->y_size];
+		for (int j = 0; j < kn->y_size; j++)
+			new_classes[i][j] = kn->classes[old_index][j];
+		delete[] kn->classes[old_index];
+	}
+	delete[] kn->classes;
+	delete[] kn->weights;
+
+	kn->classes = new_classes;
+	kn->weights = new_weights;
+	kn->neuron_index_map = new_neuron_map;
+}
+
+const float* nnets_kohonen::getWeights(int neuron, void* obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+
+	if (neuron == -1) throw "Invalid neuron index";
+
+	return kn->weights + neuron * kn->x_size;
+}
+
+int nnets_kohonen::getWinner(void* obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	return kn->getInternalIndex(kn->winner);
 }
 
 size_t nnets_kohonen::solve(const float* x, float* y, void* obj)
@@ -15,118 +106,132 @@ size_t nnets_kohonen::solve(const float* x, float* y, void* obj)
 	return kn->solve(x, y);
 }
 
-int2d nnets_kohonen::getNetDimention(void* obj)
+int nnets_kohonen::getMaxNeuronIndex(void* obj)
 {
 	KohonenNet* kn = static_cast<KohonenNet*>(obj);
-	return int2d(kn->neurons_width, kn->neurons_height);
+	return kn->neuron_index_map.size();
 }
 
-std::vector<NeuronIndex> nnets_kohonen::getNeighbours(const NeuronIndex n,
-	int radius, void* obj)
+void nnets_kohonen::addmultWeights(int neuron, float alpha, float beta, const float* x, void* obj)
 {
-	int2d dim = getNetDimention(obj);
-	int3d directions[] = 
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+
+	if (neuron != -1)
 	{
-		int3d(1, -1, 0), int3d(1, 0, -1), int3d(0, 1, -1),
-		int3d(-1, 1, 0), int3d(-1, 0, 1), int3d(0, -1, 1)
-	};
-
-	std::vector<NeuronIndex> res;
-
-	if (radius <= 0)
-		res.push_back(n);
-	else
-	{
-		int3d cur_coord(n.cube.x - radius, n.cube.y, n.cube.z + radius);
-		for (int side = 0; side < 6; side++)
-		{
-			for (int elem = 0; elem < radius; elem++)
-			{
-				NeuronIndex cur_n(cur_coord);
-
-				if ((cur_n.even_r.x >= 0) && (cur_n.even_r.x < dim.x) && 
-					(cur_n.even_r.y >= 0) && (cur_n.even_r.y < dim.y))
-					res.push_back(cur_n);
-
-				cur_coord.x += directions[side].x;
-				cur_coord.y += directions[side].y;
-				cur_coord.z += directions[side].z;
-			}
-		}
+		float* w = kn->weights + neuron * kn->x_size;
+		for (int i = 0; i < kn->x_size; i++)
+			w[i] = alpha * w[i] + beta * x[i];
 	}
-
-	return res;
+	else throw "Invalid neuron index";
 }
 
-void nnets_kohonen::addmultWeights(const NeuronIndex n, float alpha, float beta, float* x, void* obj)
+void nnets_kohonen::setY(int neuron, const float* y, void* obj)
 {
 	KohonenNet* kn = static_cast<KohonenNet*>(obj);
-	int neuron_index = n.even_r.y * kn->neurons_width + n.even_r.x;
 
-	float* w = kn->weights + neuron_index * kn->x_size;
-	for (int i = 0; i < kn->x_size; i++)
-		w[i] = alpha * w[i] + beta * x[i];
+	if (neuron != -1)
+		kn->setClass(kn->neuron_index_map[neuron], y);
+	else throw "Invalid neuron index";
 }
 
-void nnets_kohonen::setY(NeuronIndex n, const float* y, void* obj)
+void KohonenNet::initByNeuronMap(std::vector<NeuronIndex> map)
 {
-	KohonenNet* kn = static_cast<KohonenNet*>(obj);
-	kn->setClass(n, y);
-}
+	kohonen_layer = new float[map.size()];
 
-KohonenNet::KohonenNet(int inputs_count, int outputs_count,
-	int koh_width, int koh_height, bool use_normalization)
-{
-	use_norm_x = use_normalization;
+	weights = new float[map.size() * x_size];
+	classes = new float*[map.size()];
 
-	neurons_width = koh_width;	neurons_height = koh_height;
-	x_size = inputs_count;		y_size = outputs_count;
-
-	int layer_size = neurons_width * neurons_height;
-
-	x_internal = new float[x_size];
-
-	weights = new float[layer_size * x_size];
-	for (int i = 0; i < layer_size * x_size; i++)
-		weights[i] = 0.0f;
-
-	classes = new float*[layer_size];
-	for (int i = 0; i < layer_size; i++)
+	for (int i = 0; i < map.size(); i++)
 	{
+		for (int j = 0; j < x_size; j++)
+			weights[i * x_size + j] = 0.0f;
+
 		classes[i] = new float[y_size];
 		for (int j = 0; j < y_size; j++)
 			classes[i][j] = 0.0f;
 	}
-
-	kohonen_layer = new float[layer_size];
+	neuron_index_map = map;
 }
 
-KohonenNet::KohonenNet(KohonenNet& kn) : 
-	KohonenNet(kn.x_size, kn.y_size, kn.neurons_width, kn.neurons_height, kn.use_norm_x)
+KohonenNet::KohonenNet(int inputs_count, int outputs_count,
+	int koh_width, int koh_height, Metric metric) :
+	winner({0,0}), 
+	neurons_width(koh_width), neurons_height(koh_height),
+	x_size(inputs_count), y_size(outputs_count), metric(metric)
 {
-	int layer_size = neurons_width * neurons_height;
-	for (int i = 0; i < layer_size * x_size; i++)
+	use_norm_x = false;
+	x_internal = new float[x_size];
+
+	std::vector<NeuronIndex> map;
+	for (int y = 0; y < neurons_height; y++)
+		for (int x = 0; x < neurons_width; x++)
+			map.push_back(int2d{ x, y });
+	initByNeuronMap(map);
+}
+
+KohonenNet::KohonenNet(KohonenNet& kn) : winner({0,0})
+{
+	use_norm_x = kn.use_norm_x;
+	neurons_width = kn.neurons_width; neurons_height = kn.neurons_height;
+	x_size = kn.x_size; y_size = kn.y_size;
+
+	x_internal = new float[x_size];
+
+	initByNeuronMap(kn.neuron_index_map);
+	for (int i = 0; i < neuron_index_map.size() * x_size; i++)
 		weights[i] = kn.weights[i];
 
-	for (int i = 0; i < layer_size; i++)
+	for (int i = 0; i < neuron_index_map.size(); i++)
 		for (int j = 0; j < y_size; j++)
 			classes[i][j] = kn.classes[i][j];
 }
 
 size_t KohonenNet::getInputsCount() { return x_size; }
 size_t KohonenNet::getOutputsCount() { return y_size; }
-void KohonenNet::setWeights(float* weights)
+void KohonenNet::setWeights(const float* weights)
 {
-	for (int i = 0; i < neurons_width * neurons_height * x_size; i++)
+	for (int i = 0; i < neuron_index_map.size() * x_size; i++)
 		this->weights[i] = weights[i];
+}
+
+void KohonenNet::setClasses(float ** classes)
+{
+	for (int i = 0; i < neuron_index_map.size(); i++)
+		for (int j = 0; j < y_size; j++)
+			this->classes[i][j] = classes[i][j];
+}
+
+void KohonenNet::setNeurons(std::vector<NeuronIndex>& neurons)
+{
+	delete[] kohonen_layer;
+	for (int i = 0; i < neurons_width * neurons_height; i++)
+		delete[] classes[i];
+	delete[] classes;
+	delete[] weights;
+
+	initByNeuronMap(neurons);
+}
+
+int KohonenNet::getInternalIndex(NeuronIndex n)
+{
+	int found_index = -1;
+	for (int i = 0; i < neuron_index_map.size(); i++)
+		if (neuron_index_map[i] == n)
+			return i;
+	return -1;
 }
 
 void KohonenNet::setClass(NeuronIndex n, const float* y)
 {
-	int neuron_index = n.even_r.y * neurons_width + n.even_r.x;
-	float* cur_class = classes[neuron_index];
-	for (int i = 0; i < y_size; i++)
-		cur_class[i] = y[i];
+	int found_index = getInternalIndex(n);
+	if (found_index != -1)
+	{
+		float* cur_class = classes[found_index];
+		for (int i = 0; i < y_size; i++)
+			cur_class[i] = y[i];
+	}
+	else
+		throw "Invalid neuron index";
 }
 
 void KohonenNet::setUseNormalization(bool norm)
@@ -134,25 +239,48 @@ void KohonenNet::setUseNormalization(bool norm)
 	use_norm_x = norm;
 }
 
+size_t nnets_kohonen::KohonenNet::getClasses(float ** classes)
+{
+	for (int i = 0; i < neuron_index_map.size(); i++)
+		for (int j = 0; j < y_size; j++)
+			classes[i][j] = this->classes[i][j];
+	return neuron_index_map.size() * y_size;
+}
+
 size_t KohonenNet::getWeights(float* weights)
 {
-	for (int i = 0; i < neurons_width * neurons_height * x_size; i++)
+	for (int i = 0; i < neuron_index_map.size() * x_size; i++)
 		weights[i] = this->weights[i];
 	return neurons_width * neurons_height * x_size;
 }
 
+std::vector<NeuronIndex> nnets_kohonen::KohonenNet::getNeurons()
+{
+	return neuron_index_map;
+}
+
 size_t KohonenNet::getClass(NeuronIndex n, float* y)
 {
-	int neuron_index = n.even_r.y * neurons_width + n.even_r.x;
-	float* cur_class = classes[neuron_index];
-	for (int i = 0; i < y_size; i++)
-		y[i] = cur_class[i];
-	return y_size;
+	int found_index = getInternalIndex(n);
+	if (found_index != -1)
+	{
+		float* cur_class = classes[found_index];
+		for (int i = 0; i < y_size; i++)
+			y[i] = cur_class[i];
+		return y_size;
+	}
+
+	return 0;
 }
 
 size_t KohonenNet::getWeightsMatrixSize()
 {
-	return neurons_width * neurons_height * x_size;
+	return neuron_index_map.size() * x_size;
+}
+
+bool nnets_kohonen::KohonenNet::getUseNormalization()
+{
+	return use_norm_x;
 }
 
 KohonenNet::~KohonenNet()
@@ -165,7 +293,7 @@ KohonenNet::~KohonenNet()
 	delete[] x_internal;
 }
 
-NeuronIndex KohonenNet::getWinner(const float* x)
+NeuronIndex KohonenNet::calcWinner(const float* x)
 {
 	const float* input = x;
 	if (use_norm_x)
@@ -173,28 +301,63 @@ NeuronIndex KohonenNet::getWinner(const float* x)
 		float norm = 0.0f;
 		for (int i = 0; i < x_size; i++)
 			norm += x[i] * x[i];
-		norm = std::sqrtf(norm);
+		norm = std::sqrt(norm);
 		for (int i = 0; i < x_size; i++)
 			x_internal[i] = x[i] / norm;
 
 		input = x_internal;
 	}
 
-	cblas_sgemv(CblasRowMajor, CblasNoTrans,
-		neurons_width * neurons_height, x_size,
-		1.0f, weights, x_size,
-		input, 1, 0.0f, kohonen_layer, 1);
-	int winner_index = cblas_isamax(neurons_width * neurons_height, kohonen_layer, 1);
-	int row = winner_index / neurons_width;
-	int col = winner_index - row * neurons_width;
-	
-	return NeuronIndex(int2d{ col, row });
+	int winner_index = 0;
+
+	if (metric == Metric::Default)
+	{
+		cblas_sgemv(CblasRowMajor, CblasNoTrans,
+			neuron_index_map.size(), x_size,
+			1.0f, weights, x_size,
+			input, 1, 0.0f, kohonen_layer, 1);
+		float max_value = kohonen_layer[0];
+		for (int i = 1; i < neuron_index_map.size(); i++)
+		{
+			if (max_value < kohonen_layer[i])
+			{
+				max_value = kohonen_layer[i];
+				winner_index = i;
+			}
+		}
+	}
+	else if (metric == Metric::Euclidean)
+	{
+		for (int i = 0; i < neuron_index_map.size(); i++)
+		{
+			kohonen_layer[i] = 0.0f;
+			for (int j = 0; j < x_size; j++)
+			{
+				float temp = input[i] - weights[i * x_size + j];
+				kohonen_layer[i] += temp * temp;
+			}
+		}
+
+		float min_value = kohonen_layer[0];
+		for (int i = 1; i < neuron_index_map.size(); i++)
+		{
+			if (min_value > kohonen_layer[i])
+			{
+				min_value = kohonen_layer[i];
+				winner_index = i;
+			}
+		}
+	}
+	else throw "Undefined metric";
+
+	return neuron_index_map[winner_index];
 }
 
 size_t KohonenNet::solve(const float* x, float* y)
 {
-	NeuronIndex n = getWinner(x);
-	float* cur_class = classes[n.even_r.y * neurons_width + n.even_r.x];
+	winner = calcWinner(x);
+	int found_index = getInternalIndex(winner);
+	float* cur_class = classes[found_index];
 	for (int i = 0; i < y_size; i++)
 		y[i] = cur_class[i];
 	return y_size;

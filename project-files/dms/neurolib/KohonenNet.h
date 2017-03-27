@@ -38,45 +38,73 @@ namespace nnets_kohonen
 			return (std::abs(cube.x - n.cube.x) +
 				std::abs(cube.y - n.cube.y) + std::abs(cube.z - n.cube.z)) / 2;
 		}
+		bool operator==(const NeuronIndex& n)
+		{
+			return (even_r.x == n.even_r.x) && (even_r.y == n.even_r.y);
+		}
 	};
 
-	NeuronIndex getWinner(const float* x, void* obj);
-	std::vector<NeuronIndex> getNeighbours(const NeuronIndex n, int radius, void* obj);
-	void addmultWeights(const NeuronIndex n, float alpha, float beta, float* x, void* obj);
-	int2d getNetDimention(void* obj);
-	void setY(NeuronIndex n, const float* y, void* obj);
+	int getWinner(void* obj);
+	void addmultWeights(int neuron, float alpha, float beta, const float* x, void* obj);
+	int getMaxNeuronIndex(void* obj);
+	void setY(int neuron, const float* y, void* obj);
 	size_t solve(const float* x, float* y, void* obj);
+	const float* getWeights(int neuron, void* obj);
+	void disableNeurons(std::vector<int> neurons, void* obj);
+	int getDistance(int neuron1, int neuron2, void* obj);
+	size_t getWeightsMatrixSize(void* obj);
+	void setWeights(const float* w, void* obj);
+	void setUseNormalization(bool norm, void* obj);
 
 	class KohonenNet : public nnets::NeuralNetwork
 	{
 	public:
+		enum Metric {Default, Euclidean};
+
 		KohonenNet(KohonenNet& kn);
 		KohonenNet(int inputs_count, int outputs_count, 
-			int koh_width, int koh_height, bool use_normalization = false);
+			int koh_width, int koh_height, Metric metric = Default);
 
 		size_t solve(const float* x, float* y) override;
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
-		void setWeights(float* weights);
+		void setWeights(const float* weights);
+		void setClasses(float** classes);
+		void setNeurons(std::vector<NeuronIndex> &neurons);
 		void setClass(NeuronIndex n, const float* y);
 		void setUseNormalization(bool norm);
+		size_t getClasses(float** classes);
 		size_t getWeights(float* weights);
+		std::vector<NeuronIndex> getNeurons();
 		size_t getClass(NeuronIndex n, float* y);
 		size_t getWeightsMatrixSize();
+		bool getUseNormalization();
 
 		~KohonenNet();
 	private:
 		bool use_norm_x;
+		Metric metric;
+		std::vector<NeuronIndex> neuron_index_map;	//index - number of neuron data 
+													//in kohonen_layer and weights
+													//value - geometrical position in layer
 		float* x_internal;
 
 		float* weights;
 		float** classes;
 		float* kohonen_layer;
 		int neurons_width, neurons_height, x_size, y_size;
+		NeuronIndex winner;
 
-		NeuronIndex getWinner(const float* x);
-		friend NeuronIndex getWinner(const float* x, void* obj);
-		friend int2d getNetDimention(void* obj);
-		friend void addmultWeights(const NeuronIndex n, float alpha, float beta, float* x, void* obj);
+		NeuronIndex calcWinner(const float* x);
+		int getInternalIndex(NeuronIndex n);
+		void initByNeuronMap(std::vector<NeuronIndex> map);
+
+		friend int getWinner(void* obj);
+		friend int getMaxNeuronIndex(void* obj);
+		friend void addmultWeights(int neuron, float alpha, float beta, const float* x, void* obj);
+		friend void setY(int neuron, const float* y, void* obj);
+		friend const float* getWeights(int neuron, void* obj);
+		friend void disableNeurons(std::vector<int> neurons, void* obj);
+		friend int getDistance(int neuron1, int neuron2, void* obj);
 	};
 }

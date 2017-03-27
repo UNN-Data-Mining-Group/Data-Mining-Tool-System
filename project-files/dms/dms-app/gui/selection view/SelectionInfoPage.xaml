@@ -6,25 +6,27 @@
              xmlns:local="clr-namespace:dms.gui"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical" Grid.Row="0">
-            <StackPanel Orientation="Horizontal">
-                <Label Content="{Binding SelectionName}"/>
-                <Label Content="{Binding CountRows}" ContentStringFormat="Объем выборки: {0}" />
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="{Binding SelectionName}"/>
+                    <Label Content="{Binding CountRows}" ContentStringFormat="Объем выборки: {0}" />
+                </StackPanel>
+                <Label Content="{Binding TaskName}" ContentStringFormat="Задача: {0}"/>
             </StackPanel>
-            <Label Content="{Binding TaskName}" ContentStringFormat="Задача: {0}"/>
-        </StackPanel>
 
-        <StackPanel Orientation="Vertical" Grid.Row="1">
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Тип представления:"/>
-                <ComboBox ItemsSource="{Binding PreprocessingList}" SelectedItem="{Binding SelectedPreprocessing}"/>
+            <StackPanel Orientation="Vertical" Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Тип представления:"/>
+                    <ComboBox ItemsSource="{Binding PreprocessingList}" SelectedItem="{Binding SelectedPreprocessing}"/>
+                </StackPanel>
+                <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True" RowDetailsVisibilityMode="Visible"/>
             </StackPanel>
-            <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True" RowDetailsVisibilityMode="Visible"  Width="600" Height="300"/>
-        </StackPanel>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

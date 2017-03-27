@@ -73,6 +73,8 @@ namespace dms.gui
                 CreateSolutionCreationPage(vm as CreateSolutionViewModel);
             else if (vm is SolveStatisticViewModel)
                 CreateSolveStatisticPage(vm as SolveStatisticViewModel);
+            else if (vm is KohonenInfoViewModel)
+                CreateKohonenInfoPage(vm as KohonenInfoViewModel);
         }
 
         private void CreateSolverCreationPage(SolverCreationViewModel obj)
@@ -103,6 +105,12 @@ namespace dms.gui
         private void CreatePerceptronInfoPage(PerceptronInfoViewModel obj)
         {
             PerceptronInfoPage t = new PerceptronInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
+        }
+
+        private void CreateKohonenInfoPage(KohonenInfoViewModel obj)
+        {
+            KohonenInfoPage t = new KohonenInfoPage(obj);
             OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
         }
 

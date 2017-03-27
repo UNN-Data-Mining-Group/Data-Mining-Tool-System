@@ -19,7 +19,7 @@ namespace dms.view_models
 
     public class SolverParameterFactory
     {
-        public static string[] Types { get { return new string[] { "Персептрон", "Сеть Ворда", "Дерево решений", "Сверточная нейронная сеть" }; } }
+        public static string[] Types { get { return new string[] { "Персептрон", "Сеть Ворда", "Дерево решений", "Сверточная нейронная сеть", "Сеть Кохонена" }; } }
         public static ISolverParameterViewModel Create(string type)
         {
             if (type.Equals("Персептрон"))
@@ -30,6 +30,8 @@ namespace dms.view_models
                 return new WardNetParametersViewModel();
             else if (type.Equals("Сверточная нейронная сеть"))
                 return new ConvNNParametersViewModel();
+            else if (type.Equals("Сеть Кохонена"))
+                return new KohonenParametersViewModel();
             else
                 return null;
         }
