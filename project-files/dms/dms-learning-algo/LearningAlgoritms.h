@@ -13,10 +13,12 @@ namespace dms::learningAlgoritms
 	{
 	private:
 		array<float>^ params;
+		System::String^ usedAlgo;
 		array<System::String^>^ TeacherTypesList;
 		array<System::String^>^ ParamsNames;
+		float startGenetic(ISolver^ solver, array<array<float>^>^ train_x, array<float>^ train_y);
 	public:
-		
+		~LearningAlgoritms();
 		LearningAlgoritms();
 		array<System::String^>^ getTeacherTypesList();
 		array<float>^ getParams();
