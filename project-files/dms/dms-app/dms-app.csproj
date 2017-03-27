@@ -146,6 +146,14 @@
     <Compile Include="gui\solver view\convnn view\ConvNNParametersPage.xaml.cs">
       <DependentUpon>ConvNNParametersPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\solver view\kohonen view\KohonenInfoPage.xaml.cs">
+      <DependentUpon>KohonenInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\kohonen view\KohonenParametersPage.xaml.cs">
+      <DependentUpon>KohonenParametersPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\kohonen view\Tile panel\Tile.xaml.cs" />
+    <Compile Include="gui\solver view\kohonen view\Tile panel\TilePane.xaml.cs" />
     <Compile Include="gui\solver view\LearnSolverPage.xaml.cs">
       <DependentUpon>LearnSolverPage.xaml</DependentUpon>
     </Compile>
@@ -220,6 +228,8 @@
     <Compile Include="view-models\selection view models\SelectionLearnStatisticViewModel.cs" />
     <Compile Include="view-models\solver view models\convNN view models\ConvNNInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\convNN view models\ConvNNParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\kohonen net view models\KohonenInfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\kohonen net view models\KohonenParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\LearnSolverViewModel.cs" />
     <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeInfoViewModel.cs" />
@@ -240,6 +250,7 @@
     <Compile Include="view-models\preprocessing view models\TemplateViewModel.cs" />
     <Compile Include="view-models\tree-section\ConvNNTree.cs" />
     <Compile Include="view-models\tree-section\DecisionTreesTree.cs" />
+    <Compile Include="view-models\tree-section\KohonenTree.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SelectionLeaf.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SolutionLeaf.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SolverLeaf.cs" />
@@ -304,6 +315,22 @@
     <Page Include="gui\solver view\convnn view\ConvNNParametersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\kohonen view\KohonenInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\kohonen view\KohonenParametersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\solver view\kohonen view\Tile panel\Tile.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="gui\solver view\kohonen view\Tile panel\TilePane.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="gui\solver view\LearnSolverPage.xaml">
       <SubType>Designer</SubType>

@@ -152,6 +152,8 @@
     <ClInclude Include="ConvNNManaged.h" />
     <ClInclude Include="ConvNNTopology.h" />
     <ClInclude Include="INeuralNetwork.h" />
+    <ClInclude Include="KohonenNNManaged.h" />
+    <ClInclude Include="KohonenNNTopology.h" />
     <ClInclude Include="PerceptronManaged.h" />
     <ClInclude Include="PerceptronTopology.h" />
     <ClInclude Include="ISolver.h" />
@@ -165,6 +167,7 @@
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="ConvNNManaged.cpp" />
     <ClCompile Include="ConvNNTopology.cpp" />
+    <ClCompile Include="KohonenNNManaged.cpp" />
     <ClCompile Include="PerceptronManaged.cpp" />
     <ClCompile Include="PerceptronTopology.cpp" />
     <ClCompile Include="ISolver.cpp" />

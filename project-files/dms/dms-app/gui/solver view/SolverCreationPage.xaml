@@ -21,6 +21,9 @@
         <DataTemplate x:Key="convNNTemplate">
             <local:ConvNNParametersPage/>
         </DataTemplate>
+        <DataTemplate x:Key="kohNNTemplate">
+            <local:KohonenParametersPage/>
+        </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
@@ -54,7 +57,10 @@
                         <DataTrigger Binding="{Binding SelectedType}" Value="Сверточная нейронная сеть">
                             <Setter Property="ContentTemplate" Value="{StaticResource convNNTemplate}" />
                         </DataTrigger>
-                    </Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedType}" Value="Сеть Кохонена">
+                            <Setter Property="ContentTemplate" Value="{StaticResource kohNNTemplate}" />
+                        </DataTrigger>
+                        </Style.Triggers>
                 </Style>
             </ContentControl.Style>
         </ContentControl>
