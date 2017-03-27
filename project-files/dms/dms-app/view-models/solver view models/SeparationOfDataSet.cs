@@ -13,13 +13,24 @@ namespace dms.view_models.solver_view_models
     {
         private float mistakeTrain = 0;
         private float mistakeTest = 0;
+        private string typeOfSolver;
         public SeparationOfDataSet(INeuralNetwork solver, LearningScenario learnignScenario, float [][]x, float []y)
         {
-            ISolver = solver;
+            INeuralNetworkSolver = solver;
             LS = learnignScenario;
             InputData = x;
             OutputData = y;
+            typeOfSolver = "NeuralNetwork";
         }
+        public SeparationOfDataSet(ISolver solver, LearningScenario learnignScenario, float[][] x, float[] y)
+        {
+            IDecisionTreeSolver = solver as solvers.decision_tree.DecisionTree;
+            LS = learnignScenario;
+            InputData = x;
+            OutputData = y;
+            typeOfSolver = "DecisionTree";
+        }
+
 
         public float[][] InputData { get; private set; }
         public float MistakeTest {
@@ -37,7 +48,9 @@ namespace dms.view_models.solver_view_models
         }
         public LearningScenario LS { get; private set; }
         public float[] OutputData { get; private set; }
-        public INeuralNetwork ISolver { get; private set; }
+        public INeuralNetwork INeuralNetworkSolver { get; private set; }
+        public solvers.decision_tree.DecisionTree IDecisionTreeSolver { get; private set; }
+
 
         public void separationAndLearn()
         {
@@ -73,12 +86,29 @@ namespace dms.view_models.solver_view_models
 
                 };
 
-                la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-                ISolver.FetchNativeParameters();
+                if (typeOfSolver.Equals("NeuralNetwork"))
+                {
+                    la.startLearn(INeuralNetworkSolver, trainInputDataset, trainOutputDataset);
+                    INeuralNetworkSolver.FetchNativeParameters();
+                }
+                else if (typeOfSolver.Equals("DecisionTree"))
+                {
+                    // For DT
+                }
+                else throw new EntryPointNotFoundException("Not found solver");
                 int sizeTrainDataset = trainInputDataset.Length;
                 for (int i = 0; i < sizeTrainDataset; i++)
                 {
-                    float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
+                    float[] expectedOutputDataset = null;
+                    if (typeOfSolver.Equals("NeuralNetwork"))
+                    {
+                        expectedOutputDataset = INeuralNetworkSolver.Solve(trainInputDataset[i]);
+                    }
+                    else if (typeOfSolver.Equals("DecisionTree"))
+                    {
+                        // For DT
+                    }
+                    else throw new EntryPointNotFoundException("Not found solver");
                     if (expectedOutputDataset[0] != trainOutputDataset[i])
                     {
                         kMistakeTrain++;
@@ -89,7 +119,16 @@ namespace dms.view_models.solver_view_models
                 int sizeTestDataset = testOutputDataset.Length;
                 for (int i = 0; i < sizeTestDataset; i++)
                 {
-                    float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
+                    float[] expectedOutputDataset = null;
+                    if (typeOfSolver.Equals("NeuralNetwork"))
+                    {
+                        expectedOutputDataset = INeuralNetworkSolver.Solve(trainInputDataset[i]);
+                    }
+                    else if (typeOfSolver.Equals("DecisionTree"))
+                    {
+                        // For DT
+                    }
+                    else throw new EntryPointNotFoundException("Not found solver");
                     if (expectedOutputDataset[0] != testOutputDataset[i])
                     {
                         kMistakeTest++;
@@ -125,12 +164,29 @@ namespace dms.view_models.solver_view_models
 
             };
 
-            la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-            ISolver.FetchNativeParameters();
+            if (typeOfSolver.Equals("NeuralNetwork"))
+            {
+                la.startLearn(INeuralNetworkSolver, trainInputDataset, trainOutputDataset);
+                INeuralNetworkSolver.FetchNativeParameters();
+            }
+            else if (typeOfSolver.Equals("DecisionTree"))
+            {
+                // For DT
+            }
+            else throw new EntryPointNotFoundException("Not found solver");
             mistakeTrain = 0;
             for(int i = 0; i < sizeTrainDataset; i++)
             {
-                float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
+                float[] expectedOutputDataset = null;
+                if (typeOfSolver.Equals("NeuralNetwork"))
+                {
+                    expectedOutputDataset = INeuralNetworkSolver.Solve(trainInputDataset[i]);
+                }
+                else if (typeOfSolver.Equals("DecisionTree"))
+                {
+                    // For DT
+                }
+                else throw new EntryPointNotFoundException("Not found solver");
                 if (expectedOutputDataset[0] != trainOutputDataset[i])
                 {
                     mistakeTrain++;
@@ -140,8 +196,18 @@ namespace dms.view_models.solver_view_models
 
             mistakeTest = 0;
             for (int i = 0; i < sizeTestDataset; i++)
+
             {
-                float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
+                float[] expectedOutputDataset = null;
+                if (typeOfSolver.Equals("NeuralNetwork"))
+                {
+                    expectedOutputDataset = INeuralNetworkSolver.Solve(trainInputDataset[i]);
+                }
+                else if (typeOfSolver.Equals("DecisionTree"))
+                {
+                    // For DT
+                }
+                else throw new EntryPointNotFoundException("Not found solver");
                 if (expectedOutputDataset[0] != testOutputDataset[i])
                 {
                     mistakeTest++;

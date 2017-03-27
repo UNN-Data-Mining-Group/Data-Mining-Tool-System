@@ -34,7 +34,7 @@ namespace dms.view_models
             showSelectionLearnHandler = new ActionHandler(
                 () =>
                 {
-                    var t = new SelectionLearnStatisticViewModel(task.Name, Title);
+                    var t = new SelectionLearnStatisticViewModel(selection, task.Name);
                     vm.SendRequestCreateView(t);
                 }, e => true);
         }
