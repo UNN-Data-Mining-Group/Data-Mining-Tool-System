@@ -16,7 +16,7 @@
         <local:SelectionAddPane Grid.Row="0" Margin="8,0,0,0"/>
         <StackPanel Grid.Row="1" Margin="8,0,0,0" Orientation="Horizontal" IsEnabled="{Binding CanUseExitingTemplate}">
             <CheckBox Content="Использовать существующий шаблон:" Margin="5" IsChecked="{Binding IsUsingExitingTemplate}"/>
-            <ComboBox Margin="5" IsEnabled="{Binding IsUsingExitingTemplate}" SelectedItem="{Binding SelectedTemplate}" ItemsSource="{Binding TemplateList}"/>
+            <ComboBox Margin="5" IsEnabled="{Binding IsUsingExitingTemplate}" SelectedItem="{Binding SelectedTemplate.Name}" ItemsSource="{Binding TemplateList}"/>
         </StackPanel>
         <Grid Grid.Row="2" IsEnabled="{Binding IsUsingNewTemplate}">
             <Grid.RowDefinitions>

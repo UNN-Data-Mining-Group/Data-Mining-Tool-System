@@ -18,7 +18,9 @@ namespace dms.view_models
             models.TaskSolver[] per, 
             models.TaskSolver[] des, 
             models.TaskSolver[] wards, 
-            models.TaskSolver[] convnets, TaskTreeViewModel vm) : base("Решатели")
+            models.TaskSolver[] convnets,
+            models.TaskSolver[] kohnets,
+            TaskTreeViewModel vm) : base("Решатели")
         {
             ParentTask = task.Name;
             Content = new ObservableCollection<TreeSection>
@@ -26,7 +28,8 @@ namespace dms.view_models
                 new PerceptronTree(task, per, vm),
                 new DecisionTreesTree(task, des, vm),
                 new WardTree(task, wards, vm),
-                new ConvNNTree(task, convnets, vm)
+                new ConvNNTree(task, convnets, vm),
+                new KohonenTree(task, kohnets, vm)
             };
             createSolverCommand = new ActionHandler(() => 
             {

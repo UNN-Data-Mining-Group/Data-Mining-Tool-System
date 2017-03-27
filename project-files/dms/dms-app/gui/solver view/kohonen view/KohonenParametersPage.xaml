@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="dms.gui.KohonenParametersPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             xmlns:exToolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d">
+    <Grid Margin="5,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="145"/>
+            <ColumnDefinition MinWidth="130"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Количество входов:" Grid.Row="0"/>
+        <Label Content="Количество выходов:" Grid.Row="1"/>
+        <Label Content="Ширина слоя:" Grid.Row="2"/>
+        <Label Content="Длина слоя:" Grid.Row="3"/>
+        <Label Content="Метрика расстояния:" Grid.Row="4"/>
+        <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Inputs}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+        <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Outputs}" Grid.Row="1" Grid.Column="1" Margin="5"/>
+        <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Width}" Grid.Row="2" Grid.Column="1" Margin="5"/>
+        <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Height}" Grid.Row="3" Grid.Column="1" Margin="5"/>
+        <ComboBox Grid.Row="4" ItemsSource="{Binding Metrics}" SelectedItem="{Binding SelectedMetric}" Grid.Column="1" Margin="5"/>
+    </Grid>
+</UserControl>
