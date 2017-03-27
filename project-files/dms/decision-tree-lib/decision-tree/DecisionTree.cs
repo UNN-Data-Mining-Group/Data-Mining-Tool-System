@@ -12,6 +12,7 @@ namespace dms.solvers.decision_tree
     {
         int inputsCount;
         int outputCount;
+        int maxDepth;
         public Node root;
 
         public DecisionTree(long inputs, long outputs) : base(inputs, outputs)
@@ -21,6 +22,11 @@ namespace dms.solvers.decision_tree
             root = new Node();
         }
 
+        public DecisionTree(TreeDescription description, long inputs, long outputs) : base(inputs, outputs)
+        {
+            root = new Node();
+            maxDepth = description.MaxDepth;
+        }
 
         public  float treeSolve(float[] x, Node curNode)
         {
