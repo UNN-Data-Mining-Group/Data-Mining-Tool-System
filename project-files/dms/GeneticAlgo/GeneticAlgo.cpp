@@ -1,6 +1,6 @@
 #include "GeneticAlgo.h"
 
-#define GENETIC_DEBUG 0
+//#define GENETIC_DEBUG 0
 
 #ifdef GENETIC_DEBUG
 #include <fstream>
