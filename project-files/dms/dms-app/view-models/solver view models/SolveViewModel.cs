@@ -23,6 +23,7 @@ namespace dms.view_models
         public string PreprocessingName { get; set; }
         public float TrainMistake { get; set; }
         public float TestMistake { get; set; }
+        public float ClosingError { get; set; }
 
         public models.TaskTemplate TaskTemplate { get; set; }
         public models.LearnedSolver LearnedSolver { get; set; }
@@ -114,6 +115,7 @@ namespace dms.view_models
                     PreprocessingName = template.Name,
                     TestMistake = (quality != null) ? quality.MistakeTest : 0,
                     TrainMistake = (quality != null) ? quality.MistakeTrain : 0,
+                    ClosingError = Convert.ToSingle((quality != null) ? quality.ClosingError : 0),
                     TaskTemplate = template,
                     LearnedSolver = learnedSolver
                 });
