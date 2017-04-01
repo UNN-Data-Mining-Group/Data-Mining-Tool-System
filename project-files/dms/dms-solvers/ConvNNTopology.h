@@ -1,5 +1,5 @@
 #pragma once
-#include "ISolverDescription.h"
+#include "ITopology.h"
 #include "ActivationFunctionTypes.h"
 
 using System::String;
@@ -35,7 +35,7 @@ namespace dms::solvers::neural_nets::conv_net
 	};
 
 	[System::SerializableAttribute]
-	public ref class ConvNNTopology : public ISolverDescription
+	public ref class ConvNNTopology : public ITopology
 	{
 	public:
 		[System::SerializableAttribute]
@@ -49,13 +49,17 @@ namespace dms::solvers::neural_nets::conv_net
 		int GetInputWidth();
 		int GetInputHeigth();
 		int GetInputDepth();
-		int GetInputsCount();
-		int GetOutputsCount();
+		bool HasSmoothAfs() { return hasSmoothAfs; }
 		List<ILayer^>^ GetLayers();
 		List<VolumeDimention^>^ GetVolumeDimentions();
+
+		virtual System::Int64 GetInputsCount();
+		virtual System::Int64 GetOutputsCount();
+		virtual nnets::NeuralNetwork * createNativeSolver();
 	private:
 		int calcOutputVolume(int input, int filter, int padding, int stride);
 
+		bool hasSmoothAfs;
 		int w, h, d;
 		List<ILayer^>^ layers;
 		List<VolumeDimention^>^ layerDimentions;

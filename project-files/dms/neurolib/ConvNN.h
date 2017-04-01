@@ -91,7 +91,7 @@ namespace nnets_conv
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
-		~ConvNN() { freeMemory(); }
+		virtual ~ConvNN() { freeMemory(); }
 	private:
 		enum class VolumeType {Convolutional, Activation, Pooling, FullyConnected, Simple};
 

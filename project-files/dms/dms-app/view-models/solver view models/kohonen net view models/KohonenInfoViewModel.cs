@@ -87,8 +87,8 @@ namespace dms.view_models
             taskSolver = solver;
 
             KohonenNNTopology t = solver.Description as KohonenNNTopology;
-            Inputs = t.GetInputsCount();
-            Outputs = t.GetOutputsCount();
+            Inputs = Convert.ToInt32(t.GetInputsCount());
+            Outputs = Convert.ToInt32(t.GetOutputsCount());
             Width = t.GetLayerWidth();
             Height = t.GetLayerHeight();
             Metric = t.GetMetric();

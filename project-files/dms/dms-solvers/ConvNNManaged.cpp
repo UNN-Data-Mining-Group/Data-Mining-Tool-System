@@ -3,10 +3,9 @@
 using namespace dms::solvers::neural_nets::conv_net;
 
 ConvNNManaged::ConvNNManaged(ConvNNTopology^ t) :
-	INeuralNetwork(t->GetInputsCount(), t->GetOutputsCount())
+	INeuralNetwork(t)
 {
 	this->t = t;
-	initConv();
 	FetchNativeParameters();
 }
 
@@ -18,103 +17,43 @@ void ConvNNManaged::SetWeights(array<array<float>^>^ weights)
 	PushNativeParameters();
 }
 
-array<float>^ ConvNNManaged::Solve(array<float>^ x)
-{
-	size_t inputs = GetInputsCount();
-	size_t outputs = GetOutputsCount();
-
-	if (x->Length != inputs)
-		throw gcnew System::ArgumentException();
-
-	for (size_t i = 0; i < inputs; i++)
-		this->x[i] = x[i];
-
-	if (outputs != solver->solve(this->x, this->y))
-		throw gcnew System::IndexOutOfRangeException();
-
-	array<Single>^ y = gcnew array<Single>(outputs);
-	for (size_t i = 0; i < outputs; i++)
-	{
-		y[i] = this->y[i];
-	}
-	return y;
-}
-
 void ConvNNManaged::FetchNativeParameters()
 {
-	int wlen = solver->getWeightsMatricesCount();
+	auto p_solver = static_cast<nnets_conv::ConvNN*>(getNativeSolver());
+	int wlen = p_solver->getWeightsMatricesCount();
 
 	float** w = new float*[wlen];
 	weights = gcnew array<array<float>^>(wlen);
 	for (int i = 0; i < wlen; i++)
 	{
-		size_t curlen = solver->getWeightsMatrixSize(i);
+		size_t curlen = p_solver->getWeightsMatrixSize(i);
 		w[i] = new float[curlen];
 		weights[i] = gcnew array<float>(curlen);
 	}
-	solver->getWeights(w);
+	p_solver->getWeights(w);
 
 	for (int i = 0; i < weights->Length; i++)
 		for (int j = 0; j < weights[i]->Length; j++)
 			weights[i][j] = w[i][j];
 
-	for (int i = 0; i < solver->getWeightsMatricesCount(); i++)
+	for (int i = 0; i < p_solver->getWeightsMatricesCount(); i++)
 		delete[] w[i];
 	delete[] w;
 }
 
-void ConvNNManaged::initConv()
-{
-	std::vector<nnets_conv::Layer*> layers;
-	auto ls = t->GetLayers();
-	for (int i = 0; i < ls->Count; i++)
-	{
-		if (ls[i]->GetType() == FullyConnectedLayer::typeid)
-		{
-			auto l = (FullyConnectedLayer^)ls[i];
-			layers.push_back(
-				new nnets_conv::FullyConnectedLayer(l->NeuronsCount,
-					ActivationFunctionTypes::getType(l->ActivationFunction)));
-		}
-		else if (ls[i]->GetType() == ConvolutionLayer::typeid)
-		{
-			auto l = (ConvolutionLayer^)ls[i];
-			layers.push_back(
-				new nnets_conv::ConvolutionLayer(l->FilterWidth, l->FilterHeight,
-					l->StrideWidth, l->StrideHeight,
-					l->Padding, l->CountFilters,
-					ActivationFunctionTypes::getType(l->ActivationFunction)));
-		}
-		else if (ls[i]->GetType() == PoolingLayer::typeid)
-		{
-			auto l = (PoolingLayer^)ls[i];
-			layers.push_back(
-				new nnets_conv::PoolingLayer(l->FilterWidth, l->FilterHeight, l->StrideWidth, l->StrideHeight));
-		}
-	}
-
-	solver = new nnets_conv::ConvNN(t->GetInputWidth(), t->GetInputHeigth(), t->GetInputDepth(), layers);
-	x = new float[t->GetInputsCount()];
-	y = new float[t->GetOutputsCount()];
-
-	for (int i = 0; i < ls->Count; i++)
-		delete layers[i];
-}
-
 void ConvNNManaged::PushNativeParameters()
 {
-	initConv();
-
-	float** w = new float*[solver->getWeightsMatricesCount()];
-	for (int i = 0; i < solver->getWeightsMatricesCount(); i++)
-		w[i] = new float[solver->getWeightsMatrixSize(i)];
+	auto p_solver = static_cast<nnets_conv::ConvNN*>(getNativeSolver());
+	float** w = new float*[p_solver->getWeightsMatricesCount()];
+	for (int i = 0; i < p_solver->getWeightsMatricesCount(); i++)
+		w[i] = new float[p_solver->getWeightsMatrixSize(i)];
 
 	for (int i = 0; i < weights->Length; i++)
 		for (int j = 0; j < weights[i]->Length; j++)
 			w[i][j] = weights[i][j];
-	solver->setWeights(w);
+	p_solver->setWeights(w);
 
-	for (int i = 0; i < solver->getWeightsMatricesCount(); i++)
+	for (int i = 0; i < p_solver->getWeightsMatricesCount(); i++)
 		delete[] w[i];
 	delete[] w;
 }
@@ -134,17 +73,4 @@ void* ConvNNManaged::getOperations()
 	(*_opers)["freeSolver"]			= nnets_conv::freeConv;
 
 	return _opers;
-}
-
-void* ConvNNManaged::getNativeSolver()
-{
-	return solver;
-}
-
-ConvNNManaged::~ConvNNManaged()
-{
-	delete[] x;
-	delete[] y;
-
-	delete solver;
 }

@@ -10,14 +10,14 @@ namespace dms.solvers.decision_tree
     [Serializable()]
     public class DecisionTree : ISolver
     {
-        int inputsCount;
-        int outputCount;
+        Int64 inputsCount;
+        Int64 outputCount;
         public Node root;
 
-        public DecisionTree(long inputs, long outputs) : base(inputs, outputs)
+        public DecisionTree(TreeDescription treeDesc) : base(treeDesc)
         {
-            inputsCount = Convert.ToInt32(inputs);
-            outputCount = Convert.ToInt32(outputs);
+            inputsCount = treeDesc.GetInputsCount();
+            outputCount = treeDesc.GetOutputsCount();
             root = new Node();
         }
 
@@ -100,11 +100,6 @@ namespace dms.solvers.decision_tree
             float[] res = new float[outputCount];
             res[0] = treeSolve(x, root);
             return res;
-        }
-
-        public override unsafe void* getNativeSolver()
-        {
-            throw new NotImplementedException();
         }
     }
 }

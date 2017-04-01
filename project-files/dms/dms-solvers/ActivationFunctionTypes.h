@@ -17,5 +17,6 @@ namespace dms::solvers::neural_nets
 		};
 
 		static nnets::ActivationFunctionType getType(System::String^ typeName);
+		static bool hasSmoothDerivative(System::String^ typeName);
 	};
 }

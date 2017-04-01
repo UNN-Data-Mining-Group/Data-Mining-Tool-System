@@ -2,45 +2,10 @@
 using namespace dms::solvers::neural_nets::kohonen;
 
 KohonenManaged::KohonenManaged(KohonenNNTopology ^ t) : 
-	INeuralNetwork(t->GetInputsCount(), t->GetOutputsCount())
+	INeuralNetwork(t)
 {
 	this->t = t;
-	nnets_kohonen::KohonenNet::Metric m;
-	String^ m_str = t->GetMetric();
-	if (m_str->Equals("Default"))
-		m = nnets_kohonen::KohonenNet::Default;
-	else if (m_str->Equals("Euclidean"))
-		m = nnets_kohonen::KohonenNet::Euclidean;
-	else throw gcnew System::ArgumentException();
-
-	solver = new nnets_kohonen::KohonenNet(t->GetInputsCount(),
-		t->GetOutputsCount(), t->GetLayerWidth(), t->GetLayerHeight(), m);
-	x = new float[GetInputsCount()];
-	y = new float[GetOutputsCount()];
-	
 	FetchNativeParameters();
-}
-
-array<Single>^ KohonenManaged::Solve(array<Single>^ x)
-{
-	__int64 inputs = GetInputsCount();
-	__int64 outputs = GetOutputsCount();
-
-	if (x->Length != inputs)
-		throw gcnew System::ArgumentException();
-
-	for (int i = 0; i < inputs; i++)
-		this->x[i] = x[i];
-
-	if (outputs != solver->solve(this->x, this->y))
-		throw gcnew System::IndexOutOfRangeException();
-
-	array<Single>^ y = gcnew array<Single>(outputs);
-	for (int i = 0; i < outputs; i++)
-	{
-		y[i] = this->y[i];
-	}
-	return y;
 }
 
 void * dms::solvers::neural_nets::kohonen::KohonenManaged::getAttributes()
@@ -64,23 +29,20 @@ void* KohonenManaged::getOperations()
 	return _opers;
 }
 
-void * KohonenManaged::getNativeSolver()
-{
-	return solver;
-}
-
 void KohonenManaged::FetchNativeParameters()
 {
+	auto p_solver = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
+
 	int y_size = GetOutputsCount();
-	int w_size = solver->getWeightsMatrixSize();
+	int w_size = p_solver->getWeightsMatrixSize();
 	float* w = new float[w_size];
-	solver->getWeights(w);
+	p_solver->getWeights(w);
 	weights = gcnew array<float>(w_size);
 	for (int i = 0; i < w_size; i++)
 		weights[i] = w[i];
 	delete[] w;
 
-	std::vector<nnets_kohonen::NeuronIndex> ns = solver->getNeurons();
+	std::vector<nnets_kohonen::NeuronIndex> ns = p_solver->getNeurons();
 	neurons = gcnew List<Tuple<int, int>^>();
 
 	float** cls = new float*[ns.size()];
@@ -90,7 +52,7 @@ void KohonenManaged::FetchNativeParameters()
 		cls[i] = new float[y_size];
 	}
 
-	solver->getClasses(cls);
+	p_solver->getClasses(cls);
 	classes = gcnew array<array<float>^>(ns.size());
 	for (int i = 0; i < ns.size(); i++)
 	{
@@ -101,17 +63,19 @@ void KohonenManaged::FetchNativeParameters()
 	}
 	delete[] cls;
 
-	use_normalization = solver->getUseNormalization();
+	use_normalization = p_solver->getUseNormalization();
 }
 
 void KohonenManaged::PushNativeParameters()
 {
+	auto p_solver = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
+
 	int y_size = GetOutputsCount();
-	int w_size = solver->getWeightsMatrixSize();
+	int w_size = p_solver->getWeightsMatrixSize();
 	float* w = new float[w_size];
 	for (int i = 0; i < w_size; i++)
 		w[i] = weights[i];
-	solver->setWeights(w);
+	p_solver->setWeights(w);
 	delete[] w;
 
 	std::vector<nnets_kohonen::NeuronIndex> ns;
@@ -127,9 +91,9 @@ void KohonenManaged::PushNativeParameters()
 		for (int j = 0; j < y_size; j++)
 			cls[i][j] = classes[i][j];
 	}
-	solver->setNeurons(ns);
-	solver->setClasses(cls);
-	solver->setUseNormalization(use_normalization);
+	p_solver->setNeurons(ns);
+	p_solver->setClasses(cls);
+	p_solver->setUseNormalization(use_normalization);
 
 	for (int i = 0; i < ns.size(); i++)
 		delete[] cls[i];
@@ -163,11 +127,4 @@ array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()
 		}
 	}
 	return res;
-}
-
-KohonenManaged::~KohonenManaged()
-{
-	delete[] x;
-	delete[] y;
-	delete solver;
 }

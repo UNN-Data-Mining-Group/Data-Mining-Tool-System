@@ -11,27 +11,15 @@ namespace dms::solvers::neural_nets::ward_net
 	public:
 		WardNNManaged(WardNNTopology^ t);
 
-		virtual array<Single>^ Solve(array<Single>^ x) override;
 		virtual void* getAttributes() override;
 		virtual void* getOperations() override;
-		virtual void* getNativeSolver() override;
 
 		virtual void FetchNativeParameters() override;
 		virtual void PushNativeParameters() override;
 
 		void SetWeights(array<array<float>^>^ weights);
-
-		virtual ~WardNNManaged();
-
 	private:
 		array<array<float>^>^ weights;
 		WardNNTopology^ t;
-
-		[NonSerializedAttribute]
-		float *x, *y;
-		[NonSerializedAttribute]
-		nnets_ward::WardNN* wsolver;
-
-		void initWard();
 	};
 }

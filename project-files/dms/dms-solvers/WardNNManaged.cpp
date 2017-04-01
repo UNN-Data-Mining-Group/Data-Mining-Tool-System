@@ -3,37 +3,16 @@
 using namespace dms::solvers::neural_nets::ward_net;
 
 WardNNManaged::WardNNManaged(WardNNTopology^ t) : 
-	INeuralNetwork(t->GetInputsCount(), t->GetOutputsCount())
+	INeuralNetwork(t)
 {
 	this->t = t;
-	initWard();
 	FetchNativeParameters();
-}
-
-array<Single>^ WardNNManaged::Solve(array<Single>^ x)
-{
-	__int64 inputs = GetInputsCount();
-	__int64 outputs = GetOutputsCount();
-
-	if (x->Length != inputs)
-		throw gcnew System::ArgumentException();
-
-	for (int i = 0; i < inputs; i++)
-		this->x[i] = x[i];
-
-	if (outputs != wsolver->solve(this->x, this->y))
-		throw gcnew System::IndexOutOfRangeException();
-
-	array<Single>^ y = gcnew array<Single>(outputs);
-	for (int i = 0; i < outputs; i++)
-	{
-		y[i] = this->y[i];
-	}
-	return y;
 }
 
 void WardNNManaged::FetchNativeParameters()
 {
+	auto wsolver =
+		static_cast<nnets_ward::WardNN*>(getNativeSolver());
 	int wlen = wsolver->getWeightsMatricesCount();
 
 	float** w = new float*[wlen];
@@ -63,61 +42,10 @@ void WardNNManaged::SetWeights(array<array<float>^>^ weights)
 	PushNativeParameters();
 }
 
-void WardNNManaged::initWard()
-{
-	x = new float[GetInputsCount()];
-	y = new float[GetOutputsCount()];
-
-	InputLayer^ input = t->GetInputLayer();
-	List<Layer^>^ layers = t->GetLayers();
-
-	String^ exMessage = "";
-	bool isCreationSuccessfull = true;
-	try
-	{
-		nnets_ward::InputLayer native_input
-		{
-			static_cast<size_t>(input->NeuronsCount),
-			static_cast<size_t>(input->ForwardConnection)
-		};
-		std::vector<nnets_ward::Layer> native_layers;
-		for (int i = 0; i < layers->Count; i++)
-		{
-			List<NeuronsGroup^>^ g = layers[i]->Groups;
-			std::vector<nnets_ward::NeuronsGroup> groups;
-			for (int j = 0; j < g->Count; j++)
-			{
-				groups.push_back(nnets_ward::NeuronsGroup
-				{
-					static_cast<size_t>(g[j]->NeuronsCount),
-					g[j]->HasDelay,
-					ActivationFunctionTypes::getType(g[j]->ActivationFunction)
-				});
-			}
-			native_layers.push_back(nnets_ward::Layer{ static_cast<size_t>(layers[i]->ForwardConnection), groups });
-		}
-
-		wsolver = new nnets_ward::WardNN(native_input, native_layers);
-	}
-	catch (char* msg)
-	{
-		isCreationSuccessfull = false;
-		exMessage = gcnew String(msg);
-	}
-	catch (...)
-	{
-		isCreationSuccessfull = false;
-	}
-
-	if (isCreationSuccessfull == false)
-	{
-		throw gcnew System::Exception(exMessage);
-	}
-}
-
 void WardNNManaged::PushNativeParameters()
 {
-	initWard();
+	auto wsolver = 
+		static_cast<nnets_ward::WardNN*>(getNativeSolver());
 
 	float** w = new float*[wsolver->getWeightsMatricesCount()];
 	for (int i = 0; i < wsolver->getWeightsMatricesCount(); i++)
@@ -148,16 +76,4 @@ void* WardNNManaged::getOperations()
 	(*_opers)["freeSolver"]			= nnets_ward::freeWard;
 
 	return _opers;
-}
-
-void* WardNNManaged::getNativeSolver()
-{
-	return wsolver;
-}
-
-WardNNManaged::~WardNNManaged()
-{
-	delete[] x;
-	delete[] y;
-	delete wsolver;
 }
