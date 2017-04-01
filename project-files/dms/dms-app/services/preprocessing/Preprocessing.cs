@@ -47,7 +47,7 @@ namespace dms.services.preprocessing
         }
         
         private List<int> pars = new List<int>();
-        public void executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
             models.Parameter oldParam = ((models.Parameter)DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             TypeParameter type;
@@ -91,7 +91,7 @@ namespace dms.services.preprocessing
                 index++;
             }
 
-            IParameter p;
+            IParameter p = null;
             switch (prepType)
             {
                 case "Линейная нормализация 1 (к float)":
@@ -120,6 +120,7 @@ namespace dms.services.preprocessing
                     processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
                     break;
             }
+            return p;
         }
         
         private void processWithoutPreprocessing(List<Entity> values, int paramId, int newSelectionId)
@@ -227,6 +228,112 @@ namespace dms.services.preprocessing
         private string withoutPreprocessing(Entity value)
         {
             return ((ValueParameter)value).Value;
+        }
+
+        public string getPreprocessingValue(string value, int selectionId, int parameterId)
+        {
+            //
+            float valueDec = Convert.ToSingle(value.Replace(".", ","));
+            //Формируем выборку для заданного параметра
+            List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", selectionId.ToString()), typeof(SelectionRow));
+
+            List<float> valuesForCurrParameter = new List<float>();
+            foreach (Entity selRow in selectionRows)
+            {
+                int selectionRowId = selRow.ID;
+                List<Entity> valueForParamFromRow = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                        .addCondition("ParameterID", "=", parameterId.ToString())
+                        .addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
+
+                string numberStr = ((ValueParameter)valueForParamFromRow[0]).Value;
+                float number = Convert.ToSingle(numberStr.Replace(".", ","));
+                valuesForCurrParameter.Add(number);
+            }
+            valuesForCurrParameter.Sort();
+            //находим в выборке соответсвующее значение для value (переданного аргумента) и присваиваем его appropriateValue
+            float step = 0;
+            string appropriateValue = "";
+            float prev = valuesForCurrParameter[0];
+            for (int i = 1; i < valuesForCurrParameter.Count; i++)
+            {
+                float next = valuesForCurrParameter[i];
+                step = Math.Abs(next - prev);
+                if ((valueDec - prev) <= (step / 2))
+                {
+                    appropriateValue = prev.ToString();
+                    break;
+                }
+                prev = next;
+            }
+            //проверка на выод за границу диапозона значений в выборке ???
+            if (appropriateValue.Equals(""))
+            {
+                float firstVal = valuesForCurrParameter[0];
+                float lastVal = valuesForCurrParameter[valuesForCurrParameter.Count - 1];
+                if (valueDec >= lastVal)
+                {
+                    appropriateValue = lastVal.ToString();
+                }
+                else if (valueDec <= firstVal)
+                {
+                    appropriateValue = firstVal.ToString();
+                }
+            }
+            //оперделяем шаблон для выборки и достаем из него PreprocessingParameters 
+            string result = "";
+            Selection selection = ((Selection)services.DatabaseManager.SharedManager.entityById(selectionId, typeof(Selection)));
+            int templateId = selection.TaskTemplateID;
+            TaskTemplate template = ((TaskTemplate)services.DatabaseManager.SharedManager.entityById(templateId, typeof(TaskTemplate)));
+            PreprocessingViewModel.PreprocessingTemplate prepParameters = (PreprocessingViewModel.PreprocessingTemplate)template.PreprocessingParameters;
+            List<PreprocessingViewModel.SerializableList> info = prepParameters.info;
+            List<view_models.Parameter> parametersWithPrepType = prepParameters.parameters;
+            //находим нужный preprocessing list и нужное преобразование
+            foreach (PreprocessingViewModel.SerializableList elem in info)
+            {
+                if (selectionId.Equals(elem.selectionId))
+                {
+                    List<int> parameterIdList = elem.parameterIds;
+                    int index = 0;
+                    foreach(int paramId in parameterIdList)
+                    {
+                        if (parameterId.Equals(paramId))
+                        {
+                            IParameter p = elem.prepParameters[index];
+                            foreach(view_models.Parameter prepParam in parametersWithPrepType)
+                            {
+                                if (parameterId.Equals(prepParam.Id))
+                                {
+                                    string prepType = prepParam.Type;
+                                    switch (prepType)
+                                    {
+                                        case "Линейная нормализация 1 (к float)":
+                                            result = p.GetFromLinearNormalized(Convert.ToSingle(appropriateValue.Replace(".", ",")));
+                                            break;
+                                        case "Нелинейная нормализация 2 (к float)":
+                                            result = p.GetFromNonlinearNormalized(Convert.ToSingle(appropriateValue.Replace(".", ",")));
+                                            break;
+                                        case "нормализация 3 (к int)":
+                                            result = p.GetFromNormalized(Convert.ToInt32(appropriateValue));
+                                            break;
+                                        case "бинаризация":
+                                            //добавить бинаризацию!!!!
+                                            break;
+                                        case "без предобработки":
+                                            result = appropriateValue;
+                                            break;
+                                    }
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        index++;
+                    }
+                    break;
+                }
+            }
+            return result;
         }
     }
 }
