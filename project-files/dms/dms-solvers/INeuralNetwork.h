@@ -22,9 +22,9 @@ namespace dms::solvers::neural_nets
 		virtual array<Single>^ Solve(array<Single>^ x) override;
 
 		virtual ~INeuralNetwork();
-	private:
+	protected:
 		ITopology^ topology;
-
+	private:
 		[NonSerializedAttribute]
 		nnets::NeuralNetwork* solver;
 		[NonSerializedAttribute]

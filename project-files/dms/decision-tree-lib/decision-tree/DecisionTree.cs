@@ -101,5 +101,10 @@ namespace dms.solvers.decision_tree
             res[0] = treeSolve(x, root);
             return res;
         }
+
+        public override ISolver Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

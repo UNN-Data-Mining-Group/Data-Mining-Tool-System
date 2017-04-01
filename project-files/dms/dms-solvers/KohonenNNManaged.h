@@ -22,12 +22,15 @@ namespace dms::solvers::neural_nets::kohonen
 	{
 	public:
 		KohonenManaged(KohonenNNTopology^ t);
+		KohonenManaged(KohonenManaged^ k);
 
 		virtual void* getAttributes() override;
 		virtual void* getOperations() override;
 
 		virtual void FetchNativeParameters() override;
 		virtual void PushNativeParameters() override;
+
+		virtual ISolver^ Copy() override;
 		
 		array<List<Tuple<int2d^, double>^>^>^ GetVisualData();
 	private:
@@ -35,6 +38,5 @@ namespace dms::solvers::neural_nets::kohonen
 		array<array<float>^>^ classes;
 		List<Tuple<int, int>^>^ neurons;
 		bool use_normalization;
-		KohonenNNTopology^ t;
 	};
 }

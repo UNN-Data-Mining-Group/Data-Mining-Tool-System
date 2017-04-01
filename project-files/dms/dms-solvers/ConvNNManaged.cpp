@@ -5,8 +5,22 @@ using namespace dms::solvers::neural_nets::conv_net;
 ConvNNManaged::ConvNNManaged(ConvNNTopology^ t) :
 	INeuralNetwork(t)
 {
-	this->t = t;
 	FetchNativeParameters();
+}
+
+ConvNNManaged::ConvNNManaged(ConvNNManaged ^ p) :
+	INeuralNetwork(p->topology)
+{
+	p->FetchNativeParameters();
+
+	weights = gcnew array<array<float>^>(p->weights->Length);
+	for (int i = 0; i < weights->Length; i++)
+	{
+		weights[i] = gcnew array<float>(p->weights[i]->Length);
+		for (int j = 0; j < weights[i]->Length; j++)
+			weights[i][j] = p->weights[i][j];
+	}
+	PushNativeParameters();
 }
 
 void ConvNNManaged::SetWeights(array<array<float>^>^ weights)
@@ -56,6 +70,11 @@ void ConvNNManaged::PushNativeParameters()
 	for (int i = 0; i < p_solver->getWeightsMatricesCount(); i++)
 		delete[] w[i];
 	delete[] w;
+}
+
+dms::solvers::ISolver ^ dms::solvers::neural_nets::conv_net::ConvNNManaged::Copy()
+{
+	return gcnew ConvNNManaged(this);
 }
 
 void* ConvNNManaged::getAttributes()

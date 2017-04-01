@@ -13,6 +13,7 @@ namespace dms::solvers
 		ISolver(ISolverDescription^ desc);
 
 		virtual array<Single>^ Solve(array<Single>^ x) = 0;
+		virtual ISolver^ Copy() = 0;
 		virtual __int64 GetInputsCount();
 		virtual __int64 GetOutputsCount();
 

@@ -4,8 +4,32 @@ using namespace dms::solvers::neural_nets::kohonen;
 KohonenManaged::KohonenManaged(KohonenNNTopology ^ t) : 
 	INeuralNetwork(t)
 {
-	this->t = t;
 	FetchNativeParameters();
+}
+
+KohonenManaged::KohonenManaged(KohonenManaged ^ k) :
+	INeuralNetwork(k->topology)
+{
+	k->FetchNativeParameters();
+
+	weights = gcnew array<float>(k->weights->Length);
+	for (int i = 0; i < weights->Length; i++)
+		weights[i] = k->weights[i];
+
+	classes = gcnew array<array<float>^>(k->classes->Length);
+	for (int i = 0; i < weights->Length; i++)
+	{
+		classes[i] = gcnew array<float>(k->classes[i]->Length);
+		for (int j = 0; j < classes[i]->Length; j++)
+			classes[i][j] = k->classes[i][j];
+	}
+
+	neurons = gcnew List<Tuple<int, int>^>();
+	for (int i = 0; i < k->neurons->Count; i++)
+		neurons->Add(gcnew Tuple<int, int>(k->neurons[i]->Item1, k->neurons[i]->Item2));
+
+	use_normalization = k->use_normalization;
+	PushNativeParameters();
 }
 
 void * dms::solvers::neural_nets::kohonen::KohonenManaged::getAttributes()
@@ -98,6 +122,11 @@ void KohonenManaged::PushNativeParameters()
 	for (int i = 0; i < ns.size(); i++)
 		delete[] cls[i];
 	delete[] cls;
+}
+
+dms::solvers::ISolver ^ dms::solvers::neural_nets::kohonen::KohonenManaged::Copy()
+{
+	return gcnew KohonenManaged(this);
 }
 
 array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()

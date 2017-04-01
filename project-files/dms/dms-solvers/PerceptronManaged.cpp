@@ -6,8 +6,22 @@ using dms::solvers::neural_nets::perceptron::PerceptronTopology;
 PerceptronManaged::PerceptronManaged(PerceptronTopology^ t) :
 	INeuralNetwork(t)
 {
-	this->t = t;
 	FetchNativeParameters();
+}
+
+PerceptronManaged::PerceptronManaged(PerceptronManaged ^ p) :
+	INeuralNetwork(p->topology)
+{
+	p->FetchNativeParameters();
+
+	weights = gcnew array<array<float>^>(p->weights->Length);
+	for (int i = 0; i < weights->Length; i++)
+	{
+		weights[i] = gcnew array<float>(p->weights[i]->Length);
+		for (int j = 0; j < weights[i]->Length; j++)
+			weights[i][j] = p->weights[i][j];
+	}
+	PushNativeParameters();
 }
 
 void PerceptronManaged::SetWeights(array<array<float>^>^ weights)
@@ -63,6 +77,12 @@ void PerceptronManaged::PushNativeParameters()
 	delete[] w;
 }
 
+dms::solvers::ISolver ^ PerceptronManaged::Copy()
+{
+	PerceptronManaged^ p = gcnew PerceptronManaged(this);
+	return p;
+}
+
 void* PerceptronManaged::getAttributes()
 {
 	return _attr;
@@ -70,6 +90,8 @@ void* PerceptronManaged::getAttributes()
 
 void* PerceptronManaged::getOperations()
 {
+	auto t = static_cast<PerceptronTopology^>(topology);
+
 	(*_opers)["getAllWeights"]		= nnets_perceptron::getAllWeightsPerc;
 	(*_opers)["setAllWeights"]		= nnets_perceptron::setAllWeightsPerc;
 	(*_opers)["solve"]				= nnets_perceptron::solvePerc;

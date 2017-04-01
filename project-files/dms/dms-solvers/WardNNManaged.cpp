@@ -5,8 +5,22 @@ using namespace dms::solvers::neural_nets::ward_net;
 WardNNManaged::WardNNManaged(WardNNTopology^ t) : 
 	INeuralNetwork(t)
 {
-	this->t = t;
 	FetchNativeParameters();
+}
+
+WardNNManaged::WardNNManaged(WardNNManaged ^ w) :
+	INeuralNetwork(w->topology)
+{
+	w->FetchNativeParameters();
+
+	weights = gcnew array<array<float>^>(w->weights->Length);
+	for (int i = 0; i < weights->Length; i++)
+	{
+		weights[i] = gcnew array<float>(w->weights[i]->Length);
+		for (int j = 0; j < weights[i]->Length; j++)
+			weights[i][j] = w->weights[i][j];
+	}
+	PushNativeParameters();
 }
 
 void WardNNManaged::FetchNativeParameters()
@@ -59,6 +73,11 @@ void WardNNManaged::PushNativeParameters()
 	for (int i = 0; i < wsolver->getWeightsMatricesCount(); i++)
 		delete[] w[i];
 	delete[] w;
+}
+
+dms::solvers::ISolver ^ WardNNManaged::Copy()
+{
+	return gcnew WardNNManaged(this);
 }
 
 void* WardNNManaged::getAttributes()

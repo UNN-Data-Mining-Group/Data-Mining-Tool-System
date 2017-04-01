@@ -10,6 +10,7 @@ namespace dms::solvers::neural_nets::conv_net
 	{
 	public:
 		ConvNNManaged(ConvNNTopology^ t);
+		ConvNNManaged(ConvNNManaged^ p);
 
 		virtual void* getAttributes() override;
 		virtual void* getOperations() override;
@@ -17,9 +18,10 @@ namespace dms::solvers::neural_nets::conv_net
 		virtual void FetchNativeParameters() override;
 		virtual void PushNativeParameters() override;
 
+		virtual ISolver^ Copy() override;
+
 		void SetWeights(array<array<float>^>^ weights);
 	private:
 		array<array<float>^>^ weights;
-		ConvNNTopology^ t;
 	};
 }
