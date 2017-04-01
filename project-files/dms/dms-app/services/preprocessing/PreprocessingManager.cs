@@ -124,19 +124,10 @@ namespace dms.services.preprocessing
             List<string> classes = p.getClasses();
             return classes;
         }
-        public bool compareExAndObValues(string expectedValue, string obtainedValue, int selectionId, int parameterId)
+        public List<bool> compareExAndObValues(List<string> expectedValues, List<string> obtainedValues, int selectionId, int parameterId)
         {
-            string exVal = Preprocessing.PreprocessingObj.getPreprocessingValue(expectedValue, selectionId, parameterId);
-            string obVal = Preprocessing.PreprocessingObj.getPreprocessingValue(obtainedValue, selectionId, parameterId);
-            
-            if (!exVal.Equals("") && !obVal.Equals("") && exVal.Equals(obVal))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            List<string> appropriateValues = Preprocessing.PreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
+            return Preprocessing.PreprocessingObj.getResults(selectionId, parameterId, appropriateValues, expectedValues);
         }
     }
 }

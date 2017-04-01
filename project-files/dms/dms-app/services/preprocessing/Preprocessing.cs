@@ -230,10 +230,10 @@ namespace dms.services.preprocessing
             return ((ValueParameter)value).Value;
         }
 
-        public string getPreprocessingValue(string value, int selectionId, int parameterId)
+        public List<string> getAppropriateValues(List<string> obtainedValues, int selectionId, int parameterId)
         {
             //
-            float valueDec = Convert.ToSingle(value.Replace(".", ","));
+     //       float valueDec = Convert.ToSingle(value.Replace(".", ","));
             //Формируем выборку для заданного параметра
             List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", selectionId.ToString()), typeof(SelectionRow));
@@ -253,35 +253,45 @@ namespace dms.services.preprocessing
             valuesForCurrParameter.Sort();
             //находим в выборке соответсвующее значение для value (переданного аргумента) и присваиваем его appropriateValue
             float step = 0;
-            string appropriateValue = "";
-            float prev = valuesForCurrParameter[0];
-            for (int i = 1; i < valuesForCurrParameter.Count; i++)
+            List<string> appropriateValues = new List<string>();
+            
+            for (int j = 0; j < obtainedValues.Count; j++)
             {
-                float next = valuesForCurrParameter[i];
-                step = Math.Abs(next - prev);
-                if ((valueDec - prev) <= (step / 2))
+                float obtainedValue = Convert.ToSingle(obtainedValues[j].Replace(".", ","));
+
+                float prev = valuesForCurrParameter[0];
+                for (int i = 1; i < valuesForCurrParameter.Count; i++)
                 {
-                    appropriateValue = prev.ToString();
-                    break;
+                    float next = valuesForCurrParameter[i];
+                    step = Math.Abs(next - prev);
+                    if ((obtainedValue - prev) <= (step / 2))
+                    {
+                        appropriateValues[j] = prev.ToString();
+                        break;
+                    }
+                    prev = next;
                 }
-                prev = next;
+                //проверка на выод за границу диапозона значений в выборке ???
+                if (appropriateValues[j].Equals(""))
+                {
+                    float firstVal = valuesForCurrParameter[0];
+                    float lastVal = valuesForCurrParameter[valuesForCurrParameter.Count - 1];
+                    if (obtainedValue >= lastVal)
+                    {
+                        appropriateValues[j] = lastVal.ToString();
+                    }
+                    else if (obtainedValue <= firstVal)
+                    {
+                        appropriateValues[j] = firstVal.ToString();
+                    }
+                }
             }
-            //проверка на выод за границу диапозона значений в выборке ???
-            if (appropriateValue.Equals(""))
-            {
-                float firstVal = valuesForCurrParameter[0];
-                float lastVal = valuesForCurrParameter[valuesForCurrParameter.Count - 1];
-                if (valueDec >= lastVal)
-                {
-                    appropriateValue = lastVal.ToString();
-                }
-                else if (valueDec <= firstVal)
-                {
-                    appropriateValue = firstVal.ToString();
-                }
-            }
+            return appropriateValues;
+        }
+
+        public List<bool> getResults(int selectionId, int parameterId, List<string> appropriateValues, List<string> expectedValues)
+        {
             //оперделяем шаблон для выборки и достаем из него PreprocessingParameters 
-            string result = "";
             Selection selection = ((Selection)services.DatabaseManager.SharedManager.entityById(selectionId, typeof(Selection)));
             int templateId = selection.TaskTemplateID;
             TaskTemplate template = ((TaskTemplate)services.DatabaseManager.SharedManager.entityById(templateId, typeof(TaskTemplate)));
@@ -295,12 +305,12 @@ namespace dms.services.preprocessing
                 {
                     List<int> parameterIdList = elem.parameterIds;
                     int index = 0;
-                    foreach(int paramId in parameterIdList)
+                    foreach (int paramId in parameterIdList)
                     {
                         if (parameterId.Equals(paramId))
                         {
                             IParameter p = elem.prepParameters[index];
-                            foreach(view_models.Parameter prepParam in parametersWithPrepType)
+                            foreach (view_models.Parameter prepParam in parametersWithPrepType)
                             {
                                 if (parameterId.Equals(prepParam.Id))
                                 {
@@ -308,20 +318,18 @@ namespace dms.services.preprocessing
                                     switch (prepType)
                                     {
                                         case "Линейная нормализация 1 (к float)":
-                                            result = p.GetFromLinearNormalized(Convert.ToSingle(appropriateValue.Replace(".", ",")));
-                                            break;
+                                            return getValuesFromLinearNormalized(appropriateValues, expectedValues, p);
+                                          //  result = p.GetFromLinearNormalized(Convert.ToSingle(appropriateValue.Replace(".", ",")));
+                                          //  break;
                                         case "Нелинейная нормализация 2 (к float)":
-                                            result = p.GetFromNonlinearNormalized(Convert.ToSingle(appropriateValue.Replace(".", ",")));
-                                            break;
+                                            return getValuesFromNonlinearNormalized(appropriateValues, expectedValues, p);
                                         case "нормализация 3 (к int)":
-                                            result = p.GetFromNormalized(Convert.ToInt32(appropriateValue));
-                                            break;
+                                            return getValuesFromNormalized(appropriateValues, expectedValues, p);
                                         case "бинаризация":
                                             //добавить бинаризацию!!!!
                                             break;
                                         case "без предобработки":
-                                            result = appropriateValue;
-                                            break;
+                                            return getValuesWithoutPreprocessing(appropriateValues, expectedValues);
                                     }
                                     break;
                                 }
@@ -333,7 +341,87 @@ namespace dms.services.preprocessing
                     break;
                 }
             }
-            return result;
+            return null;
+        }
+
+        public List<bool> getValuesFromLinearNormalized(List<string> appropriateValues, List<string> expectedValues, IParameter p)
+        {
+            List<bool> results = new List<bool>();
+            for (int i = 0; i < appropriateValues.Count; i++)
+            {
+                string apVal = p.GetFromLinearNormalized(Convert.ToSingle(appropriateValues[i].Replace(".", ",")));
+                string exVal = p.GetFromLinearNormalized(Convert.ToSingle(expectedValues[i].Replace(".", ",")));
+
+                if (!exVal.Equals("") && !apVal.Equals("") && exVal.Equals(apVal))
+                {
+                    results.Add(true);
+                }
+                else
+                {
+                    results.Add(false);
+                }
+            }
+            return results;
+        }
+
+        public List<bool> getValuesFromNonlinearNormalized(List<string> appropriateValues, List<string> expectedValues, IParameter p)
+        {
+            List<bool> results = new List<bool>();
+            for (int i = 0; i < appropriateValues.Count; i++)
+            {
+                string apVal = p.GetFromNonlinearNormalized(Convert.ToSingle(appropriateValues[i].Replace(".", ",")));
+                string exVal = p.GetFromNonlinearNormalized(Convert.ToSingle(expectedValues[i].Replace(".", ",")));
+
+                if (!exVal.Equals("") && !apVal.Equals("") && exVal.Equals(apVal))
+                {
+                    results.Add(true);
+                }
+                else
+                {
+                    results.Add(false);
+                }
+            }
+            return results;
+        }
+
+        public List<bool> getValuesFromNormalized(List<string> appropriateValues, List<string> expectedValues, IParameter p)
+        {
+            List<bool> results = new List<bool>();
+            for (int i = 0; i < appropriateValues.Count; i++)
+            {
+                string apVal = p.GetFromNormalized(Convert.ToInt32(appropriateValues[i]));
+                string exVal = p.GetFromNormalized(Convert.ToInt32(expectedValues[i]));
+
+                if (!exVal.Equals("") && !apVal.Equals("") && exVal.Equals(apVal))
+                {
+                    results.Add(true);
+                }
+                else
+                {
+                    results.Add(false);
+                }
+            }
+            return results;
+        }
+
+        public List<bool> getValuesWithoutPreprocessing(List<string> appropriateValues, List<string> expectedValues)
+        {
+            List<bool> results = new List<bool>();
+            for (int i = 0; i < appropriateValues.Count; i++)
+            {
+                string apVal = appropriateValues[i];
+                string exVal = expectedValues[i];
+
+                if (!exVal.Equals("") && !apVal.Equals("") && exVal.Equals(apVal))
+                {
+                    results.Add(true);
+                }
+                else
+                {
+                    results.Add(false);
+                }
+            }
+            return results;
         }
     }
 }
