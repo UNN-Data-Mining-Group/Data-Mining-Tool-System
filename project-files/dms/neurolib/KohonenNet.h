@@ -80,7 +80,7 @@ namespace nnets_kohonen
 		size_t getWeightsMatrixSize();
 		bool getUseNormalization();
 
-		~KohonenNet();
+		virtual ~KohonenNet();
 	private:
 		bool use_norm_x;
 		Metric metric;

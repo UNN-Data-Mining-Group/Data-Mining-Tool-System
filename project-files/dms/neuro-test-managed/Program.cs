@@ -85,7 +85,8 @@ namespace neuro_test_managed
             var net = new ConvNNManaged(t);
             net.SetWeights(w);
 
-            float[] y = net.Solve(new float[]{ 0.5f, 0.3f, -0.6f, -0.2f });
+            var net2 = net.Copy();
+            float[] y = net2.Solve(new float[]{ 0.5f, 0.3f, -0.6f, -0.2f });
             float[] answer = new float[] { 0.35f, -0.15f };
 
             float EPS = 1e-5f;
@@ -154,7 +155,8 @@ namespace neuro_test_managed
             WardNNManaged wnn = new WardNNManaged(new WardNNTopology(input, layers));
             wnn.SetWeights(w);
 
-            var y = wnn.Solve(new float[] { 1.0f, 0.0f });
+            var wnn2 = wnn.Copy();
+            var y = wnn2.Solve(new float[] { 1.0f, 0.0f });
             if (Math.Abs(y[0] - 6.0f) < 1e-6)
             {
                 Console.WriteLine("PASS");
@@ -191,7 +193,8 @@ namespace neuro_test_managed
             PerceptronManaged p = new PerceptronManaged(new PerceptronTopology(3, neurons, delays, afs));
             p.SetWeights(w);
 
-            float[] y = p.Solve(new float[] { 1, 0, 1 });
+            var p2 = p.Copy();
+            float[] y = p2.Solve(new float[] { 1, 0, 1 });
             float[] answer = { 5.0f / 12, 1.0f / 6 };
             float EPS = 1e-5f;
 

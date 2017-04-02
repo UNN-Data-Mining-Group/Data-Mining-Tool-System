@@ -51,14 +51,8 @@ namespace dms.view_models
                         break;
                     }
                 }
-                Random r = new Random();
 
-                List<Tuple<int2d, double>> res = new List<Tuple<int2d, double>>();
-                for (int i = 0; i < Width; i++)
-                    for (int j = 0; j < Height; j++)
-                        res.Add(new Tuple<int2d, double>(new int2d(i, j), r.NextDouble()));
-
-                Weights = res/* Data[index]*/;
+                Weights = Data[index];
             }
         }
         public List<Tuple<int2d, double>> Weights
@@ -93,8 +87,8 @@ namespace dms.view_models
             taskSolver = solver;
 
             KohonenNNTopology t = solver.Description as KohonenNNTopology;
-            Inputs = t.GetInputsCount();
-            Outputs = t.GetOutputsCount();
+            Inputs = Convert.ToInt32(t.GetInputsCount());
+            Outputs = Convert.ToInt32(t.GetOutputsCount());
             Width = t.GetLayerWidth();
             Height = t.GetLayerHeight();
             Metric = t.GetMetric();
@@ -140,8 +134,6 @@ namespace dms.view_models
         {
             get
             {
-                return new string[] { "FakeScenario" };
-
                 List<Entity> learnedSolvers = LearnedSolver.where(new Query("LearnedSolver")
                    .addTypeQuery(TypeQuery.select)
                    .addCondition("TaskSolverID", "=", taskSolver.ID.ToString()),
@@ -164,8 +156,6 @@ namespace dms.view_models
         {
             get
             {
-                return new string[] { "FakeSelection" };
-
                 List<Entity> learnedSolvers = LearnedSolver.where(new Query("LearnedSolver")
                     .addTypeQuery(TypeQuery.select)
                     .addCondition("TaskSolverID", "=", taskSolver.ID.ToString()),
@@ -184,8 +174,6 @@ namespace dms.view_models
         {
             get
             {
-                return new string[] { "FakeTemplate" };
-
                 List<Entity> learnedSolvers = LearnedSolver.where(new Query("LearnedSolver")
                     .addTypeQuery(TypeQuery.select)
                     .addCondition("TaskSolverID", "=", taskSolver.ID.ToString()),
@@ -259,7 +247,7 @@ namespace dms.view_models
                     TileGraphs.Clear();
                 selectedTemplate = value;
 
-                /*List<Entity> templates = TaskTemplate.where(new Query("TaskTemplate")
+                List<Entity> templates = TaskTemplate.where(new Query("TaskTemplate")
                     .addTypeQuery(TypeQuery.select).addCondition("TaskID", "=", task.ID.ToString())
                     .addCondition("Name", "=", SelectedTemplate), typeof(TaskTemplate));
                 if (templates.Count > 1)
@@ -273,8 +261,7 @@ namespace dms.view_models
                 foreach(models.Parameter parameter in pars)
                 {
                     paramNames[parameter.Index] = parameter.Name;
-                }*/
-                paramNames = new string[] { "FakeParam1", "FakeParam2" };
+                }
 
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("CanAddGraph");
@@ -289,7 +276,7 @@ namespace dms.view_models
                     SelectedTemplate != null;
                 if (res == true)
                 {
-                    /*Entity taskTemplate = TaskTemplate.where(new Query("TaskTemplate")
+                    Entity taskTemplate = TaskTemplate.where(new Query("TaskTemplate")
                         .addTypeQuery(TypeQuery.select)
                         .addCondition("Name", "=", SelectedTemplate),
                         typeof(TaskTemplate))[0];
@@ -310,7 +297,7 @@ namespace dms.view_models
                         typeof(LearnedSolver))[0] as LearnedSolver;
 
                     KohonenManaged km = solver.Soul as KohonenManaged;
-                    data = km.GetVisualData();*/
+                    data = km.GetVisualData();
                 }
                 return res;
             }

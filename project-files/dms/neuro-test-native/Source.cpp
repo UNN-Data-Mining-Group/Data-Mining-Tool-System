@@ -21,41 +21,69 @@ void performance_test_af();
 int accuracy_test_perc();
 int accuracy_test_ward();
 int accuracy_test_conv();
+int accuracy_test_koh();
 
 void kohonen_learning();
 
 void main()
 {
-	kohonen_learning();
-
-	/*std::cout << "=== Accuracy tests ===" << std::endl;
+	std::cout << "=== Accuracy tests ===" << std::endl;
 	std::cout << "->Perceptron: " << (accuracy_test_perc() == 0 ? "Success" : "Fail") << std::endl;
 	std::cout << "->Ward: " << (accuracy_test_ward() == 0 ? "Success" : "Fail") << std::endl;
 	std::cout << "->Convolutional: " << (accuracy_test_conv() == 0 ? "Success" : "Fail") << std::endl;
+	std::cout << "->Kohonen: " << (accuracy_test_koh() == 0 ? "Success" : "Fail") << std::endl;
 
 	std::cout << std::endl << "=== Performance tests ===" << std::endl;
 	performance_test_perc();
 	performance_test_ward();
 	performance_test_conv();
-	performance_test_af();*/
+	performance_test_af();
+	kohonen_learning();
 }
 
-void kohonen_learning()
+int accuracy_test_koh()
 {
-	/*nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2);
-	float w[] = 
+	nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2);
+	float w[] =
 	{
 		1, 0, 0,
 		0, 2, 0,
 		0, 0, 3,
 		-2, 0, 0
 	};
+	float** classes = new float*[4];
+	for (int i = 0; i < 4; i++)
+		classes[i] = new float[1];
+	classes[0][0] = 0;
+	classes[1][0] = 1;
+	classes[2][0] = 1;
+	classes[3][0] = 0;
+
 	float y1[] = { 0 };
 	kn1->setWeights(w);
-	kn1->solve(w, y1);
-	kn1->solve(w + 3, y1);
-	delete kn1;*/
+	kn1->setClasses(classes);
 
+	int res = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		kn1->solve(&w[i*3], y1);
+		if (abs(y1[0] - classes[i][0]) >= EPS)
+		{
+			res = 1;
+			break;
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+		delete[] classes[i];
+	delete[] classes;
+	delete kn1;
+
+	return res;
+}
+
+void kohonen_learning()
+{
 	std::ifstream input_file("iris_mod.data");
 	int rowsCount = 150;
 	int inputParams = 4;

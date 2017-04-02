@@ -157,7 +157,7 @@ namespace dms.view_models
             if (ls.Soul is INeuralNetwork)
             {
                 INeuralNetwork isolver = ls.Soul as INeuralNetwork;
-                isolver.PushNativeParameters();
+                //isolver.PushNativeParameters();
                 return isolver;
             }
             // New ifelse will be added for desicion tree;
