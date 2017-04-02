@@ -126,8 +126,14 @@ namespace dms.services.preprocessing
         }
         public List<bool> compareExAndObValues(List<string> expectedValues, List<string> obtainedValues, int selectionId, int parameterId)
         {
-            List<string> appropriateValues = Preprocessing.PreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
-            return Preprocessing.PreprocessingObj.getResults(selectionId, parameterId, appropriateValues, expectedValues);
+            List<string> appropriateValues = InversePreprocessing.InversePreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
+            return InversePreprocessing.InversePreprocessingObj.getComparisonResults(selectionId, parameterId, appropriateValues, expectedValues);
+        }
+
+        public List<string> getAppropriateValuesAfterInversePreprocessing(List<string> obtainedValues, int selectionId, int parameterId)
+        {
+            List<string> appropriateValues = InversePreprocessing.InversePreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
+            return InversePreprocessing.InversePreprocessingObj.getAppropriateValuesAfterInversePreprocessing(selectionId, parameterId, appropriateValues);
         }
     }
 }
