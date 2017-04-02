@@ -78,30 +78,30 @@ namespace dms.view_models.solver_view_models
                     GeneticParams = (GeneticParam)LS.LAParameters
 
                 };
-                
+                PreprocessingManager preprocessing = new PreprocessingManager();
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
                 ISolver.FetchNativeParameters();
                 int sizeTrainDataset = trainInputDataset.Length;
+                List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
+                List<string> obtainedOutputValues = new List<string>();
                 for (int i = 0; i < sizeTrainDataset; i++)
                 {
-                    float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
-                    if (expectedOutputDataset[0] != trainOutputDataset[i])
-                    {
-                        kMistakeTrain++;
-                    }
+                    obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(trainInputDataset[i])[0]));
                 }
-                kMistakeTrain /= sizeTrainDataset;
-                
+                List<bool> comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+                var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+                kMistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
+
                 int sizeTestDataset = testOutputDataset.Length;
+                expectedOutputValues = testOutputDataset.Select(x => Convert.ToString(x)).ToList();
+                obtainedOutputValues.Clear();
                 for (int i = 0; i < sizeTestDataset; i++)
                 {
-                    float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
-                    if (expectedOutputDataset[0] != testOutputDataset[i])
-                    {
-                        kMistakeTest++;
-                    }
+                    obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(testInputDataset[i])[0]));
                 }
-                kMistakeTest /= sizeTestDataset;
+                comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+                counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+                kMistakeTest = (float)counts[false] / (float)sizeTestDataset;
 
                 mistakeTrain += kMistakeTrain;
                 mistakeTest += kMistakeTest;
