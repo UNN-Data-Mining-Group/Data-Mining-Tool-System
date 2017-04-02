@@ -73,9 +73,9 @@ namespace dms.services.preprocessing
             return Preprocessing.PreprocessingObj.addNewEntitiesForPreprocessing(selectionName, countRows, taskTemplateId);
         }
 
-        public void executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
-            Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId);
+            return Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId);
         }
 
         public List<Entity> getNewParametersForBinarizationType(int oldSelectionId, int newTemplateId, int oldParamId)
@@ -123,6 +123,11 @@ namespace dms.services.preprocessing
             EnumeratedParameter p = new EnumeratedParameter(oldValuesForOldParamId);
             List<string> classes = p.getClasses();
             return classes;
+        }
+        public List<bool> compareExAndObValues(List<string> expectedValues, List<string> obtainedValues, int selectionId, int parameterId)
+        {
+            List<string> appropriateValues = Preprocessing.PreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
+            return Preprocessing.PreprocessingObj.getResults(selectionId, parameterId, appropriateValues, expectedValues);
         }
     }
 }
