@@ -6,25 +6,38 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 using dms.tools;
+using dms.models;
 
 namespace dms.view_models
 {
     public class LearningStatistic
     {
+        public LearningStatistic(LearnedSolver learnedSolver)
+        {
+            LearningQuality learningQuality = (LearningQuality)LearningQuality.where(new Query("LearningQuality").addTypeQuery(TypeQuery.select)
+                .addCondition("LearnedSolverID", "=", learnedSolver.ID.ToString()), typeof(LearningQuality))[0];
+            MistakeTest = learningQuality.MistakeTest;
+            MistakeTrain = learningQuality.MistakeTrain;
+            ClosingError = Convert.ToSingle(learningQuality.ClosingError);
+
+        }
         public string LearningScenarioName { get; set; }
-        public float MisstakeTest { get { return 10.5f; } }
-        public float MisstakeTrain { get { return 8.75f; } }
+        public float MistakeTest { get; set; }
+        public float ClosingError { get; set; }
+        public float MistakeTrain { get; set; }
     }
 
     public class PreprocessingLearnViewModel
     {
-        public PreprocessingLearnViewModel()
+        public PreprocessingLearnViewModel(List<LearnedSolver> learnedSolvers)
         {
-            LearningStatistics = new LearningStatistic[] 
+            List<LearningStatistic> learningStatistic = new List<LearningStatistic>();
+            foreach (LearnedSolver learnedSolver in learnedSolvers)
             {
-                new LearningStatistic { LearningScenarioName = "Сценарий 1" },
-                new LearningStatistic { LearningScenarioName = "Сценарий 2" }
-            };
+                LearningScenario learningScenario = (LearningScenario)LearningScenario.getById(learnedSolver.LearningScenarioID, typeof(LearningScenario));
+                learningStatistic.Add(new LearningStatistic(learnedSolver) { LearningScenarioName = learningScenario.Name });
+            }
+            LearningStatistics = learningStatistic.ToArray();
         }
         public string Name { get; set; }
         public LearningStatistic[] LearningStatistics { get; private set; }
@@ -32,13 +45,17 @@ namespace dms.view_models
 
     public class LearnedSolverViewModel
     {
-        public LearnedSolverViewModel()
+        public LearnedSolverViewModel(List<LearnedSolver> learnedSolvers)
         {
-            PreprocessingList = new PreprocessingLearnViewModel[]
+            foreach (LearnedSolver learnedSolver in learnedSolvers)
             {
-                new PreprocessingLearnViewModel{Name = "Предобработка 1"},
-                new PreprocessingLearnViewModel{Name = "Предобработка 2"}
-            };
+                Selection selection = (Selection)Selection.getById(learnedSolver.SelectionID, typeof(Selection));
+                TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.getById(selection.TaskTemplateID, typeof(TaskTemplate));
+                PreprocessingList = new PreprocessingLearnViewModel[]
+                {
+                new PreprocessingLearnViewModel(learnedSolvers) {Name = taskTemplate.Name}
+                };
+            }
         }
         public string Name { get; set; }
         public PreprocessingLearnViewModel[] PreprocessingList { get; private set; }
@@ -53,12 +70,13 @@ namespace dms.view_models
         {
             LearningDetails = new ObservableCollection<LearningDetailsViewModel>();
             LearningDetails.Add(new LearningDetailsViewModel(this) { SelectedScenario = "Сценарий 1", SelectedPreprocessing = "Предобработка 1" });
-            addHandler = new ActionHandler(() => 
+            addHandler = new ActionHandler(() =>
             {
                 LearningDetails.Add(
                     new LearningDetailsViewModel(this)
                     {
-                        SelectedScenario = "Сценарий 1", SelectedPreprocessing = "Предобработка 1"
+                        SelectedScenario = "Сценарий 1",
+                        SelectedPreprocessing = "Предобработка 1"
                     });
             }, e => true);
             deleteHandler = new ActionHandler(() => parent.DeleteSolverToLearn(this), e => true);
@@ -79,7 +97,7 @@ namespace dms.view_models
         private ActionHandler deleteHandler;
         public LearningDetailsViewModel(SolverLearnRowViewModel parent)
         {
-            deleteHandler = new ActionHandler(()=>parent.DeleteLearningDetailsItem(this), e=>true);
+            deleteHandler = new ActionHandler(() => parent.DeleteLearningDetailsItem(this), e => true);
         }
         public string SelectedScenario { get; set; }
         public string SelectedPreprocessing { get; set; }
@@ -94,20 +112,45 @@ namespace dms.view_models
         private ActionHandler addHandler;
         private ActionHandler learnCommand;
 
-        public SelectionLearnStatisticViewModel(string taskName, string selectionName)
+        public SelectionLearnStatisticViewModel(Selection selection, string taskName)
         {
-            LearnedSolvers = new LearnedSolverViewModel[]
+            List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                .addCondition("Name", "=", selection.Name), typeof(Selection));
+            List<Entity> learnedSolvers = new List<Entity>();
+            foreach (Selection sel in selections)
+                learnedSolvers.AddRange(LearnedSolver.where(new Query("LearnedSolver").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", sel.ID.ToString()), typeof(LearnedSolver)));
+            List<LearnedSolverViewModel> listLearnedSolverViewModel = new List<LearnedSolverViewModel>();
+            ISet<string> nameLearnedSolver = new HashSet<string>();
+            Dictionary<string, List<LearnedSolver>> dictionarytaskSolverToLearnedSolver = new Dictionary<string, List<LearnedSolver>>();
+            foreach (LearnedSolver learnedSolver in learnedSolvers)
             {
-                new LearnedSolverViewModel {Name = "Персептрон 1"},
-                new LearnedSolverViewModel {Name = "Персептрон 2"}
-            };
+                TaskSolver taskSolver = (TaskSolver)TaskSolver.getById(learnedSolver.TaskSolverID, typeof(TaskSolver));
+                List<LearnedSolver> learnedSolverForCurSolver;
+                if (dictionarytaskSolverToLearnedSolver.TryGetValue(taskSolver.Name, out learnedSolverForCurSolver))
+                {
+                    learnedSolverForCurSolver.Add(learnedSolver);
+                    dictionarytaskSolverToLearnedSolver[taskSolver.Name] = learnedSolverForCurSolver;
+                }
+                else
+                {
+                    learnedSolverForCurSolver = new List<LearnedSolver>() { learnedSolver };
+                    dictionarytaskSolverToLearnedSolver.Add(taskSolver.Name, learnedSolverForCurSolver);
+                }
+            }
+            foreach (KeyValuePair<string, List<LearnedSolver>> pair in dictionarytaskSolverToLearnedSolver)
+            {
+                listLearnedSolverViewModel.Add(new LearnedSolverViewModel(pair.Value) { Name = pair.Key });
+            }
+            LearnedSolvers = listLearnedSolverViewModel.ToArray();
 
             SolversToLearn = new ObservableCollection<SolverLearnRowViewModel>
             {
                 new SolverLearnRowViewModel(this) {SelectedName = "Персептрон 1"}
             };
+            CurSelection = selection;
             TaskName = taskName;
-            SelectionName = selectionName;
+            SelectionName = selection.Name;
             addHandler = new ActionHandler(
                 () =>
                 {
@@ -123,6 +166,8 @@ namespace dms.view_models
         public ObservableCollection<SolverLearnRowViewModel> SolversToLearn { get; private set; }
         public ICommand AddCommand { get { return addHandler; } }
         public ICommand LearnCommand { get { return learnCommand; } }
+
+        public Selection CurSelection { get; private set; }
 
         public void DeleteSolverToLearn(SolverLearnRowViewModel vm)
         {

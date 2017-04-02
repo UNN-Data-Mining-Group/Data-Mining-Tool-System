@@ -14,6 +14,7 @@
                 <DataGridTextColumn Header="Преобразование" Binding="{Binding PreprocessingName}" Width="*"/>
                 <DataGridTextColumn Header="Ошибка train" Binding="{Binding TrainMistake}" Width="*"/>
                 <DataGridTextColumn Header="Ошибка test" Binding="{Binding TestMistake}" Width="*"/>
+                <DataGridTextColumn Header="Невязка" Binding="{Binding ClosingError}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
         <Label Content="Решения:"/>
