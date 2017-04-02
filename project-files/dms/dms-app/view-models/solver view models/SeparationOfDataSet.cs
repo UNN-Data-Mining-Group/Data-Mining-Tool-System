@@ -43,7 +43,7 @@ namespace dms.view_models.solver_view_models
         public int SelectionID { get; private set; }
         public int ParameterID { get; private set; }
 
-        public void separationAndLearn(int selectionID, int parameterID)
+        public ISolver separationAndLearn(int selectionID, int parameterID)
         {
             SelectionID = selectionID;
             ParameterID = parameterID;
@@ -51,18 +51,20 @@ namespace dms.view_models.solver_view_models
             mixDataset();
             if (selectionType.Equals("Тестовая/обучающая"))
             {
-                simpleSeparation(); 
+                return simpleSeparation(); 
             }
             else if (selectionType.Equals("Кроссвалидация"))
             {
-                crossValidation();
+                return crossValidation();
             }
             else throw new Exception("Unknown error");
         }
 
-        private void crossValidation()
+        private ISolver crossValidation()
         {
             int folds = 5;
+            ISolver curSolver = ISolver.Copy();
+            List<float> listOfTestMistakes = new List<float>();
             for (int k = 0; k < folds; k++)
             {
                 float kMistakeTrain = 0;
@@ -102,15 +104,20 @@ namespace dms.view_models.solver_view_models
                 comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
                 counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
                 kMistakeTest = (float)counts[false] / (float)sizeTestDataset;
-
-                mistakeTrain += kMistakeTrain;
-                mistakeTest += kMistakeTest;
+                if (k != 0 && kMistakeTest < listOfTestMistakes.Min())
+                {
+                    curSolver = ISolver.Copy();
+                    mistakeTest = kMistakeTest;
+                    mistakeTrain = kMistakeTrain;
+                }
+                listOfTestMistakes.Add(kMistakeTest);
             }
-            mistakeTrain /= folds;
-            mistakeTest /= folds;
+            ISolver = curSolver.Copy() as INeuralNetwork;
+
+            return ISolver;
         }
 
-        public void simpleSeparation()
+        public ISolver simpleSeparation()
         {
             int sizeTrainDataset = Convert.ToInt32(InputData.Length * 0.5);
             int sizeTestDataset = InputData.Length - sizeTrainDataset;
@@ -154,6 +161,8 @@ namespace dms.view_models.solver_view_models
             comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
             counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
             mistakeTest = (float)counts[false] / (float)sizeTestDataset;
+
+            return ISolver;
         }
 
         private void mixDataset()

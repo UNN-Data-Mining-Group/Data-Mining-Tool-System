@@ -327,14 +327,13 @@ namespace dms.view_models
                 }
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
-                s.separationAndLearn(selection.ID, outputParam);
                 LearnedSolver ls = new LearnedSolver()
                 {
                     SelectionID = selection.ID,
                     LearningScenarioID = learningScenario.ID,
                     TaskSolverID = Solver.ID,
-                    Soul = isolver
-                };
+                    Soul = s.separationAndLearn(selection.ID, outputParam)
+            };
                 ls.save();
 
                 LearningQuality lq = new LearningQuality()
