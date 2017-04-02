@@ -277,6 +277,7 @@ namespace dms.view_models
                 {
                     inputData[i] = new float[parameters.Count - 1];
                 }
+                int outputParam = 0;
                 foreach (Entity selRow in selectionRows)
                 {
                     int selectionRowId = selRow.ID;
@@ -289,7 +290,7 @@ namespace dms.view_models
                             addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
                         if (((dms.models.Parameter)param).IsOutput == 1)
                         {
-
+                            outputParam = param.ID;
                             string outputValue = ((ValueParameter)value[0]).Value;
                             float outputFloat;
                             if (float.TryParse(outputValue, out outputFloat))
@@ -326,7 +327,7 @@ namespace dms.view_models
                 }
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
-                s.separationAndLearn();
+                s.separationAndLearn(selection.ID, outputParam);
                 LearnedSolver ls = new LearnedSolver()
                 {
                     SelectionID = selection.ID,
