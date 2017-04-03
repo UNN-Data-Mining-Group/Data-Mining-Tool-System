@@ -45,9 +45,9 @@ namespace dms.services.preprocessing
 
             return selectionId;
         }
-        
+
         private List<int> pars = new List<int>();
-        public void executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
             models.Parameter oldParam = ((models.Parameter)DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             TypeParameter type;
@@ -72,10 +72,10 @@ namespace dms.services.preprocessing
                     type = TypeParameter.Real;
                     break;
             }
-            
+
             List<string> values = new List<string>();
             List<Entity> valueParam = new List<Entity>();
-            
+
             List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", oldSelectionId.ToString()), typeof(SelectionRow));
 
@@ -91,7 +91,7 @@ namespace dms.services.preprocessing
                 index++;
             }
 
-            IParameter p;
+            IParameter p = null;
             switch (prepType)
             {
                 case "Линейная нормализация 1 (к float)":
@@ -120,8 +120,9 @@ namespace dms.services.preprocessing
                     processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
                     break;
             }
+            return p;
         }
-        
+
         private void processWithoutPreprocessing(List<Entity> values, int paramId, int newSelectionId)
         {
             DataHelper helper = new DataHelper();
@@ -202,12 +203,14 @@ namespace dms.services.preprocessing
             if (type == 1)
             {
                 return p.GetLinearNormalizedFloat(((ValueParameter)value).Value).ToString();
-            } else if (type == 2)
+            }
+            else if (type == 2)
             {
                 return p.GetNonlinearNormalizedFloat(((ValueParameter)value).Value).ToString();
-            } else
+            }
+            else
             {
-               // return "0";
+                // return "0";
                 return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();
             }
         }
@@ -228,5 +231,7 @@ namespace dms.services.preprocessing
         {
             return ((ValueParameter)value).Value;
         }
+
+
     }
 }
