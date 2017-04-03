@@ -24,10 +24,12 @@ namespace dms.solvers.decision_tree
 
         public DecisionTree(TreeDescription description, long inputs, long outputs) : base(inputs, outputs)
         {
+            inputsCount = Convert.ToInt32(inputs);
+            outputCount = Convert.ToInt32(outputs);
             root = new Node();
             maxDepth = description.MaxDepth;
         }
-
+        
         public  float treeSolve(float[] x, Node curNode)
         {
             while (curNode.is_leaf != true)
@@ -52,6 +54,8 @@ namespace dms.solvers.decision_tree
         {
             return 0;
         }
+
+
 
         public override float[] Solve(float[] x)
         {
