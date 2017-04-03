@@ -10,5 +10,6 @@ namespace nnets
 		virtual size_t solve(const float* x, float* y) = 0;
 		virtual size_t getInputsCount() = 0;
 		virtual size_t getOutputsCount() = 0;
+		virtual ~NeuralNetwork() {}
 	};
 }

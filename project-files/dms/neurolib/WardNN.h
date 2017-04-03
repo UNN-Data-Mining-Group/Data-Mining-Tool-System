@@ -53,7 +53,7 @@ namespace nnets_ward
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
-		~WardNN();
+		virtual ~WardNN();
 	private:
 		struct Layer;	//internal representation of layers
 

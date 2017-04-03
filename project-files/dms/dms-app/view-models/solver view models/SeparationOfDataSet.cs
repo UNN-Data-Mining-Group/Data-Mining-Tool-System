@@ -35,6 +35,7 @@ namespace dms.view_models.solver_view_models
                 return mistakeTrain * 100;
             }
         }
+        public float ClosingError { get; set; }
         public LearningScenario LS { get; private set; }
         public float[] OutputData { get; private set; }
         public INeuralNetwork ISolver { get; private set; }
@@ -73,7 +74,7 @@ namespace dms.view_models.solver_view_models
 
                 };
 
-                la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
                 ISolver.FetchNativeParameters();
                 int sizeTrainDataset = trainInputDataset.Length;
                 for (int i = 0; i < sizeTrainDataset; i++)
@@ -125,7 +126,7 @@ namespace dms.view_models.solver_view_models
 
             };
 
-            la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+            ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             ISolver.FetchNativeParameters();
             mistakeTrain = 0;
             for(int i = 0; i < sizeTrainDataset; i++)

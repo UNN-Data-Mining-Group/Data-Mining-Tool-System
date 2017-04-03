@@ -18,4 +18,9 @@ namespace dms::solvers::neural_nets
 			return nnets::ActivationFunctionType::Tanh;
 		throw gcnew System::ArgumentException();
 	}
+
+	bool ActivationFunctionTypes::hasSmoothDerivative(System::String^ typeName)
+	{
+		return nnets::has_derivative(getType(typeName));
+	}
 }

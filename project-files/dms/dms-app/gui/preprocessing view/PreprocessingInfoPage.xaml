@@ -13,11 +13,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
-                <Label Content="{Binding BaseTemplate}" ContentStringFormat="Базовый шаблон: {0}"/>
+                <Label Content="{Binding BaseTemplate.Id}" ContentStringFormat="Базовый шаблон: {0}"/>
                 <local:TemplateInfoPage DataContext="{Binding BaseTemplateViewModel}"/>
             </StackPanel>
             <StackPanel Grid.Column="1">
-                <Label Content="{Binding PerformedTemplate}" ContentStringFormat="Порожденный шаблон: {0}"/>
+                <Label Content="{Binding PerformedTemplate.Id}" ContentStringFormat="Порожденный шаблон: {0}"/>
                 <local:TemplateInfoPage DataContext="{Binding PerformedTemplateViewModel}"/>
             </StackPanel>
         </Grid>
