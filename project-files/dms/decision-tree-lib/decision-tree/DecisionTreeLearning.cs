@@ -15,6 +15,7 @@ namespace dms.solvers.decision_tree
             {
                 DecisionTree dc_solver = (DecisionTree)solver;
                 treeBuilding(new LearningTable(train_x, train_y), dc_solver.root);
+                solver = dc_solver;
             }
             return 0;
         }
