@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace dms.services.preprocessing.normalization
 {
+    [Serializable]
     public class IntegerParameter : IParameter
     {
         public string Type { get { return "Integer"; } }
@@ -51,23 +53,6 @@ namespace dms.services.preprocessing.normalization
 
             return temp;
         }
-
-/*        public float GetNormalizedFloat(string value)
-        {
-            float val = (float) GetInt(value);
-               float step = (float)1.0 / countValues;
-               float temp = minValue;
-               for (int i = 0; i < countValues; i++)
-               {
-                   if (Math.Abs(val - temp) < 1e-10)
-                   {
-                       return (float) (step / 2.0 + i * step);
-                   }
-                   temp++;
-               }
-            return float.NaN;
-            return (val - minValue) / (maxValue - minValue);
-        }*/
 
         public float GetLinearNormalizedFloat(string value)
         {

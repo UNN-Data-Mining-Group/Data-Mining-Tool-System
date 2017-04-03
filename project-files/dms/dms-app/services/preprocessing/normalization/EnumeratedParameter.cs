@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace dms.services.preprocessing.normalization
 {
+    [Serializable]
     public class EnumeratedParameter : IParameter
     {
         public string Type { get { return "Enum"; } }
@@ -18,6 +20,11 @@ namespace dms.services.preprocessing.normalization
                     throw new ArgumentOutOfRangeException();
                 countNumbers = value;
             }
+        }
+
+        public List<string> getClasses()
+        {
+            return classes;
         }
 
         public EnumeratedParameter(List<string> values)
@@ -64,13 +71,12 @@ namespace dms.services.preprocessing.normalization
 
         public int GetNormalizedInt(string value)
         {
-            double val = GetLinearNormalizedFloat(value);
-            return Convert.ToInt32(val * Math.Pow(10, countNumbers));
+            return GetInt(value) + 1;
         }
 
         public string GetFromNormalized(int value)
         {
-            return GetFromLinearNormalized((float)(value / Math.Pow(10, countNumbers)));
+            return classes[value - 1];
         }
 
         public string GetFromLinearNormalized(float value)
@@ -95,7 +101,21 @@ namespace dms.services.preprocessing.normalization
                 value = 1.0f;
 
             float output = (float)(centerValue - 1 / a * Math.Log(1 / value - 1));
-            return Convert.ToString(output);
+            return classes[Convert.ToInt32(output)];
+         //   return Convert.ToString(output);
+        }
+
+        public string getMinValue()
+        {
+            return "1";
+        }
+        public string getMaxValue()
+        {
+            return classes[countClasses];
+        }
+        public int getCountNumbers()
+        {
+            return countNumbers;
         }
 
         private float centerValue;

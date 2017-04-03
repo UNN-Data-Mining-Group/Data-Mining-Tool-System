@@ -22,7 +22,11 @@ namespace dms.view_models
         public void CreateSolver(string name, models.Task task)
         {
             int depth = MaxTreeDepth;
-            TreeDescription td = new TreeDescription(depth);
+
+            //WARNING!!!
+            //Here must be selected task template 
+            //and number of inputs and outputs in it.
+            TreeDescription td = new TreeDescription(0, 0, depth);
 
             TaskSolver ts = new TaskSolver()
             {

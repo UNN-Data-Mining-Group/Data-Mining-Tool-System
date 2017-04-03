@@ -50,6 +50,20 @@ namespace dms.models
             }
         }
 
+        private double closingError;
+        public double ClosingError
+        {
+            get
+            {
+                return closingError;
+            }
+            set
+            {
+                closingError = value;
+            }
+        }
+
+
         public LearningQuality()
         {
             this.nameTable = "LearningQuality";
@@ -61,6 +75,7 @@ namespace dms.models
             mappingTable.Add("LearnedSolverID", "LearnedSolverID");
             mappingTable.Add("MistakeTrain", "MistakeTrain");
             mappingTable.Add("MistakeTest", "MistakeTest");
+            mappingTable.Add("ClosingError", "ClosingError");
             base.mappingTable().ToList().ForEach(x => mappingTable.Add(x.Key, x.Value));
             return mappingTable;
         }

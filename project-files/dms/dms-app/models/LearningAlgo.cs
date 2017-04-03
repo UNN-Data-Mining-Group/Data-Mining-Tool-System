@@ -37,8 +37,8 @@ namespace dms.models
         }
         public float startLearn(ISolver solver,float[][] train_x,float[] train_y)
         {
-            float res = lrAlgo.startLearn(solver,train_x,train_y);
-            return 0;
+            float res = lrAlgo.startLearn(solver, train_x, train_y);
+            return res;
             
         }
         private string[] ParamsName;

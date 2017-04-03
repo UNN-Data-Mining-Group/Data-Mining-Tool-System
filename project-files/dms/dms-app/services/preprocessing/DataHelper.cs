@@ -9,6 +9,12 @@ namespace dms.services.preprocessing
 {
     class DataHelper
     {
+        public void updateTaskTemplate(int taskTemplateId, view_models.PreprocessingViewModel.PreprocessingTemplate pp)
+        {
+            TaskTemplate entity = (TaskTemplate)DatabaseManager.SharedManager.entityById(taskTemplateId, typeof(TaskTemplate));
+            entity.PreprocessingParameters = pp;
+            entity.save();
+        }
         public void updateTask(int taskId, int paramCount, int selectionCount)
         {
             dms.models.Task entity = (dms.models.Task) DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task));
