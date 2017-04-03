@@ -2,10 +2,10 @@
 
 namespace dms::solvers
 {
-	ISolver::ISolver(__int64 inputs, __int64 outputs)
+	ISolver::ISolver(ISolverDescription^ desc)
 	{
-		inputsCount = inputs;
-		outputsCount = outputs;
+		inputsCount = desc->GetInputsCount();
+		outputsCount = desc->GetOutputsCount();
 
 		_attr = new std::vector<std::string>();
 		_opers = new std::map<std::string, void*>();

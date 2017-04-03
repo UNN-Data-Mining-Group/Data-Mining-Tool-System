@@ -32,7 +32,12 @@ namespace dms.view_models
                 new SolverTree(task, per, des, wards, convnets, kohnets, vm),
                 new SolutionsTree(Title, solv, vm)
             };
-            deleteCommand = new ActionHandler(() => vm.UpdateTaskTree(), e => true);
+            deleteCommand = new ActionHandler(
+                () =>
+                {
+                    new dms.services.preprocessing.DataHelper().deleteTask(task);
+                    vm.UpdateTaskTree();
+                }, e => true);
             showInfoDialogCommand = new ActionHandler(() => 
             {
                 TaskInfoViewModel t = new TaskInfoViewModel(task);

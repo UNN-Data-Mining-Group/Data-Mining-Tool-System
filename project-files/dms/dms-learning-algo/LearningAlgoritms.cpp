@@ -23,7 +23,7 @@ void set_weights_(void* solver, float* weights)
 
 namespace dms::learningAlgoritms
 {
-	float LearningAlgoritms::startGenetic(ISolver ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
+	float LearningAlgoritms::startGenetic(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
 	{
 		int count_person = params[0];
 		void* parent_Solver;
@@ -177,7 +177,7 @@ namespace dms::learningAlgoritms
 		float res = 0;
 
 		if (usedAlgo->Equals(TeacherTypesList[0]))
-			res = startGenetic(solver, train_x, train_y);
+			res = startGenetic(static_cast<INeuralNetwork^>(solver), train_x, train_y);
 		else
 			throw gcnew System::ArgumentException("This algorithm is not supported yet", "usedAlgo");
 			

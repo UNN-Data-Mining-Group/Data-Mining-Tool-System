@@ -66,6 +66,9 @@
     <ClInclude Include="KohonenNNManaged.h">
       <Filter>Neural Nets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ITopology.h">
+      <Filter>Neural Nets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -96,6 +99,9 @@
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KohonenNNManaged.cpp">
+      <Filter>Neural Nets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="INeuralNetwork.cpp">
       <Filter>Neural Nets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

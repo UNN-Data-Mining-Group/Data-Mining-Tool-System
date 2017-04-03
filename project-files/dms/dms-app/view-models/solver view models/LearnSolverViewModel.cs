@@ -1,4 +1,5 @@
 ﻿using dms.models;
+using dms.solvers.decision_tree;
 using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.perceptron;
@@ -23,8 +24,9 @@ namespace dms.view_models
         private string[] preprocessing;
         private string[] selections;
 
-        public LearningModel(LearnSolverViewModel main, models.Task task)
+        public LearningModel(LearnSolverViewModel main, models.Task task, TaskSolver taskSolver)
         {
+            CurTaskSolver = taskSolver;
             Task = task;
             deleteHandler = new ActionHandler(() => main.Delete(this), e => true);
             Selections = Selections;
@@ -39,7 +41,8 @@ namespace dms.view_models
         }
 
         public int Number { get { return number; } set { number = value; NotifyPropertyChanged(); } }
-        public string[] Selections {
+        public string[] Selections
+        {
             get
             {
 
@@ -76,9 +79,22 @@ namespace dms.view_models
                 NotifyPropertyChanged("Selections");
             }
         }
-        public string[] LearningScenarios { get
+        public string[] LearningScenarios
+        {
+            get
             {
-                List<Entity> listLearningScenarios = Entity.all(typeof(LearningScenario));
+                List<Entity> listLearningScenarios = null;
+                string typeSolver = CurTaskSolver.TypeName;
+                if (typeSolver.Equals("DecisionTree"))
+                {
+                    listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                    .addCondition("LearningAlgorithmName", "=", "Деревья решений"), typeof(LearningScenario));
+                }
+                else
+                {
+                    listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                    .addCondition("LearningAlgorithmName", "!=", "Деревья решений"), typeof(LearningScenario));
+                }
                 string[] nameLearningScenarios = new string[listLearningScenarios.Count];
                 int i = 0;
                 foreach (LearningScenario ls in listLearningScenarios)
@@ -103,22 +119,50 @@ namespace dms.view_models
                 List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                     .addCondition("Name", "=", SelectedSelection), typeof(Selection));
                 List<Entity> listTaskTemplate = Entity.all(typeof(TaskTemplate));
-                string[] nameTaskTemplate = new string[selections.Count];
+                List<string> nameTaskTemplate = new List<string>();
                 int i = 0;
                 foreach (Selection selection in selections)
                 {
+                    List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                    .addCondition("SelectionID", "=", selection.ID.ToString()), typeof(SelectionRow));
+                    List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskTemplateID", "=", selection.TaskTemplateID.ToString()), typeof(dms.models.Parameter));
                     TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.getById(selection.TaskTemplateID, typeof(TaskTemplate));
+                    int stepRow = 0;
+                    foreach (Entity selRow in selectionRows)
+                    {
+                        int selectionRowId = selRow.ID;
+                        int stepParam = 0;
+                        foreach (Entity param in parameters)
+                        {
+                            int paramId = param.ID;
+                            List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                                .addCondition("ParameterID", "=", paramId.ToString()).
+                                addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
+                            if (((dms.models.Parameter)param).IsOutput == 1)
+                            {
+                                string outputValue = ((ValueParameter)value[0]).Value;
+                                float outputFloat;
+                                if (!float.TryParse(outputValue, out outputFloat))
+                                    goto outerloop;
+                            }
+                            stepParam++;
+                        }
+                        stepRow++;
+                    }
+
                     if (i == 0)
                         LearningScenarioID = taskTemplate.ID;
-                    nameTaskTemplate[i] = taskTemplate.Name;
+                    nameTaskTemplate.Add(taskTemplate.Name);
                     i++;
+                outerloop:;
                 }
-                if (nameTaskTemplate.Length == 0)
+                if (nameTaskTemplate.Count == 0)
                 {
                     CanSolve = false;
                     return new string[] { "Нет созданных преобразований" };
                 }
-                else return nameTaskTemplate;
+                else return nameTaskTemplate.ToArray();
             }
             set
             {
@@ -158,6 +202,8 @@ namespace dms.view_models
             }
         }
         public ICommand DeleteCommand { get { return deleteHandler; } }
+
+        public TaskSolver CurTaskSolver { get; private set; }
     }
 
     public class LearnSolverViewModel : ViewmodelBase
@@ -172,7 +218,7 @@ namespace dms.view_models
             SolverName = taskSolver.Name;
             solver = taskSolver;
             LearningList = new ObservableCollection<LearningModel>();
-            addHandler = new ActionHandler(() => Add(new LearningModel(this, task)), e => true);
+            addHandler = new ActionHandler(() => Add(new LearningModel(this, task, taskSolver)), e => true);
             learnHandler = new ActionHandler(learnSolver, e => LearningList.All(lm => lm.CanSolve));
         }
 
@@ -180,7 +226,8 @@ namespace dms.view_models
 
         public string TaskName { get; }
         public string SolverName { get; }
-        public TaskSolver Solver {
+        public TaskSolver Solver
+        {
             get
             {
                 return solver;
@@ -194,7 +241,7 @@ namespace dms.view_models
         public void Delete(LearningModel l)
         {
             LearningList.Remove(l);
-            for(int i = 0; i < LearningList.Count; i++)
+            for (int i = 0; i < LearningList.Count; i++)
             {
                 LearningList[i].Number = i + 1;
             }
@@ -205,17 +252,19 @@ namespace dms.view_models
             l.Number = LearningList.Count;
         }
 
-        private void learnSolver() {
-            foreach (LearningModel learningModel in LearningList) {
+        private void learnSolver()
+        {
+            foreach (LearningModel learningModel in LearningList)
+            {
                 TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
                 .addCondition("Name", "=", learningModel.SelectedPreprocessing), typeof(TaskTemplate))[0];
-                Selection selection = (Selection) Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                Selection selection = (Selection)Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplate.ID.ToString())
                 .addCondition("Name", "=", learningModel.SelectedSelection), typeof(Selection))[0];
                 int countRows = selection.RowCount;
-                LearningScenario learningScenario = (LearningScenario) LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                LearningScenario learningScenario = (LearningScenario)LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
                 .addCondition("Name", "=", learningModel.SelectedScenario), typeof(LearningScenario))[0];
-                
+
                 List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", selection.ID.ToString()), typeof(SelectionRow));
                 List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
@@ -228,6 +277,7 @@ namespace dms.view_models
                 {
                     inputData[i] = new float[parameters.Count - 1];
                 }
+                int outputParam = 0;
                 foreach (Entity selRow in selectionRows)
                 {
                     int selectionRowId = selRow.ID;
@@ -240,7 +290,7 @@ namespace dms.view_models
                             addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
                         if (((dms.models.Parameter)param).IsOutput == 1)
                         {
-
+                            outputParam = param.ID;
                             string outputValue = ((ValueParameter)value[0]).Value;
                             float outputFloat;
                             if (float.TryParse(outputValue, out outputFloat))
@@ -271,24 +321,27 @@ namespace dms.view_models
                     WardNNTopology topology = Solver.Description as WardNNTopology;
                     isolver = new WardNNManaged(topology);
                 }
-                else
-                    throw new EntryPointNotFoundException();
+                else if (Solver.Description is TreeDescription)
+                {
+                    TreeDescription topology = Solver.Description as TreeDescription;
+                }
+                else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
-                s.separationAndLearn();
                 LearnedSolver ls = new LearnedSolver()
                 {
                     SelectionID = selection.ID,
                     LearningScenarioID = learningScenario.ID,
                     TaskSolverID = Solver.ID,
-                    Soul = isolver
-                };
+                    Soul = s.separationAndLearn(selection.ID, outputParam)
+            };
                 ls.save();
 
                 LearningQuality lq = new LearningQuality()
                 {
                     LearnedSolverID = ls.ID,
                     MistakeTrain = Convert.ToInt32(s.MistakeTrain),
-                    MistakeTest = Convert.ToInt32(s.MistakeTest)
+                    MistakeTest = Convert.ToInt32(s.MistakeTest),
+                    ClosingError = s.ClosingError
                 };
                 lq.save();
             }

@@ -11,10 +11,23 @@ namespace dms.solvers.decision_tree
     public class TreeDescription : ISolverDescription
     {
         public int MaxDepth;
+        public long inputs, outputs;
 
-        public TreeDescription(int max_depth)
+        public TreeDescription(long inputs, long outputs, int max_depth)
         {
             MaxDepth = max_depth;
+            this.inputs = inputs;
+            this.outputs = outputs;
+        }
+
+        public long GetInputsCount()
+        {
+            return inputs;
+        }
+
+        public long GetOutputsCount()
+        {
+            return outputs;
         }
     }
 }

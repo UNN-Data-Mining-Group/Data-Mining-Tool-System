@@ -36,7 +36,7 @@ namespace dms.view_models
             var delays = topology.HasLayersDelayWeight();
             var afs = topology.GetActivationFunctionsNames();
 
-            CountInputNeurons = topology.GetInputsCount();
+            CountInputNeurons = Convert.ToInt32(topology.GetInputsCount());
             for (int i = 0; i < Layers.Length - 1; i++)
             {
                 Layers[i] = new Layer
