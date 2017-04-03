@@ -24,10 +24,10 @@ namespace dms.view_models
                 dms.models.Parameter p = (dms.models.Parameter)param;
                 if (p.IsOutput == 0)
                 {
-                    input.Add(new Parameter(p.Name, p.Type.ToString(), p.Comment, param.ID));
+                    input.Add(new Parameter(p.Name, p.Type.ToString(), p.Comment));
                 } else
                 {
-                    output.Add(new Parameter(p.Name, p.Type.ToString(), p.Comment, param.ID));
+                    output.Add(new Parameter(p.Name, p.Type.ToString(), p.Comment));
                 }
             }
             InputParameters = input.ToArray();

@@ -47,7 +47,7 @@ namespace dms.services.preprocessing
         }
         
         private List<int> pars = new List<int>();
-        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public void executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
             models.Parameter oldParam = ((models.Parameter)DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             TypeParameter type;
@@ -91,7 +91,7 @@ namespace dms.services.preprocessing
                 index++;
             }
 
-            IParameter p = null;
+            IParameter p;
             switch (prepType)
             {
                 case "Линейная нормализация 1 (к float)":
@@ -120,7 +120,6 @@ namespace dms.services.preprocessing
                     processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
                     break;
             }
-            return p;
         }
         
         private void processWithoutPreprocessing(List<Entity> values, int paramId, int newSelectionId)
@@ -229,7 +228,5 @@ namespace dms.services.preprocessing
         {
             return ((ValueParameter)value).Value;
         }
-
-        
     }
 }

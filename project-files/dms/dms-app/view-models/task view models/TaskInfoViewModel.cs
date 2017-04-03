@@ -13,14 +13,12 @@ namespace dms.view_models
     [Serializable]
     public class Parameter
     {
-        public Parameter(string name, string type, string comment, int id)
+        public Parameter(string name, string type, string comment)
         {
-            Id = id;
             Name = name;
             Type = type;
             Comment = comment;
         }
-        public int Id { get; }
         public string Name { get; }
         public string Type { get; }
         public string Comment { get; }
@@ -83,11 +81,11 @@ namespace dms.view_models
                 {
                     PreprocessingViewModel.PreprocessingTemplate pp =
                         (PreprocessingViewModel.PreprocessingTemplate)template.PreprocessingParameters;
-                    List<Parameter> parameters = pp.parameters;
-                    List<string> types = pp.types;
+                    List<Parameter> parameters = pp.getParameters();
+                    List<string> types = pp.getTypes();
                     Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[parameters.Count];
                     for(int i = 0; i < parameters.Count; i++)
-                    {//???
+                    {
                         tuple[i] = new Tuple<Parameter, string>(parameters[i], types[i]);
                     }
                     PreprocessingList[index] = new Preprocessing(pp.PreprocessingName, pp.BaseTemplate.Name, template.Name, tuple, template.ID);

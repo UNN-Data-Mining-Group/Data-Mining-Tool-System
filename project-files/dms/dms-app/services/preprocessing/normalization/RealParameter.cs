@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Security.Permissions;
-using System.Runtime.Serialization;
 
 namespace dms.services.preprocessing.normalization
 {
-    [Serializable]
     public class RealParameter : IParameter
     {
         public string Type { get { return "Real"; } }
@@ -109,6 +106,7 @@ namespace dms.services.preprocessing.normalization
             float output = (float)(centerValue - 1/a *Math.Log(1/value - 1));
             return Convert.ToString(output);
         }
+
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
         private float minValue, maxValue, centerValue;
         private int countNumbers;

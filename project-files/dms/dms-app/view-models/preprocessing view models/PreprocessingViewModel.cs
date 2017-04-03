@@ -34,32 +34,38 @@ namespace dms.view_models
 
         public string PreprocessingName { get; set; }
         public PreprocessingParameterViewModel[] PreprocessingParameters { get; private set; }
-
-        [Serializable] public class PrepParameter
-        {
-            public float maxValue { get; set; }
-            public float minValue { get; set; }
-            public float centerValue { get; set; }
-            public float countValues { get; set; }
-            public float countNumbers { get; set; }
-        }
-
-        [Serializable()]
-        public class SerializableList
-        {
-            public int selectionId { get; set; }
-            public List<int> parameterIds = new List<int>();
-            public List<services.preprocessing.normalization.IParameter> prepParameters = new List<services.preprocessing.normalization.IParameter>();
-        }
-
         [Serializable()]
         public class PreprocessingTemplate : IPreprocessingParameters
         {
             public string PreprocessingName { get; set; }
             public Pair BaseTemplate { get; set; }
-            public List<SerializableList> info = new List<SerializableList>();
             public List<Parameter> parameters = new List<Parameter>();
-            public List<string> types { get; set; }
+            public List<string> types = new List<string>();
+
+            public void addParameter(Parameter p)
+            {
+                parameters.Add(p);
+            }
+
+            public void addTypes(List<string> ts)
+            {
+                types = types.Concat(ts).ToList();
+            }
+
+            public List<string> getTypes()
+            {
+                return types;
+            }
+
+            public void addParameters(List<Parameter> ps)
+            {
+                parameters = parameters.Concat(ps).ToList();
+            }
+
+            public List<Parameter> getParameters()
+            {
+                return parameters;
+            }
 
             public void testMethod()
             {
@@ -163,8 +169,8 @@ namespace dms.view_models
                     else
                     {
                         PreprocessingTemplate pp = (PreprocessingTemplate) template.PreprocessingParameters;
-                        List<Parameter> list = pp.parameters;
-                        List<string> types = pp.types;
+                        List<Parameter> list = pp.getParameters();
+                        List<string> types = pp.getTypes();
                         PreprocessingParameters[index].Type = types[index];
                     }
                     index++;
@@ -229,8 +235,7 @@ namespace dms.view_models
                 List<PreprocessingParameterViewModel> preprocessingParametersTemp = new List<PreprocessingParameterViewModel>();
                 List<string> types =  new List<string>();
                 List<Parameter> parameters =  new List<Parameter>();
-                List<services.preprocessing.normalization.IParameter> listOfIParameters = new List<services.preprocessing.normalization.IParameter>();
-                List<int> paramIds = new List<int>();
+
                 foreach (Entity sel in selections)
                 {
                     int newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
@@ -279,11 +284,11 @@ namespace dms.view_models
                                 {
                                     preprocessingParametersTemp.Add(ppVM);
                                     types.Add("бинаризация");
-                                    parameters.Add(new view_models.Parameter(ppVM.ParameterName, ppVM.Type, ((models.Parameter)entity).Comment, entity.ID));
+                                    parameters.Add(new view_models.Parameter(ppVM.ParameterName, ppVM.Type, ((models.Parameter)entity).Comment));
                                 }
                                 
                                 i++;
-                                services.preprocessing.normalization.IParameter p = PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, i - 1, entity.ID);
+                                PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, i - 1, entity.ID);
                                 continue;
                             }
                         }
@@ -315,28 +320,22 @@ namespace dms.view_models
                                 ppVM.Type = prepParam.Type;
                                 ppVM.ParameterId = newParamId;
 
-                                parameters.Add(new view_models.Parameter(prepParam.ParameterName, prepParam.Type, oldParam.Comment, newParamId));
+                                parameters.Add(new view_models.Parameter(prepParam.ParameterName, prepParam.Type, oldParam.Comment));
                                 types.Add(prepType);
                                 preprocessingParametersTemp.Add(ppVM);
                             }
-
-                            services.preprocessing.normalization.IParameter p = PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, prepParam.Position, newParamId);
-                            listOfIParameters.Add(p);
-                            paramIds.Add(newParamId);
+                            
+                            PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, prepParam.Position, newParamId);
                         }
                     }
-                    SerializableList list = new SerializableList();
-                    list.selectionId = newSelectionId;
-                    list.parameterIds = paramIds;
-                    list.prepParameters = listOfIParameters;
-                    pp.info.Add(list);
                 }
                 if (parameters != null && types != null)
                 {
-                    pp.parameters = parameters;
-                    pp.types = types;
+                    pp.addParameters(parameters);
+                    pp.addTypes(types);
                     PreprocessingManager.PrepManager.updateTaskTemplate(newTaskTemplateId, pp);
                 }
+
                 if (preprocessingParametersTemp != null)
                 {
                     PreprocessingParameters = preprocessingParametersTemp.ToArray();
