@@ -14,20 +14,14 @@ namespace dms.solvers.decision_tree
         int maxDepth;
         Int64 inputsCount;
         Int64 outputCount;
-
         public Node root;
 
         public DecisionTree(TreeDescription treeDesc) : base(treeDesc)
         {
             inputsCount = treeDesc.GetInputsCount();
             outputCount = treeDesc.GetOutputsCount();
+            maxDepth = treeDesc.MaxDepth;
             root = new Node();
-        }
-
-        public DecisionTree(TreeDescription description, long inputs, long outputs) : base(inputs, outputs)
-        {
-            root = new Node();
-            maxDepth = description.MaxDepth;
         }
 
         public  float treeSolve(float[] x, Node curNode)
