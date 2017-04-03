@@ -9,9 +9,13 @@ namespace dms.solvers.decision_tree
     class DecisionTreeLearning
     {
 
-        public float startLearn(DecisionTree solver, float[][] train_x, float[] train_y)
+        public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
         {
-            treeBuilding( new LearningTable(train_x, train_y), solver.root);
+            if (solver.GetType() == typeof(DecisionTree))
+            {
+                DecisionTree dc_solver = (DecisionTree)solver;
+                treeBuilding(new LearningTable(train_x, train_y), dc_solver.root);
+            }
             return 0;
         }
 
