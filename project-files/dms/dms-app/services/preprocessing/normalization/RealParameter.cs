@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Permissions;
+using System.Runtime.Serialization;
 
 namespace dms.services.preprocessing.normalization
 {
+    [Serializable]
     public class RealParameter : IParameter
     {
         public string Type { get { return "Real"; } }
@@ -41,9 +44,9 @@ namespace dms.services.preprocessing.normalization
             }
             numbers.Sort();
             MinRange = double.PositiveInfinity;
-            for (int i = 0; i < numbers.Count - 1; i ++)
+            for (int i = 0; i < numbers.Count - 1; i++)
             {
-                MinRange = Math.Min(MinRange, Math.Abs(numbers[i] - numbers[i+1]));
+                MinRange = Math.Min(MinRange, Math.Abs(numbers[i] - numbers[i + 1]));
             }
 
             countNumbers = -Convert.ToInt32(Math.Log10(MinRange)) + 1;
@@ -81,7 +84,7 @@ namespace dms.services.preprocessing.normalization
 
         public string GetFromNormalized(int value)
         {
-            float dval = (float) (value / Math.Pow(10, countNumbers));
+            float dval = (float)(value / Math.Pow(10, countNumbers));
             return GetFromLinearNormalized(dval);
         }
 
@@ -103,10 +106,9 @@ namespace dms.services.preprocessing.normalization
             else if (value > 1.0f)
                 value = 1.0f;
 
-            float output = (float)(centerValue - 1/a *Math.Log(1/value - 1));
+            float output = (float)(centerValue - 1 / a * Math.Log(1 / value - 1));
             return Convert.ToString(output);
         }
-
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
         private float minValue, maxValue, centerValue;
         private int countNumbers;

@@ -28,7 +28,7 @@ namespace dms.services.preprocessing
         public PreprocessingManager()
         {
         }
-  
+
         public void updateTask(int taskId, int parameterCount, int selectionCount)
         {
             DataHelper helper = new DataHelper();
@@ -51,7 +51,7 @@ namespace dms.services.preprocessing
             return Parser.SelectionParser.ParametersName;
         }
 
-        public int parseSelection(int taskTemplateId, string filePath, char delimiter, int taskId, string selectionName, 
+        public int parseSelection(int taskTemplateId, string filePath, char delimiter, int taskId, string selectionName,
             ParameterCreationViewModel[] parameters, bool hasHeader, bool isUsingExitingTemplate)
         {
             return Parser.SelectionParser.parse(taskTemplateId, filePath, delimiter, taskId, selectionName, parameters, hasHeader, isUsingExitingTemplate);
@@ -73,16 +73,16 @@ namespace dms.services.preprocessing
             return Preprocessing.PreprocessingObj.addNewEntitiesForPreprocessing(selectionName, countRows, taskTemplateId);
         }
 
-        public void executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
-            Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId);
+            return Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId);
         }
 
         public List<Entity> getNewParametersForBinarizationType(int oldSelectionId, int newTemplateId, int oldParamId)
         {
             models.Parameter oldParam = ((models.Parameter)services.DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             List<string> classes = getClasses(oldSelectionId, newTemplateId, oldParamId);
-            List <Entity> listNewParams = new List<Entity>(classes.Count);
+            List<Entity> listNewParams = new List<Entity>(classes.Count);
             int index = 0;
             foreach (string cl in classes)
             {
@@ -95,9 +95,9 @@ namespace dms.services.preprocessing
             List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", newTemplateId.ToString()), typeof(models.Parameter));
             List<Entity> lst = new List<Entity>();
-            foreach(Entity en in parameters)
+            foreach (Entity en in parameters)
             {
-                if (classes.Contains(((models.Parameter) en).Name))
+                if (classes.Contains(((models.Parameter)en).Name))
                 {
                     lst.Add(en);
                 }
@@ -124,7 +124,6 @@ namespace dms.services.preprocessing
             List<string> classes = p.getClasses();
             return classes;
         }
-
         public List<bool> compareExAndObValues(List<string> expectedValues, List<string> obtainedValues, int selectionId, int parameterId)
         {
             List<string> appropriateValues = InversePreprocessing.InversePreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
