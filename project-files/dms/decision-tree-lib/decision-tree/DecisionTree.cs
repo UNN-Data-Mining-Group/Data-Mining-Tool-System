@@ -106,7 +106,8 @@ namespace dms.solvers.decision_tree
 
         public override ISolver Copy()
         {
-            throw new NotImplementedException();
+            DecisionTree newDT = this;
+            return newDT;
         }
     }
 }
