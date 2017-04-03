@@ -64,7 +64,7 @@ namespace dms.services.preprocessing
                     step = Math.Abs(next - prev);
                     if ((obtainedValue - prev) <= (step / 2))
                     {
-                        appropriateValues[j] = prev.ToString();
+                        appropriateValues.Add(prev.ToString());
                         break;
                     }
                     prev = next;

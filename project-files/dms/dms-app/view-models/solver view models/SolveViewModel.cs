@@ -13,6 +13,7 @@ using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.ward_net;
 using dms.models;
 using dms.solvers;
+using dms.services.preprocessing;
 
 namespace dms.view_models
 {
@@ -24,6 +25,8 @@ namespace dms.view_models
         public float TrainMistake { get; set; }
         public float TestMistake { get; set; }
         public float ClosingError { get; set; }
+        public int SelectionID { get; set; }
+        public int ParameterID { get; set; }
 
         public models.TaskTemplate TaskTemplate { get; set; }
         public models.LearnedSolver LearnedSolver { get; set; }
@@ -93,6 +96,8 @@ namespace dms.view_models
         public ICommand AddSolvingInstance { get { return addHandler; } }
         public ICommand SolveCommand { get { return solveHandler; } }
         public ICommand SaveCommand { get { return saveHandler; } }
+        public int SelectionID { get; set; }
+        public int ParameterID { get; set; }
 
         public SolveViewModel(models.Task task, models.TaskSolver solver)
         {
@@ -108,8 +113,18 @@ namespace dms.view_models
                 models.LearningScenario scenario = (models.LearningScenario)models.LearningScenario.getById(learnedSolver.LearningScenarioID, typeof(models.LearningScenario));
                 models.TaskTemplate template = (models.TaskTemplate)models.TaskTemplate.getById(selection.TaskTemplateID, typeof(models.TaskTemplate));
                 models.LearningQuality quality = (qualities != null && qualities.Count > 0) ? qualities[0] : null;
+                List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
+                int outputParam = 0;
+                foreach (models.Parameter param in parameters) {
+                    if (param.IsOutput == 1) {
+                        outputParam = param.ID;
+                        break;
+                    }
+                }
                 learningList.Add(new LearningInfo
                 {
+                    SelectionID = selection.ID,
+                    ParameterID = outputParam,
                     SelectionName = selection.Name, 
                     LearningScenarioName = scenario.Name,
                     PreprocessingName = template.Name,
@@ -141,27 +156,23 @@ namespace dms.view_models
 
         public void Solve()
         {
-            ISolver isolver = FactorySolver(this.SelectedLearning.LearnedSolver);
+            SelectionID = SelectedLearning.SelectionID;
+            ParameterID = SelectedLearning.ParameterID;
+            ISolver isolver = this.SelectedLearning.LearnedSolver.Soul;
+            List<string> curOutputValues = new List<string>();
             foreach (var item in SolvingList)
             {
-                float[] y = isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
+                curOutputValues.Add(Convert.ToString(isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray())[0]));
+            }
+            PreprocessingManager preprocessing = new PreprocessingManager();
+            List<string> outputValues = preprocessing.getAppropriateValuesAfterInversePreprocessing(curOutputValues, SelectionID, ParameterID);
+            foreach (var item in SolvingList)
+            {
                 for (int i = 0; i < item.Y.Count; i++)
                 {
-                    item.Y[i] = Convert.ToString(y[i]);
+                    item.Y[i] = outputValues[i];
                 }                
-            } 
-        }
-
-        public ISolver FactorySolver(LearnedSolver ls)
-        {
-            if (ls.Soul is INeuralNetwork)
-            {
-                INeuralNetwork isolver = ls.Soul as INeuralNetwork;
-                //isolver.PushNativeParameters();
-                return isolver;
             }
-            // New ifelse will be added for desicion tree;
-            else throw new EntryPointNotFoundException();
         }
     }
 }

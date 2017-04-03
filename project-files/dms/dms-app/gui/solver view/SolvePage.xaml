@@ -12,8 +12,8 @@
                 <DataGridTextColumn Header="Выборка" Binding="{Binding SelectionName}" Width="*"/>
                 <DataGridTextColumn Header="Сценарий обучения" Binding="{Binding LearningScenarioName}" Width="*"/>
                 <DataGridTextColumn Header="Преобразование" Binding="{Binding PreprocessingName}" Width="*"/>
-                <DataGridTextColumn Header="Ошибка train" Binding="{Binding TrainMistake}" Width="*"/>
-                <DataGridTextColumn Header="Ошибка test" Binding="{Binding TestMistake}" Width="*"/>
+                <DataGridTextColumn Header="Ошибка train в %" Binding="{Binding TrainMistake}" Width="*"/>
+                <DataGridTextColumn Header="Ошибка test в %" Binding="{Binding TestMistake}" Width="*"/>
                 <DataGridTextColumn Header="Невязка" Binding="{Binding ClosingError}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
