@@ -106,7 +106,9 @@ namespace dms.solvers.decision_tree
 
         public override ISolver Copy()
         {
-            DecisionTree newDT = this;
+            TreeDescription dtDescr = new TreeDescription(this.GetInputsCount(), this.GetOutputsCount(), this.maxDepth);
+            DecisionTree newDT = new DecisionTree(dtDescr);
+            newDT.root = this.root.Copy();
             return newDT;
         }
     }

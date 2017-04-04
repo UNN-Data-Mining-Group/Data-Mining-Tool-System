@@ -23,6 +23,19 @@ namespace dms.solvers.decision_tree
             is_leaf = isleaf;
         }
 
+        public Node Copy()
+        {
+            Node newNODE = new Node();
+            if (!this.is_leaf)
+            {
+                newNODE.left_child = this.left_child.Copy();
+                newNODE.right_child = this.right_child.Copy();
+            }
+            newNODE.rule = this.rule;
+            newNODE.is_leaf = this.is_leaf;
+            return newNODE;
+        }
+
         public bool IsLeaf()
         {
             return is_leaf;
