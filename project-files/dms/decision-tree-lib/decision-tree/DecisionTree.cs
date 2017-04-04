@@ -40,15 +40,6 @@ namespace dms.solvers.decision_tree
             return curNode.rule.value;
         }
 
-        public int getInputsCount()
-        {
-            return 0;
-        }
-        public int getOutputsCount()
-        {
-            return 0;
-        }
-
         public void treeBuilding(LearningTable education_table, Node tree_node)
         {
             LearningClassInfo[] thisClassInfo = education_table.ClassInfoInit(education_table, 0, education_table.LearningClasses.Length);
