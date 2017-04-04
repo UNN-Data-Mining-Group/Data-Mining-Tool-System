@@ -102,20 +102,6 @@ namespace dms.services.preprocessing.normalization
 
             float output = (float)(centerValue - 1 / a * Math.Log(1 / value - 1));
             return classes[Convert.ToInt32(output)];
-            //   return Convert.ToString(output);
-        }
-
-        public string getMinValue()
-        {
-            return "1";
-        }
-        public string getMaxValue()
-        {
-            return classes[countClasses];
-        }
-        public int getCountNumbers()
-        {
-            return countNumbers;
         }
 
         private float centerValue;

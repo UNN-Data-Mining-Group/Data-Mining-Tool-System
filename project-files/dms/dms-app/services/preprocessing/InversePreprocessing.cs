@@ -116,7 +116,7 @@ namespace dms.services.preprocessing
                             IParameter p = elem.prepParameters[index];
                             foreach (view_models.Parameter prepParam in parametersWithPrepType)
                             {
-                                if (parameterId.Equals(prepParam.ID))
+                                if (parameterId.Equals(prepParam.Id))
                                 {
                                     string prepType = prepParam.Type;
                                     switch (prepType)
