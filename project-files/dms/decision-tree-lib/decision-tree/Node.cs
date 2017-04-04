@@ -31,7 +31,7 @@ namespace dms.solvers.decision_tree
                 newNODE.left_child = this.left_child.Copy();
                 newNODE.right_child = this.right_child.Copy();
             }
-            newNODE.rule = this.rule;
+            newNODE.rule = new Rule(this.rule.index_of_param, this.rule.value);
             newNODE.is_leaf = this.is_leaf;
             return newNODE;
         }
