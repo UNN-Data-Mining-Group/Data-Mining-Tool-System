@@ -116,7 +116,7 @@ namespace dms.view_models
             ParentTask = ((models.Task)services.DatabaseManager.SharedManager.entityById(taskId, typeof(models.Task))).Name;
             Random r = new Random();
             SelectionName = "Выборка " + r.Next(1, 1000);
-            NewTemplateName = "New Template";
+            NewTemplateName = "Базовый шаблон для " + SelectionName;
             HasHeader = false;
             CountRows = 0;
             FilePath = "";

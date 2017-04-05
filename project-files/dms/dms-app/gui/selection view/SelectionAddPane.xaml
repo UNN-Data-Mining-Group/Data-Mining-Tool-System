@@ -16,7 +16,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
-        <exToolkit:WatermarkTextBox Text="{Binding SelectionName}" Grid.Column="0" Watermark="Имя" Margin="5"/>
+        <exToolkit:WatermarkTextBox Name="SelectionName" Text="{Binding SelectionName}" Grid.Column="0" Watermark="Имя" Margin="5" TextChanged="SelectionName_TextChanged"/>
         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="90"/>

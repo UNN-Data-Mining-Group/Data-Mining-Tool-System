@@ -27,5 +27,19 @@ namespace dms.gui
         {
             InitializeComponent();
         }
+
+        public Button CreateSelection_button { get; set; }
+
+        private void SelectionName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (CreateSelection_button != null && SelectionName.Text != null && SelectionName.Text != "")
+            {
+                CreateSelection_button.IsEnabled = true;
+            }
+            else if (CreateSelection_button != null)
+            {
+                CreateSelection_button.IsEnabled = false;
+            }
+        }
     }
 }

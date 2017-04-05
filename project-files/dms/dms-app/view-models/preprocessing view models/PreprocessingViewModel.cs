@@ -112,7 +112,7 @@ namespace dms.view_models
                 IsUsingExitingTemplate = false;
                 Random r = new Random();
                 PreprocessingName = "Преобразование " + r.Next(1, 1000);
-                NewTemplateName = "New Template";
+                NewTemplateName = "Шаблон для " + PreprocessingName;
                 TaskTemplate template = null;
                 Pair pair = new Pair();
                 if (templateId == -1)

@@ -48,5 +48,17 @@ namespace dms.gui
                 ParentDocument = null;
             }
         }
+
+        private void WatermarkTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TaskName.Text != null && TaskName.Text != "")
+            {
+                CreateTask.IsEnabled = true;
+            }
+            else
+            {
+                CreateTask.IsEnabled = false;
+            }
+        }
     }
 }
