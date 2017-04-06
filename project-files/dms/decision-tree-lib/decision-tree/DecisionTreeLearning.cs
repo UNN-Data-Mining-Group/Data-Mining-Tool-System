@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.solvers.decision_tree
 {
-    class DecisionTreeLearning
+    public class DecisionTreeLearning
     {
 
         public float startLearn(ISolver solver, float[][] train_x, float[] train_y)

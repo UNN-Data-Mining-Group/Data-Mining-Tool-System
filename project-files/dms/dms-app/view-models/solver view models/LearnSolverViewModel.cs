@@ -1,4 +1,5 @@
 ﻿using dms.models;
+using dms.solvers;
 using dms.solvers.decision_tree;
 using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
@@ -85,7 +86,9 @@ namespace dms.view_models
             {
                 List<Entity> listLearningScenarios = null;
                 string typeSolver = CurTaskSolver.TypeName;
-                if (typeSolver.Equals("DecisionTree"))
+                // Не убирать!!!!!!
+
+                /* if (typeSolver.Equals("DecisionTree"))
                 {
                     listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
                     .addCondition("LearningAlgorithmName", "=", "Деревья решений"), typeof(LearningScenario));
@@ -95,6 +98,8 @@ namespace dms.view_models
                     listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
                     .addCondition("LearningAlgorithmName", "!=", "Деревья решений"), typeof(LearningScenario));
                 }
+                */
+                listLearningScenarios = Entity.all(typeof(LearningScenario));
                 string[] nameLearningScenarios = new string[listLearningScenarios.Count];
                 int i = 0;
                 foreach (LearningScenario ls in listLearningScenarios)
@@ -272,7 +277,6 @@ namespace dms.view_models
                 int stepRow = 0;
                 float[][] inputData = new float[countRows][];
                 float[] outputData = new float[countRows];
-                string[] outputDataForStrings = new string[countRows];
                 for (int i = 0; i < countRows; i++)
                 {
                     inputData[i] = new float[parameters.Count - 1];
@@ -295,9 +299,6 @@ namespace dms.view_models
                             float outputFloat;
                             if (float.TryParse(outputValue, out outputFloat))
                                 outputData[stepRow] = outputFloat;
-                            else
-                                outputDataForStrings[stepRow] = outputValue;
-
                         }
                         else
                             inputData[stepRow][stepParam] = float.Parse(((ValueParameter)value[0]).Value, CultureInfo.InvariantCulture.NumberFormat);
@@ -305,7 +306,7 @@ namespace dms.view_models
                     }
                     stepRow++;
                 }
-                INeuralNetwork isolver = null;
+                ISolver isolver = null;
                 if (Solver.Description is PerceptronTopology)
                 {
                     PerceptronTopology topology = Solver.Description as PerceptronTopology;
@@ -324,6 +325,7 @@ namespace dms.view_models
                 else if (Solver.Description is TreeDescription)
                 {
                     TreeDescription topology = Solver.Description as TreeDescription;
+                    isolver = new DecisionTree(topology);                    
                 }
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
@@ -333,7 +335,7 @@ namespace dms.view_models
                     LearningScenarioID = learningScenario.ID,
                     TaskSolverID = Solver.ID,
                     Soul = s.separationAndLearn(selection.ID, outputParam)
-            };
+                };
                 ls.save();
 
                 LearningQuality lq = new LearningQuality()

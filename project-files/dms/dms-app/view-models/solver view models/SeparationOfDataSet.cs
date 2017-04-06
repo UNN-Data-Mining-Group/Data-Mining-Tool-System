@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using dms.solvers;
 using dms.solvers.neural_nets;
 using dms.services.preprocessing;
+using dms.solvers.decision_tree;
 
 namespace dms.view_models.solver_view_models
 {
@@ -14,7 +15,7 @@ namespace dms.view_models.solver_view_models
     {
         private float mistakeTrain = 0;
         private float mistakeTest = 0;
-        public SeparationOfDataSet(INeuralNetwork solver, LearningScenario learnignScenario, float [][]x, float []y)
+        public SeparationOfDataSet(ISolver solver, LearningScenario learnignScenario, float [][]x, float []y)
         {
             ISolver = solver;
             LS = learnignScenario;
@@ -39,7 +40,7 @@ namespace dms.view_models.solver_view_models
         public float ClosingError { get; set; }
         public LearningScenario LS { get; private set; }
         public float[] OutputData { get; private set; }
-        public INeuralNetwork ISolver { get; private set; }
+        public ISolver ISolver { get; private set; }
         public int SelectionID { get; private set; }
         public int ParameterID { get; private set; }
 
@@ -82,7 +83,6 @@ namespace dms.view_models.solver_view_models
                 };
                 PreprocessingManager preprocessing = new PreprocessingManager();
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-                ISolver.FetchNativeParameters();
                 int sizeTrainDataset = trainInputDataset.Length;
                 List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
                 List<string> obtainedOutputValues = new List<string>();
@@ -130,16 +130,23 @@ namespace dms.view_models.solver_view_models
             Array.Copy(OutputData, trainOutputDataset, sizeTrainDataset);
             Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTrainDataset);
 
-
-            LearningAlgo la = new LearningAlgo()
+            if (ISolver is INeuralNetwork)
             {
-                usedAlgo = LS.LearningAlgorithmName,
-                GeneticParams = (GeneticParam)LS.LAParameters
+                LearningAlgo la = new LearningAlgo()
+                {
+                    usedAlgo = LS.LearningAlgorithmName,
+                    GeneticParams = (GeneticParam)LS.LAParameters
 
-            };
+                };
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+            }
+            else if (ISolver is DecisionTree)
+            {
+                DecisionTreeLearning la = new DecisionTreeLearning();
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+            }
+
             PreprocessingManager preprocessing = new PreprocessingManager();
-            ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-            ISolver.FetchNativeParameters();
             mistakeTrain = 0;
             List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
             List<string> obtainedOutputValues = new List<string>();
