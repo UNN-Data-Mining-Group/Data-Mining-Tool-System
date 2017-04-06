@@ -206,7 +206,12 @@ void KohonenNet::setClasses(float ** classes)
 
 void nnets_kohonen::KohonenNet::setClasses(float ** x, float ** y, int rowsCount)
 {
-	Selection s { x, y, rowsCount, getInputsCount(), getOutputsCount() };
+	Selection s 
+	{
+		x, y, rowsCount, 
+		static_cast<int>(getInputsCount()), 
+		static_cast<int>(getOutputsCount()) 
+	};
 
 	IPretrainer *pt = nullptr;
 	if (initializer == Random)
