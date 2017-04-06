@@ -1,4 +1,5 @@
 #include "KohonenNet.h"
+#include "KohonenPretrain.h"
 #include "mkl_cblas.h"
 
 using namespace nnets_kohonen;
@@ -154,10 +155,12 @@ void KohonenNet::initByNeuronMap(std::vector<NeuronIndex> map)
 }
 
 KohonenNet::KohonenNet(int inputs_count, int outputs_count,
-	int koh_width, int koh_height, Metric metric) :
+	int koh_width, int koh_height, 
+	ClassInitializer initializer, Metric metric) :
 	winner({0,0}), 
 	neurons_width(koh_width), neurons_height(koh_height),
-	x_size(inputs_count), y_size(outputs_count), metric(metric)
+	x_size(inputs_count), y_size(outputs_count), 
+	initializer(initializer), metric(metric)
 {
 	use_norm_x = false;
 	x_internal = new float[x_size];
@@ -199,6 +202,20 @@ void KohonenNet::setClasses(float ** classes)
 	for (int i = 0; i < neuron_index_map.size(); i++)
 		for (int j = 0; j < y_size; j++)
 			this->classes[i][j] = classes[i][j];
+}
+
+void nnets_kohonen::KohonenNet::setClasses(float ** x, float ** y, int rowsCount)
+{
+	Selection s { x, y, rowsCount, getInputsCount(), getOutputsCount() };
+
+	IPretrainer *pt = nullptr;
+	if (initializer == Random)
+		pt = new StatisticalPretrainer(1e-5f);
+	else if (initializer == SelfOrganizer)
+		pt = new KohonenSelfOrganizer(1000, 27, 1.0f, 0.1f, 0.0001f, 1e-5f);
+	else throw "Undefined pretrainer";
+	pt->pretrain(s, this, 27);
+	delete pt;
 }
 
 void KohonenNet::setNeurons(std::vector<NeuronIndex>& neurons)
