@@ -157,14 +157,14 @@ namespace dms.solvers.decision_tree
             right_table.LearningClasses = temp_right_y.ToArray();
         }
 
-        public void FindBetterParameter(LearningTable education_table, ref int index_of_parametr, ref string best_value_for_split)
+        public void FindBetterParameter(LearningTable education_table, ref int index_of_parametr, ref string best_value_for_split, int inputs ,int outputs)
         {
             index_of_parametr = 0;
             best_value_for_split = "";
             LearningClassInfo[] leftClassInf;
             LearningClassInfo[] rightClassInf;
             double giniValue = -100000;
-            for (int index = 0; index < education_table.LearningData[0].Length; index++)
+            for (int index = 0; index < inputs; index++)
             {
                 education_table.QuickSortByParam(0, education_table.LearningData.Length - 1, index);
                 double average = 0;
