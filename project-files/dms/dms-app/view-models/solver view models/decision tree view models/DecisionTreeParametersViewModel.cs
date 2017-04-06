@@ -13,6 +13,8 @@ namespace dms.view_models
     {
         public event Action CanCreateChanged;
         public int MaxTreeDepth { get; set; }
+        public int Inputs { get; set; }
+        public int Outputs { get; set; }
 
         public bool CanCreateSolver(string name, models.Task task)
         {
@@ -26,7 +28,7 @@ namespace dms.view_models
             //WARNING!!!
             //Here must be selected task template 
             //and number of inputs and outputs in it.
-            TreeDescription td = new TreeDescription(task.ParamCount - 1, 1, depth);
+            TreeDescription td = new TreeDescription(Inputs, Outputs, depth);
             
             TaskSolver ts = new TaskSolver()
             {
