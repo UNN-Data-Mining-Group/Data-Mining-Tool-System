@@ -151,6 +151,35 @@ namespace dms.solvers.decision_tree
                     temp_left_y.Add(education_table.LearningClasses[i]);
                 }
             }
+            if (temp_left_x.Count == 0)
+            {
+                float tmpy = temp_right_y[0];
+                for (int i = 1; i < temp_right_y.Count; i++)
+                {
+                    if (tmpy != temp_right_y[i])
+                    {
+                        temp_left_x.Add(temp_right_x[i]);
+                        temp_right_x.RemoveAt(i);
+                        temp_left_y.Add(temp_right_y[i]);
+                        temp_right_y.RemoveAt(i);
+                    }
+                }
+            }
+            else if (temp_right_x.Count == 0)
+            {
+                float tmpy = temp_left_y[0];
+                for (int i = 1; i < temp_left_y.Count; i++)
+                {
+                    if (tmpy != temp_left_y[i])
+                    {
+                        temp_right_x.Add(temp_left_x[i]);
+                        temp_left_x.RemoveAt(i);
+                        temp_right_y.Add(temp_left_y[i]);
+                        temp_left_y.RemoveAt(i);
+                    }
+                }
+            }
+           
             left_table.LearningData = temp_left_x.ToArray();
             right_table.LearningData = temp_right_x.ToArray();
             left_table.LearningClasses = temp_left_y.ToArray();
