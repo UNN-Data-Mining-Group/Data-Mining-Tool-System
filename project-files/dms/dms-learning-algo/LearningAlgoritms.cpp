@@ -126,7 +126,7 @@ namespace dms::learningAlgoritms
 		delete[] solvers;
 
 		
-
+		solver->FetchNativeParameters();
 		return res;
 	}
 

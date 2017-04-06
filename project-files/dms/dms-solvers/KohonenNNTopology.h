@@ -32,7 +32,8 @@ namespace dms::solvers::neural_nets::kohonen
 				m = nnets_kohonen::KohonenNet::Euclidean;
 			else throw gcnew System::ArgumentException();
 
-			return new nnets_kohonen::KohonenNet(inputs, outputs, width, height, m);
+			return new nnets_kohonen::KohonenNet(inputs, outputs, width, height, 
+				nnets_kohonen::KohonenNet::ClassInitializer::Random, m);
 		}
 	private:
 		int inputs, outputs, width, height;

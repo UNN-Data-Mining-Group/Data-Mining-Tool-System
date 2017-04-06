@@ -43,7 +43,8 @@ void main()
 
 int accuracy_test_koh()
 {
-	nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2);
+	nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2, 
+		nnets_kohonen::KohonenNet::ClassInitializer::Random);
 	float w[] =
 	{
 		1, 0, 0,
@@ -131,7 +132,8 @@ void kohonen_learning()
 	opers.setY = nnets_kohonen::setY;
 	opers.solve = nnets_kohonen::solve;
 
-	nnets_kohonen::KohonenNet* kn = new nnets_kohonen::KohonenNet(inputParams, 1, 5, 5);
+	nnets_kohonen::KohonenNet* kn = new nnets_kohonen::KohonenNet(inputParams, 1, 5, 5,
+		nnets_kohonen::KohonenNet::ClassInitializer::Random);
 	KohonenSelfOrganizer *selfOrg = new KohonenSelfOrganizer(opers, 200, 27, 1.5f, 0.1f, 1e-7f, EPS);
 	StatisticalPretrainer* st = new StatisticalPretrainer(opers, EPS);
 

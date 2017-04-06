@@ -44,32 +44,37 @@ namespace nnets_kohonen
 		}
 	};
 
-	int getWinner(void* obj);
-	void addmultWeights(int neuron, float alpha, float beta, const float* x, void* obj);
-	int getMaxNeuronIndex(void* obj);
-	void setY(int neuron, const float* y, void* obj);
 	size_t solve(const float* x, float* y, void* obj);
-	const float* getWeights(int neuron, void* obj);
-	void disableNeurons(std::vector<int> neurons, void* obj);
-	int getDistance(int neuron1, int neuron2, void* obj);
 	size_t getWeightsMatrixSize(void* obj);
 	void setWeights(const float* w, void* obj);
 	void setUseNormalization(bool norm, void* obj);
+
+	int getMaxNeuronIndex(void* obj);
+	int getWinner(void* obj);
+	int getDistance(int neuron1, int neuron2, void* obj);
+	void addmultWeights(int neuron, float alpha, float beta, const float* x, void* obj);
+	const float* getWeights(int neuron, void* obj);
+	void setY(int neuron, const float* y, void* obj);
+	void disableNeurons(std::vector<int> neurons, void* obj);
 
 	class KohonenNet : public nnets::NeuralNetwork
 	{
 	public:
 		enum Metric {Default, Euclidean};
+		enum ClassInitializer {Random, SelfOrganizer};
 
 		KohonenNet(KohonenNet& kn);
 		KohonenNet(int inputs_count, int outputs_count, 
-			int koh_width, int koh_height, Metric metric = Default);
+			int koh_width, int koh_height, 
+			ClassInitializer initializer, Metric metric = Default);
 
 		size_t solve(const float* x, float* y) override;
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
+
 		void setWeights(const float* weights);
 		void setClasses(float** classes);
+		void setClasses(float** x, float** y, int rowsCount);	//init classes by train selection
 		void setNeurons(std::vector<NeuronIndex> &neurons);
 		void setClass(NeuronIndex n, const float* y);
 		void setUseNormalization(bool norm);
@@ -84,6 +89,7 @@ namespace nnets_kohonen
 	private:
 		bool use_norm_x;
 		Metric metric;
+		ClassInitializer initializer;
 		std::vector<NeuronIndex> neuron_index_map;	//index - number of neuron data 
 													//in kohonen_layer and weights
 													//value - geometrical position in layer
