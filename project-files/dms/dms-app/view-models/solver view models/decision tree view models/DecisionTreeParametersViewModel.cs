@@ -26,8 +26,8 @@ namespace dms.view_models
             //WARNING!!!
             //Here must be selected task template 
             //and number of inputs and outputs in it.
-            TreeDescription td = new TreeDescription(0, 0, depth);
-
+            TreeDescription td = new TreeDescription(task.ParamCount - 1, 1, depth);
+            
             TaskSolver ts = new TaskSolver()
             {
                 Name = name,
