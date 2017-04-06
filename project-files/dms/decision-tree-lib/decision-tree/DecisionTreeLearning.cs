@@ -14,7 +14,7 @@ namespace dms.solvers.decision_tree
             if (solver.GetType() == typeof(DecisionTree))
             {
                 DecisionTree dc_solver = (DecisionTree)solver;
-                treeBuilding(new LearningTable(train_x, train_y), dc_solver.root);
+                treeBuilding(new LearningTable(train_x, train_y), dc_solver.root, (int)solver.GetInputsCount(), (int)solver.GetOutputsCount());
                 solver = dc_solver;
             }
             return 0;
@@ -23,7 +23,7 @@ namespace dms.solvers.decision_tree
 
 
 
-        public void treeBuilding(LearningTable education_table, Node tree_node)
+        public void treeBuilding(LearningTable education_table, Node tree_node, int inputs , int outputs)
         {
             LearningClassInfo[] thisClassInfo = education_table.ClassInfoInit(education_table, 0, education_table.LearningClasses.Length);
 
@@ -43,7 +43,7 @@ namespace dms.solvers.decision_tree
                 tree_node.is_leaf = false;
                 int index_of_parametr = 0;
                 string best_value_for_split = "";
-                left_table.FindBetterParameter(education_table, ref index_of_parametr, ref best_value_for_split);
+                left_table.FindBetterParameter(education_table, ref index_of_parametr, ref best_value_for_split, inputs, outputs);
                 tree_node.rule = new Rule();
                 tree_node.rule.index_of_param = index_of_parametr;
                 tree_node.rule.value = (float)Convert.ToDouble(best_value_for_split);
@@ -51,8 +51,8 @@ namespace dms.solvers.decision_tree
                 tree_node.right_child = new Node();
 
                 left_table.SplitLearningTable(education_table, tree_node.rule, ref left_table, ref right_table);
-                treeBuilding(left_table, tree_node.left_child);
-                treeBuilding(right_table, tree_node.right_child);
+                treeBuilding(left_table, tree_node.left_child ,inputs ,outputs);
+                treeBuilding(right_table, tree_node.right_child, inputs, outputs);
 
 
             }
