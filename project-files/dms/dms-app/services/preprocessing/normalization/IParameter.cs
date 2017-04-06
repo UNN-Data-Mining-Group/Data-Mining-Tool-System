@@ -16,7 +16,7 @@ namespace dms.services.preprocessing.normalization
         float GetLinearNormalizedFloat(string value);
         float GetNonlinearNormalizedFloat(string value);
         int GetNormalizedInt(string value);
-
+        
         string GetFromNormalized(int value);
         string GetFromLinearNormalized(float value);
         string GetFromNonlinearNormalized(float value);
