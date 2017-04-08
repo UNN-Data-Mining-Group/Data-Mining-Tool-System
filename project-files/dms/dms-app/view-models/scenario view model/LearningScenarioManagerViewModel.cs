@@ -11,13 +11,13 @@ namespace dms.view_models
     {
         private ActionHandler createHandler;
         private ActionHandler cancelHandler;
-        private LearningAlgo learningAlgo;
+        private LearningAlgoManger learningAlgo;
         private String selectionType;
         public LearningScenarioViewModel()
         {
             createHandler = new ActionHandler(createScenario, e => true);
             cancelHandler = new ActionHandler(() => OnClose?.Invoke(this, null), e => true);
-            learningAlgo = new LearningAlgo();
+            learningAlgo = new LearningAlgoManger();
             Name = "Сценарий";
             MixSeed = "123";
             TeacherType = TeacherTypesList[0];

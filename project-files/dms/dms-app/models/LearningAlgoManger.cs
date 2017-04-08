@@ -10,7 +10,7 @@ using dms.solvers;
 
 namespace dms.models
 {
-    public class LearningAlgo
+    public class LearningAlgoManger 
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
@@ -22,7 +22,7 @@ namespace dms.models
             public float[] geneticParams;
         }
 
-        public LearningAlgo()
+        public LearningAlgoManger()
         {
             lrAlgo = new LearningAlgoritms();
             geneticParams = new GeneticParam();
