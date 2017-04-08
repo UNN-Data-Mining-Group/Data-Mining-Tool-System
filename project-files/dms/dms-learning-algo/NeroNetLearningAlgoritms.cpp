@@ -1,4 +1,4 @@
-#include "LearningAlgoritms.h"
+#include "NeroNetLearningAlgoritms.h"
 
 float get_res_(void* solver, float* in)
 {
@@ -21,9 +21,9 @@ void set_weights_(void* solver, float* weights)
 
 }
 
-namespace dms::learningAlgoritms
+namespace dms::neroNetLearningAlgoritms
 {
-	float LearningAlgoritms::startGenetic(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
+	float NeroNetLearningAlgoritms::startGenetic(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
 	{
 		int count_person = params[0];
 		void* parent_Solver;
@@ -130,14 +130,14 @@ namespace dms::learningAlgoritms
 		return res;
 	}
 
-	LearningAlgoritms::~LearningAlgoritms()
+	NeroNetLearningAlgoritms::~NeroNetLearningAlgoritms()
 	{
 		delete[] TeacherTypesList;
 		delete[] ParamsNames;
 		delete[] params;
 	}
 
-	LearningAlgoritms::LearningAlgoritms()
+	NeroNetLearningAlgoritms::NeroNetLearningAlgoritms()
 	{		
 		TeacherTypesList = gcnew array<String^>(2);
 		TeacherTypesList[0] = "Генетический алгоритм";
@@ -155,24 +155,24 @@ namespace dms::learningAlgoritms
 		params[3] = 0.2f;		
 	}
 
-	array<System::String^>^ LearningAlgoritms::getTeacherTypesList()
+	array<System::String^>^ NeroNetLearningAlgoritms::getTeacherTypesList()
 	{
 		return TeacherTypesList;
 	}
 
-	array<float>^ LearningAlgoritms::getParams()
+	array<float>^ NeroNetLearningAlgoritms::getParams()
 	{
 		return params;
 	}
 
-	array<System::String^>^ LearningAlgoritms::getParamsNames()
+	array<System::String^>^ NeroNetLearningAlgoritms::getParamsNames()
 	{
 		return ParamsNames;
 	}
 
 
 
-	float LearningAlgoritms::startLearn(ISolver^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
+	float NeroNetLearningAlgoritms::startLearn(ISolver^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
 	{
 		float res = 0;
 

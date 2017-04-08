@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using dms.learningAlgoritms;
+using dms.neroNetLearningAlgoritms;
 using dms.solvers;
 
 
@@ -14,7 +14,7 @@ namespace dms.models
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
-        private LearningAlgoritms lrAlgo;
+        private NeroNetLearningAlgoritms lrAlgo;
 
         [Serializable()]
         private class GeneticParam : ILAParameters
@@ -24,7 +24,7 @@ namespace dms.models
 
         public LearningAlgoManger()
         {
-            lrAlgo = new LearningAlgoritms();
+            lrAlgo = new NeroNetLearningAlgoritms();
             geneticParams = new GeneticParam();
             TeacherTypesList = lrAlgo.getTeacherTypesList();
 

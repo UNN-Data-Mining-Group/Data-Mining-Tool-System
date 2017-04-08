@@ -147,11 +147,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\dms-solvers\resource.h" />
-    <ClInclude Include="LearningAlgoritms.h" />
+    <ClInclude Include="NeroNetLearningAlgoritms.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="LearningAlgoritms.cpp" />
+    <ClCompile Include="NeroNetLearningAlgoritms.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

@@ -8,9 +8,9 @@ using namespace dms::solvers::neural_nets;
 using namespace geneticAlgo;
 
 
-namespace dms::learningAlgoritms
+namespace dms::neroNetLearningAlgoritms
 {
-	public ref class LearningAlgoritms
+	public ref class NeroNetLearningAlgoritms
 	{
 	private:
 		array<float>^ params;
@@ -19,8 +19,8 @@ namespace dms::learningAlgoritms
 		array<System::String^>^ ParamsNames;
 		float startGenetic(INeuralNetwork^ solver, array<array<float>^>^ train_x, array<float>^ train_y);
 	public:
-		~LearningAlgoritms();
-		LearningAlgoritms();
+		~NeroNetLearningAlgoritms();
+		NeroNetLearningAlgoritms();
 		array<System::String^>^ getTeacherTypesList();
 		array<float>^ getParams();
 		array<System::String^>^ getParamsNames();
