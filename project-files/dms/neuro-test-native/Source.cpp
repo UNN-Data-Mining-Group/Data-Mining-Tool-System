@@ -1,10 +1,13 @@
 #include "Perceptron.h"
 #include "WardNN.h"
 #include "ConvNN.h"
+#include "KohonenLearning.h"
+#include "KohonenNet.h"
 #include <ctime>
 #include <random>
 #include <iostream>
 #include <cmath>
+#include <fstream>
 
 #define EPS 1e-5
 
@@ -18,6 +21,9 @@ void performance_test_af();
 int accuracy_test_perc();
 int accuracy_test_ward();
 int accuracy_test_conv();
+int accuracy_test_koh();
+
+void kohonen_learning();
 
 void main()
 {
@@ -25,12 +31,130 @@ void main()
 	std::cout << "->Perceptron: " << (accuracy_test_perc() == 0 ? "Success" : "Fail") << std::endl;
 	std::cout << "->Ward: " << (accuracy_test_ward() == 0 ? "Success" : "Fail") << std::endl;
 	std::cout << "->Convolutional: " << (accuracy_test_conv() == 0 ? "Success" : "Fail") << std::endl;
+	std::cout << "->Kohonen: " << (accuracy_test_koh() == 0 ? "Success" : "Fail") << std::endl;
 
 	std::cout << std::endl << "=== Performance tests ===" << std::endl;
 	performance_test_perc();
 	performance_test_ward();
 	performance_test_conv();
 	performance_test_af();
+	kohonen_learning();
+}
+
+int accuracy_test_koh()
+{
+	nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2, 
+		nnets_kohonen::KohonenNet::ClassInitializer::Random);
+	float w[] =
+	{
+		1, 0, 0,
+		0, 2, 0,
+		0, 0, 3,
+		-2, 0, 0
+	};
+	float** classes = new float*[4];
+	for (int i = 0; i < 4; i++)
+		classes[i] = new float[1];
+	classes[0][0] = 0;
+	classes[1][0] = 1;
+	classes[2][0] = 1;
+	classes[3][0] = 0;
+
+	float y1[] = { 0 };
+	kn1->setWeights(w);
+	kn1->setClasses(classes);
+
+	int res = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		kn1->solve(&w[i*3], y1);
+		if (abs(y1[0] - classes[i][0]) >= EPS)
+		{
+			res = 1;
+			break;
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+		delete[] classes[i];
+	delete[] classes;
+	delete kn1;
+
+	return res;
+}
+
+void kohonen_learning()
+{
+	std::ifstream input_file("iris_mod.data");
+	int rowsCount = 150;
+	int inputParams = 4;
+	float** x = new float*[rowsCount];
+	float** y = new float*[rowsCount];
+
+	char row[256];
+	char buf[10];
+
+	for (int i = 0; i < rowsCount; i++)
+	{
+		x[i] = new float[inputParams];
+		y[i] = new float[1];
+		input_file.getline(row, 256);
+		int k = 0;
+		for (int j = 0; j < inputParams; j++)
+		{
+			int l = 0;
+			while (row[k] != ',')
+				buf[l++] = row[k++];
+			k++;
+			buf[l] = '\0';
+			x[i][j] = atof(buf);
+		}
+
+		int l = 0;
+		while (row[k] != '\0')
+			buf[l++] = row[k++];
+		buf[l] = '\0';
+		y[i][0] = atof(buf);
+	}
+
+	input_file.close();
+
+	OperatorList opers;
+	opers.addmultWeights = nnets_kohonen::addmultWeights;
+	opers.disableNeurons = nnets_kohonen::disableNeurons;
+	opers.getDistance = nnets_kohonen::getDistance;
+	opers.getMaxNeuronIndex = nnets_kohonen::getMaxNeuronIndex;
+	opers.getWeights = nnets_kohonen::getWeights;
+	opers.getWeightsMatrixSize = nnets_kohonen::getWeightsMatrixSize;
+	opers.getWinner = nnets_kohonen::getWinner;
+	opers.setUseNormalization = nnets_kohonen::setUseNormalization;
+	opers.setWeights = nnets_kohonen::setWeights;
+	opers.setY = nnets_kohonen::setY;
+	opers.solve = nnets_kohonen::solve;
+
+	nnets_kohonen::KohonenNet* kn = new nnets_kohonen::KohonenNet(inputParams, 1, 5, 5,
+		nnets_kohonen::KohonenNet::ClassInitializer::Random);
+	KohonenSelfOrganizer *selfOrg = new KohonenSelfOrganizer(opers, 200, 27, 1.5f, 0.1f, 1e-7f, EPS);
+	StatisticalPretrainer* st = new StatisticalPretrainer(opers, EPS);
+
+	KohonenClassifier* cl = new KohonenClassifier(opers,
+		selfOrg
+		//st
+		, EPS, 1000, 27, 0.8f, 1.0f, true);
+	Selection s(x, y, rowsCount, inputParams, 1);
+	cl->train(s, kn);
+	delete cl;
+	delete st;
+	delete selfOrg;
+	delete kn;
+
+	for (int i = 0; i < rowsCount; i++)
+	{
+		delete[] x[i];
+		delete[] y[i];
+	}
+	delete[] x; 
+	delete[] y;
 }
 
 void generate_w(float* w, size_t size, int seed)

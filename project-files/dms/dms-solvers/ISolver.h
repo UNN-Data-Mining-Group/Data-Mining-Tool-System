@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include "ISolverDescription.h"
 using namespace System;
 
 namespace dms::solvers
@@ -9,16 +10,15 @@ namespace dms::solvers
 	public ref class ISolver abstract
 	{
 	public:
-		ISolver(__int64 inputs, __int64 outputs);
+		ISolver(ISolverDescription^ desc);
 
 		virtual array<Single>^ Solve(array<Single>^ x) = 0;
+		virtual ISolver^ Copy() = 0;
 		virtual __int64 GetInputsCount();
 		virtual __int64 GetOutputsCount();
 
 		virtual void* /* exactly std::vector<std::string>* */  getAttributes();
 		virtual void* /* exactly std::map<std::string, void*>* */ getOperations();
-		virtual void* getNativeSolver() = 0;
-		virtual std::vector<std::string>* getH() { return nullptr; }
 
 		virtual ~ISolver();
 	private:

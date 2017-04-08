@@ -45,17 +45,12 @@ namespace dms.services.preprocessing
 
             return selectionId;
         }
-        
+
         private List<int> pars = new List<int>();
-        public void executePreprocessing(int taskTemplateId, int newSelectionId, int selectionId, 
-            int paramId, string prepType, int paramCount, int parameterPosition, bool canAdd)
+        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
-            dms.models.Parameter param = ((dms.models.Parameter)dms.services.DatabaseManager.SharedManager
-                .entityById(paramId, typeof(dms.models.Parameter)));
-            List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
-                .addCondition("SelectionID", "=", selectionId.ToString()), typeof(SelectionRow));
+            models.Parameter oldParam = ((models.Parameter)DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             TypeParameter type;
-            bool flag = false;
             switch (prepType)
             {
                 case "Линейная нормализация 1 (к float)":
@@ -68,84 +63,66 @@ namespace dms.services.preprocessing
                     type = TypeParameter.Int;
                     break;
                 case "бинаризация":
-                    flag = true;
-                    type = TypeParameter.Int;// Enum;
+                    type = TypeParameter.Int;
                     break;
                 case "без предобработки":
-                    type = param.Type;
+                    type = oldParam.Type;
                     break;
                 default:
                     type = TypeParameter.Real;
                     break;
             }
-            int newParamId;
-            if (canAdd)
-            {
-                if (flag)
-                {
-                    newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
-               taskTemplateId, param.Index, param.IsOutput + 1, type);
-                }
-               else
-                {
-                    newParamId = new DataHelper().addOneParameter(param.Name, param.Comment,
-               taskTemplateId, param.Index, param.IsOutput, type);
-                }
-                pars.Add(newParamId);
-            }
-            else
-            {
 
-                newParamId = pars[parameterPosition - 1];
-
-            }
-            
-            
             List<string> values = new List<string>();
             List<Entity> valueParam = new List<Entity>();
+
+            List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+                .addCondition("SelectionID", "=", oldSelectionId.ToString()), typeof(SelectionRow));
+
             int index = 0;
             foreach (Entity entity in oldSelectionRows)
             {
                 int selectionRowId = entity.ID;
                 List<Entity> list = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
-                .addCondition("ParameterID", "=", paramId.ToString()).
+                .addCondition("ParameterID", "=", oldParamId.ToString()).
                 addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
                 valueParam = valueParam.Concat(list).ToList();
                 values.Add(((ValueParameter)valueParam[index]).Value);
                 index++;
             }
 
-            IParameter p;
+            IParameter p = null;
             switch (prepType)
             {
                 case "Линейная нормализация 1 (к float)":
                 case "Нелинейная нормализация 2 (к float)":
                 case "нормализация 3 (к int)":
-                    if (param.Type == TypeParameter.Real)
+                    if (oldParam.Type == TypeParameter.Real)
                     {
                         p = new RealParameter(values);
                         normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
-                    else if (param.Type == TypeParameter.Int)
+                    else if (oldParam.Type == TypeParameter.Int)
                     {
                         p = new IntegerParameter(values);
                         normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
-                    else if (param.Type == TypeParameter.Enum)
+                    else if (oldParam.Type == TypeParameter.Enum)
                     {
                         p = new EnumeratedParameter(values);
                         normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     break;
                 case "бинаризация":
-                    binarizationValues(valueParam, newParamId, newSelectionId, paramCount, parameterPosition);
+                    binarizationValues(valueParam, newParamId, newSelectionId, parameterPosition);
                     break;
                 case "без предобработки":
                     processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
                     break;
             }
+            return p;
         }
-        
+
         private void processWithoutPreprocessing(List<Entity> values, int paramId, int newSelectionId)
         {
             DataHelper helper = new DataHelper();
@@ -163,13 +140,12 @@ namespace dms.services.preprocessing
             DatabaseManager.SharedManager.insertMultipleEntities(listValues);
         }
 
-        private void binarizationValues(List<Entity> values, int paramId, int newSelectionId, int paramCount, int parameterPosition)
+        private void binarizationValues(List<Entity> values, int paramId, int newSelectionId, int parameterPosition)
         {
             DataHelper helper = new DataHelper();
             List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", newSelectionId.ToString()), typeof(SelectionRow));
 
-            int index = 0;
             List<Entity> listValues = new List<Entity>();
 
             List<string> valueStr = new List<string>();
@@ -178,11 +154,12 @@ namespace dms.services.preprocessing
                 valueStr.Add(((ValueParameter)value).Value);
             }
             EnumeratedParameter p = new EnumeratedParameter(valueStr);
-            
-            foreach (Entity value in values)
+
+            int index = 0;
+            foreach (string value in valueStr)
             {
-                int i = p.GetInt(((ValueParameter)value).Value);
-                string val = binarization(value, i, parameterPosition);
+                int i = p.GetInt(value);
+                string val = binarization(parameterPosition == i);
                 listValues.Add(helper.addValueParameter(selectionRows[index].ID, paramId, val));
                 index++;
             }
@@ -226,52 +203,35 @@ namespace dms.services.preprocessing
             if (type == 1)
             {
                 return p.GetLinearNormalizedFloat(((ValueParameter)value).Value).ToString();
-            } else if (type == 2)
+            }
+            else if (type == 2)
             {
                 return p.GetNonlinearNormalizedFloat(((ValueParameter)value).Value).ToString();
-            } else
+            }
+            else
             {
+                // return "0";
                 return p.GetNormalizedInt(((ValueParameter)value).Value).ToString();
             }
         }
 
-        private string binarization(Entity value, int index, int parameterPosition)
+        private string binarization(bool flag)
         {
-          //  string vec = "";
-            string val = ((ValueParameter)value).Value; 
-            if (index.Equals(parameterPosition))
+            if (flag)
             {
                 return "1";
-            }else
+            }
+            else
             {
                 return "0";
             }
-            
-       /*     for (int i = 1; i <= parameterCount; i++)
-            {
-                if (i == parameterPosition)
-                {
-                    if (parameterPosition == 1)
-                    {
-                        vec = "1";// val;
-                        continue;
-                    }
-                    vec = vec + "," + "1";// val;
-                    continue;
-                }
-                if (i == 1)
-                {
-                    vec = "0";
-                    continue;
-                }
-                vec = vec + ", 0";
-            }
-            return vec;
-*/        }
+        }
 
         private string withoutPreprocessing(Entity value)
         {
             return ((ValueParameter)value).Value;
         }
+
+
     }
 }
