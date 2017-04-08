@@ -8,13 +8,58 @@ using dms.neroNetLearningAlgoritms;
 using dms.solvers;
 
 
+namespace dms.iLearningAlgo
+{
+    public interface ILearningAlgo
+    {
+        string[] getTeacherTypesList();
+        float[] getParams();
+        string[] getParamsNames();
+        float startLearn(ISolver solver, float[][] train_x, float[] train_y);
+    }
+}
+
+namespace dms.neroNetLearningAlgoritms
+{
+    public class NeroNetLearningAlgoritm : iLearningAlgo.ILearningAlgo
+    {
+        private NeroNetLearningAlgoritms lrAlgo;
+
+        public NeroNetLearningAlgoritm()
+        {
+            lrAlgo = new NeroNetLearningAlgoritms();
+        }
+
+        public string[] getTeacherTypesList()
+        {
+            return lrAlgo.getTeacherTypesList();
+        }
+        public float[] getParams()
+        {
+            return lrAlgo.getParams();
+        }
+        public string[] getParamsNames()
+        {
+            return lrAlgo.getParamsNames();
+        }
+        public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
+        {
+            return lrAlgo.startLearn(solver, train_x, train_y);
+        }
+    }
+}
+
+
 namespace dms.models
 {
+
+    
+
     public class LearningAlgoManger 
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
-        private NeroNetLearningAlgoritms lrAlgo;
+        private NeroNetLearningAlgoritm lrAlgo;
 
         [Serializable()]
         private class GeneticParam : ILAParameters
@@ -24,7 +69,7 @@ namespace dms.models
 
         public LearningAlgoManger()
         {
-            lrAlgo = new NeroNetLearningAlgoritms();
+            lrAlgo = new NeroNetLearningAlgoritm();
             geneticParams = new GeneticParam();
             TeacherTypesList = lrAlgo.getTeacherTypesList();
 

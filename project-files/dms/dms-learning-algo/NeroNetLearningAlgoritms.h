@@ -7,10 +7,9 @@ using namespace dms::solvers;
 using namespace dms::solvers::neural_nets;
 using namespace geneticAlgo;
 
-
 namespace dms::neroNetLearningAlgoritms
 {
-	public ref class NeroNetLearningAlgoritms
+	public ref class NeroNetLearningAlgoritms 
 	{
 	private:
 		array<float>^ params;
