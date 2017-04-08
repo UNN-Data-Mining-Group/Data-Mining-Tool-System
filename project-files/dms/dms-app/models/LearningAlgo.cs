@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using dms.learningAlgoritms;
 using dms.solvers;
+
+
 namespace dms.models
 {
-
-    [Serializable()]
-    public class GeneticParam : ILAParameters
-    {
-        public float[] geneticParams;
-    }
-
     public class LearningAlgo
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
         private LearningAlgoritms lrAlgo;
-        
+
+        [Serializable()]
+        private class GeneticParam : ILAParameters
+        {
+            public float[] geneticParams;
+        }
+
         public LearningAlgo()
         {
             lrAlgo = new LearningAlgoritms();
@@ -89,16 +90,16 @@ namespace dms.models
         }
 
         private GeneticParam geneticParams;
-        public GeneticParam GeneticParams
+        public ILAParameters GeneticParams
         {
             get
             {
                 geneticParams.geneticParams = paramsValue;
-                return geneticParams;
+                return (ILAParameters) geneticParams;
             }
             set
             {
-                geneticParams = value;
+                geneticParams = (GeneticParam)value;
                 paramsValue = geneticParams.geneticParams;
             }
         }

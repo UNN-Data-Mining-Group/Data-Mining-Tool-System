@@ -78,7 +78,7 @@ namespace dms.view_models.solver_view_models
                 LearningAlgo la = new LearningAlgo()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    GeneticParams = LS.LAParameters
 
                 };
                 PreprocessingManager preprocessing = new PreprocessingManager();
@@ -135,7 +135,7 @@ namespace dms.view_models.solver_view_models
                 LearningAlgo la = new LearningAlgo()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    GeneticParams = LS.LAParameters
 
                 };
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);

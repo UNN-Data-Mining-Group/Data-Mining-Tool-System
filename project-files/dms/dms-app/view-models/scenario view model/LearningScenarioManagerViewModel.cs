@@ -28,23 +28,33 @@ namespace dms.view_models
 
         public string[] ParamsName { get { return learningAlgo.paramsName; } }
         public float[] ParamsValue { get; set; }
-        public GeneticParam GenParam
+        public  ILAParameters GenParam
         {
             set
             {
-                ParamsValue = value.geneticParams;
+   //             ParamsValue = value.geneticParams;
                 learningAlgo.GeneticParams = value;
             }
             get
             {
-                learningAlgo.GeneticParams.geneticParams = ParamsValue;
+ //               learningAlgo.GeneticParams.geneticParams = ParamsValue;
                 return learningAlgo.GeneticParams;
             }
         }
 
         public string Name { get; set; }
         public int ID { get; set; }
-        public string TeacherType { get; set; }
+        public string TeacherType
+        {
+            get
+            {
+                return learningAlgo.usedAlgo;
+            }
+            set
+            {
+                learningAlgo.usedAlgo = value;
+            }
+        }
         public string SelectionType
         {
             get
@@ -52,8 +62,7 @@ namespace dms.view_models
                 return selectionType;
             }
             set
-            {
-                learningAlgo.usedAlgo = value;
+            {                
                 selectionType = value;
             }
         }
@@ -124,7 +133,7 @@ namespace dms.view_models
                     SelectionType = learningScenario.SelectionParameters.Split(',')[0],
                     MixSeed = learningScenario.SelectionParameters.Split(',')[1],
                     TeacherType = learningScenario.LearningAlgorithmName,
-                    GenParam = (GeneticParam)learningScenario.LAParameters,
+                    GenParam = learningScenario.LAParameters,
                     ID = learningScenario.ID
                 });
             }
