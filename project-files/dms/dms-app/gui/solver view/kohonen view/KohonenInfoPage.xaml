@@ -14,6 +14,7 @@
             <Label Content="{Binding Width}" ContentStringFormat="Ширина слоя: {0}"/>
             <Label Content="{Binding Height}" ContentStringFormat="Длина слоя: {0}"/>
             <Label Content="{Binding Metric}" ContentStringFormat="Метрика расстояния: {0}"/>
+            <Label Content="{Binding ClassInitializer}" ContentStringFormat="Инициализация выходного слоя: {0}"/>
             <GroupBox Header="Визуализация обученной сети" Margin="5">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <StackPanel>

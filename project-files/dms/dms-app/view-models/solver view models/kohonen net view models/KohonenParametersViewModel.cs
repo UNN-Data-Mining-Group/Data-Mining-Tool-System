@@ -19,6 +19,7 @@ namespace dms.view_models
             Width = 1;
             Height = 1;
             SelectedMetric = Metrics[0];
+            SelectedInitializer = ClassInitializers[0];
         }
 
         public int Inputs { get; set; }
@@ -27,6 +28,8 @@ namespace dms.view_models
         public int Height { get; set; }
         public string[] Metrics { get { return KohonenNNTopology.GetAvaliableMetrics(); } }
         public string SelectedMetric { get; set; }
+        public string[] ClassInitializers { get { return KohonenNNTopology.GetClassInitializerList(); } }
+        public string SelectedInitializer { get; set; }
 
         public bool CanCreateSolver(string name, models.Task task)
         {
@@ -35,7 +38,9 @@ namespace dms.view_models
 
         public void CreateSolver(string name, models.Task task)
         {
-            KohonenNNTopology t = new KohonenNNTopology(Inputs, Outputs, Width, Height, SelectedMetric);
+            KohonenNNTopology t = new KohonenNNTopology(Inputs, Outputs, 
+                Width, Height,
+                SelectedInitializer, SelectedMetric);
             TaskSolver solver = new TaskSolver()
             {
                 Name = name,

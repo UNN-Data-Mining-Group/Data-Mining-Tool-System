@@ -9,8 +9,10 @@ namespace dms::solvers::neural_nets::kohonen
 	{
 	public:
 		KohonenNNTopology(int inputs, int outputs, int width, int height,
-			System::String^ metric) : inputs(inputs), outputs(outputs),
-			width(width), height(height), metric(metric)
+			System::String^ classInitializer, System::String^ metric) 
+			: inputs(inputs), outputs(outputs),
+			width(width), height(height), 
+			metric(metric), classInitializer(classInitializer)
 		{}
 
 		int GetLayerWidth() { return width; }
@@ -19,6 +21,12 @@ namespace dms::solvers::neural_nets::kohonen
 		static array<System::String^>^ GetAvaliableMetrics() 
 		{
 			return gcnew array<System::String^>{"Default", "Euclidean"};
+		}
+
+		System::String^ GetClassInitializer() { return classInitializer; }
+		static array<System::String^>^ GetClassInitializerList()
+		{
+			return gcnew array<System::String^> {"Evenly", "Statistical", "Revert"};
 		}
 
 		virtual System::Int64 GetInputsCount() { return inputs; }
@@ -32,11 +40,20 @@ namespace dms::solvers::neural_nets::kohonen
 				m = nnets_kohonen::KohonenNet::Euclidean;
 			else throw gcnew System::ArgumentException();
 
-			return new nnets_kohonen::KohonenNet(inputs, outputs, width, height, 
-				nnets_kohonen::KohonenNet::ClassInitializer::Random, m);
+			nnets_kohonen::KohonenNet::ClassInitializer cl;
+			if (classInitializer->Equals("Evenly"))
+				cl = nnets_kohonen::KohonenNet::ClassInitializer::Evenly;
+			else if (classInitializer->Equals("Statistical"))
+				cl = nnets_kohonen::KohonenNet::ClassInitializer::Statistical;
+			else if (classInitializer->Equals("Revert"))
+				cl = nnets_kohonen::KohonenNet::ClassInitializer::Revert;
+			else throw gcnew System::ArgumentException();
+
+			return new nnets_kohonen::KohonenNet(inputs, outputs, width, height, cl, m);
 		}
 	private:
 		int inputs, outputs, width, height;
 		System::String^ metric;
+		System::String^ classInitializer;
 	};
 }

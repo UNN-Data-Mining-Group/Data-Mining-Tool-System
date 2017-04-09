@@ -61,7 +61,7 @@ namespace nnets_kohonen
 	{
 	public:
 		enum Metric {Default, Euclidean};
-		enum ClassInitializer {Random, SelfOrganizer};
+		enum ClassInitializer {Statistical, Evenly, Revert};
 
 		KohonenNet(KohonenNet& kn);
 		KohonenNet(int inputs_count, int outputs_count, 
@@ -74,7 +74,7 @@ namespace nnets_kohonen
 
 		void setWeights(const float* weights);
 		void setClasses(float** classes);
-		void setClasses(float** x, float** y, int rowsCount);	//init classes by train selection
+		void setClasses(float** y, int rowsCount);	//init classes by train output vectors
 		void setNeurons(std::vector<NeuronIndex> &neurons);
 		void setClass(NeuronIndex n, const float* y);
 		void setUseNormalization(bool norm);

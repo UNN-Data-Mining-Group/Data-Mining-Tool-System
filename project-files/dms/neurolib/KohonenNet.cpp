@@ -1,5 +1,6 @@
 #include "KohonenNet.h"
 #include "KohonenPretrain.h"
+#include <algorithm>
 #include "mkl_cblas.h"
 
 using namespace nnets_kohonen;
@@ -204,23 +205,61 @@ void KohonenNet::setClasses(float ** classes)
 			this->classes[i][j] = classes[i][j];
 }
 
-void nnets_kohonen::KohonenNet::setClasses(float ** x, float ** y, int rowsCount)
+void nnets_kohonen::KohonenNet::setClasses(float ** y, int rowsCount)
 {
-	Selection s 
-	{
-		x, y, rowsCount, 
-		static_cast<int>(getInputsCount()), 
-		static_cast<int>(getOutputsCount()) 
-	};
+	ClassExtracter extr { 1e-5f };
+	extr.fit(y, rowsCount);
+	auto distr = extr.getClassesDistributions();
+	int all_sizes = getMaxNeuronIndex(this);
 
-	IPretrainer *pt = nullptr;
-	if (initializer == Random)
-		pt = new StatisticalPretrainer(1e-5f);
-	else if (initializer == SelfOrganizer)
-		pt = new KohonenSelfOrganizer(1000, 27, 1.0f, 0.1f, 0.0001f, 1e-5f);
-	else throw "Undefined pretrainer";
-	pt->pretrain(s, this, 27);
-	delete pt;
+	if ((initializer == Statistical) || (initializer == Revert))
+	{
+		if (initializer == Revert)
+		{
+			std::sort(distr.begin(), distr.end(),
+				[](std::pair<int, int> p1, std::pair<int, int> p2) { return p1.second < p2.second; });
+			auto first = distr.begin();
+			auto last = distr.end() - 1;
+			while (first < last)
+			{
+				int temp = first->first;
+				first->first = last->first;
+				last->first = temp;
+
+				first++;
+				last--;
+			}
+		}
+
+		int sum = 0;
+		for (int i = 0; i < distr.size(); i++)
+		{
+			int temp = distr[i].second * all_sizes;
+			distr[i].second = temp / rowsCount;
+			sum += distr[i].second;
+		}
+		distr[distr.size() - 1].second += (all_sizes - sum);
+	}
+	else if (initializer == Evenly)
+	{
+		int sum = 0;
+		for (int i = 0; i < distr.size(); i++)
+		{
+			distr[i].second = all_sizes / distr.size();
+			sum += distr[i].second;
+		}
+		distr[distr.size() - 1].second += (all_sizes - sum);
+	}
+	else throw "Unsupported class initializer";
+
+	int currentClassIndex = 0;
+	for (int j = 0; j < all_sizes; j++)
+	{
+		if (distr[currentClassIndex].second <= 0)
+			currentClassIndex++;
+		setY(j, y[distr[currentClassIndex].first], this);
+		distr[currentClassIndex].second--;
+	}
 }
 
 void KohonenNet::setNeurons(std::vector<NeuronIndex>& neurons)
