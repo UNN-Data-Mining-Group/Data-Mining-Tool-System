@@ -165,6 +165,12 @@ namespace dms::neroNetLearningAlgoritms
 		return TeacherTypesList;
 	}
 
+	array<System::String^>^ NeroNetLearningAlgoritms::getTeacherTypesList(ISolver ^ solver)
+	{
+		throw gcnew System::NotImplementedException();
+		// TODO: insert return statement here
+	}
+
 	array<float>^ NeroNetLearningAlgoritms::getParams()
 	{
 		return params;

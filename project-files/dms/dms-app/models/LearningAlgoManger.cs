@@ -17,6 +17,7 @@ namespace dms.iLearningAlgo
         string[] getParamsNames();
         void setUsedAlgo(string usedAlgo);
         float startLearn(ISolver solver, float[][] train_x, float[] train_y);
+        string[] getTeacherTypesList(ISolver solver);
     }
 }
 
@@ -40,6 +41,12 @@ namespace dms.neroNetLearningAlgoritms
         {
             return lrAlgo.getTeacherTypesList();
         }
+
+        public string[] getTeacherTypesList(ISolver solver)
+        {
+            return lrAlgo.getTeacherTypesList(solver);
+        }
+
         public float[] getParams()
         {
             return lrAlgo.getParams();
@@ -112,6 +119,16 @@ namespace dms.models
             {
                 return ParamsName;
             }
+        }
+
+        public string[] getTeacherTypesList(ISolver solver)
+        {
+            string[] tmpTeacherTypeList = new string[0];
+            for (int i = 0; i < countAlgoLib; i++)
+            {
+                tmpTeacherTypeList = tmpTeacherTypeList.Concat(lrAlgo[i].getTeacherTypesList(solver)).ToArray();
+            }
+            return tmpTeacherTypeList;
         }
 
         private float[] ParamsValue;
