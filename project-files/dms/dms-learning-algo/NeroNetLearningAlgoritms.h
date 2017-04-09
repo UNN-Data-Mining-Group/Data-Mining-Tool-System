@@ -20,6 +20,7 @@ namespace dms::neroNetLearningAlgoritms
 	public:
 		~NeroNetLearningAlgoritms();
 		NeroNetLearningAlgoritms();
+		void setUsedAlgo(System::String^ usedAlgo_);
 		array<System::String^>^ getTeacherTypesList();
 		array<float>^ getParams();
 		array<System::String^>^ getParamsNames();

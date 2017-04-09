@@ -155,6 +155,11 @@ namespace dms::neroNetLearningAlgoritms
 		params[3] = 0.2f;		
 	}
 
+	void NeroNetLearningAlgoritms::setUsedAlgo(System::String ^ usedAlgo_)
+	{
+		usedAlgo = usedAlgo_;
+	}
+
 	array<System::String^>^ NeroNetLearningAlgoritms::getTeacherTypesList()
 	{
 		return TeacherTypesList;

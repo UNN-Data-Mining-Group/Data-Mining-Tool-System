@@ -15,6 +15,7 @@ namespace dms.iLearningAlgo
         string[] getTeacherTypesList();
         float[] getParams();
         string[] getParamsNames();
+        void setUsedAlgo(string usedAlgo);
         float startLearn(ISolver solver, float[][] train_x, float[] train_y);
     }
 }
@@ -24,6 +25,11 @@ namespace dms.neroNetLearningAlgoritms
     public class NeroNetLearningAlgoritm : iLearningAlgo.ILearningAlgo
     {
         private NeroNetLearningAlgoritms lrAlgo;
+
+        public void setUsedAlgo(string usedAlgo)
+        {
+            lrAlgo.setUsedAlgo(usedAlgo);
+        }
 
         public NeroNetLearningAlgoritm()
         {
@@ -59,7 +65,10 @@ namespace dms.models
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
-        private NeroNetLearningAlgoritm lrAlgo;
+        private iLearningAlgo.ILearningAlgo[] lrAlgo;
+        private const int countAlgoLib = 1;
+        private string[][] myTeacherTypeList;
+        private iLearningAlgo.ILearningAlgo usedLrAlgo;
 
         [Serializable()]
         private class GeneticParam : ILAParameters
@@ -69,21 +78,30 @@ namespace dms.models
 
         public LearningAlgoManger()
         {
-            lrAlgo = new NeroNetLearningAlgoritm();
+            lrAlgo = new iLearningAlgo.ILearningAlgo[countAlgoLib];
+            myTeacherTypeList = new string[countAlgoLib][];
+            lrAlgo[0] = new NeroNetLearningAlgoritm();
             geneticParams = new GeneticParam();
-            TeacherTypesList = lrAlgo.getTeacherTypesList();
+            TeacherTypesList = new string[0];
+            for (int i = 0; i < countAlgoLib; i++)
+            {
+                myTeacherTypeList[i] = lrAlgo[i].getTeacherTypesList();
+                TeacherTypesList = TeacherTypesList.Concat(myTeacherTypeList[i]).ToArray();
+            }
+
+  //          TeacherTypesList = lrAlgo[0].getTeacherTypesList();
 
 
             //new string[] { "Обучатель 1", "Обучатель 2", "Обучатель 3" };
-            ParamsName = lrAlgo.getParamsNames();
+//            ParamsName = lrAlgo[0].getParamsNames();
             
-            ParamsValue = lrAlgo.getParams(); //new float[] { 0, 0.3f, 1f, 5f };
+//            ParamsValue = lrAlgo[0].getParams(); //new float[] { 0, 0.3f, 1f, 5f };
             
            
         }
         public float startLearn(ISolver solver,float[][] train_x,float[] train_y)
         {
-            float res = lrAlgo.startLearn(solver, train_x, train_y);
+            float res = usedLrAlgo.startLearn(solver, train_x, train_y);
             return res;
             
         }
@@ -131,6 +149,20 @@ namespace dms.models
             set
             {
                 UsedAlgo = value;
+                for (int i = 0; i < countAlgoLib; i++)
+                {
+                    foreach(string algo in myTeacherTypeList[i])
+                    {
+                        if(algo.Equals(UsedAlgo))
+                        {
+                            usedLrAlgo = lrAlgo[i];
+                            usedLrAlgo.setUsedAlgo(UsedAlgo);
+                            ParamsName = usedLrAlgo.getParamsNames();
+                            ParamsValue = usedLrAlgo.getParams();
+                            return;
+                        }
+                    }
+                }
             }
         }
 
