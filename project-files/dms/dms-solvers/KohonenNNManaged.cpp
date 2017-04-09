@@ -50,6 +50,9 @@ void* KohonenManaged::getOperations()
 	(*_opers)["setAllWeights"] = nnets_kohonen::setWeights;
 	(*_opers)["setY"] = nnets_kohonen::setY;
 	(*_opers)["solve"] = nnets_kohonen::solve;
+	(*_opers)["getAllWeights"] = nnets_kohonen::getAllWeights;
+	(*_opers)["copySolver"] = nnets_kohonen::copyKohonen;
+	(*_opers)["freeSolver"] = nnets_kohonen::freeKohonen;
 	return _opers;
 }
 

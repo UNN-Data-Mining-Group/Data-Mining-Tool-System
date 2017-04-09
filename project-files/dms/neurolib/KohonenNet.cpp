@@ -1,5 +1,6 @@
 #include "KohonenNet.h"
 #include "KohonenPretrain.h"
+#include <algorithm>
 #include "mkl_cblas.h"
 
 using namespace nnets_kohonen;
@@ -30,6 +31,12 @@ void nnets_kohonen::setUseNormalization(bool norm, void* obj)
 {
 	KohonenNet* kn = static_cast<KohonenNet*>(obj);
 	kn->setUseNormalization(norm);
+}
+
+size_t nnets_kohonen::getAllWeights(float * w, void * obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	return kn->getWeights(w);
 }
 
 void nnets_kohonen::disableNeurons(std::vector<int> neurons, void* obj)
@@ -84,6 +91,19 @@ void nnets_kohonen::disableNeurons(std::vector<int> neurons, void* obj)
 	kn->classes = new_classes;
 	kn->weights = new_weights;
 	kn->neuron_index_map = new_neuron_map;
+}
+
+void * nnets_kohonen::copyKohonen(void * obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	return new KohonenNet(*kn);
+}
+
+void nnets_kohonen::freeKohonen(void *& obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	delete kn;
+	obj = nullptr;
 }
 
 const float* nnets_kohonen::getWeights(int neuron, void* obj)
@@ -155,12 +175,12 @@ void KohonenNet::initByNeuronMap(std::vector<NeuronIndex> map)
 }
 
 KohonenNet::KohonenNet(int inputs_count, int outputs_count,
-	int koh_width, int koh_height, 
+	int koh_width, int koh_height, float classEps,
 	ClassInitializer initializer, Metric metric) :
 	winner({0,0}), 
 	neurons_width(koh_width), neurons_height(koh_height),
 	x_size(inputs_count), y_size(outputs_count), 
-	initializer(initializer), metric(metric)
+	initializer(initializer), metric(metric), class_eps(classEps)
 {
 	use_norm_x = false;
 	x_internal = new float[x_size];
@@ -177,6 +197,8 @@ KohonenNet::KohonenNet(KohonenNet& kn) : winner({0,0})
 	use_norm_x = kn.use_norm_x;
 	neurons_width = kn.neurons_width; neurons_height = kn.neurons_height;
 	x_size = kn.x_size; y_size = kn.y_size;
+	metric = kn.metric;	initializer = kn.initializer; 
+	class_eps = kn.class_eps;
 
 	x_internal = new float[x_size];
 
@@ -204,23 +226,61 @@ void KohonenNet::setClasses(float ** classes)
 			this->classes[i][j] = classes[i][j];
 }
 
-void nnets_kohonen::KohonenNet::setClasses(float ** x, float ** y, int rowsCount)
+void nnets_kohonen::KohonenNet::setClasses(float ** y, int rowsCount)
 {
-	Selection s 
-	{
-		x, y, rowsCount, 
-		static_cast<int>(getInputsCount()), 
-		static_cast<int>(getOutputsCount()) 
-	};
+	ClassExtracter extr { class_eps };
+	extr.fit(y, rowsCount, getOutputsCount());
+	auto distr = extr.getClassesDistributions();
+	int all_sizes = getMaxNeuronIndex(this);
 
-	IPretrainer *pt = nullptr;
-	if (initializer == Random)
-		pt = new StatisticalPretrainer(1e-5f);
-	else if (initializer == SelfOrganizer)
-		pt = new KohonenSelfOrganizer(1000, 27, 1.0f, 0.1f, 0.0001f, 1e-5f);
-	else throw "Undefined pretrainer";
-	pt->pretrain(s, this, 27);
-	delete pt;
+	if ((initializer == Statistical) || (initializer == Revert))
+	{
+		if (initializer == Revert)
+		{
+			std::sort(distr.begin(), distr.end(),
+				[](std::pair<int, int> p1, std::pair<int, int> p2) { return p1.second < p2.second; });
+			auto first = distr.begin();
+			auto last = distr.end() - 1;
+			while (first < last)
+			{
+				int temp = first->first;
+				first->first = last->first;
+				last->first = temp;
+
+				first++;
+				last--;
+			}
+		}
+
+		int sum = 0;
+		for (int i = 0; i < distr.size(); i++)
+		{
+			int temp = distr[i].second * all_sizes;
+			distr[i].second = temp / rowsCount;
+			sum += distr[i].second;
+		}
+		distr[distr.size() - 1].second += (all_sizes - sum);
+	}
+	else if (initializer == Evenly)
+	{
+		int sum = 0;
+		for (int i = 0; i < distr.size(); i++)
+		{
+			distr[i].second = all_sizes / distr.size();
+			sum += distr[i].second;
+		}
+		distr[distr.size() - 1].second += (all_sizes - sum);
+	}
+	else throw "Unsupported class initializer";
+
+	int currentClassIndex = 0;
+	for (int j = 0; j < all_sizes; j++)
+	{
+		if (distr[currentClassIndex].second <= 0)
+			currentClassIndex++;
+		setY(j, y[distr[currentClassIndex].first], this);
+		distr[currentClassIndex].second--;
+	}
 }
 
 void KohonenNet::setNeurons(std::vector<NeuronIndex>& neurons)
@@ -256,6 +316,11 @@ void KohonenNet::setClass(NeuronIndex n, const float* y)
 		throw "Invalid neuron index";
 }
 
+void nnets_kohonen::KohonenNet::setClassEps(float eps)
+{
+	class_eps = eps;
+}
+
 void KohonenNet::setUseNormalization(bool norm)
 {
 	use_norm_x = norm;
@@ -269,11 +334,16 @@ size_t nnets_kohonen::KohonenNet::getClasses(float ** classes)
 	return neuron_index_map.size() * y_size;
 }
 
+float nnets_kohonen::KohonenNet::getClassEps()
+{
+	return class_eps;
+}
+
 size_t KohonenNet::getWeights(float* weights)
 {
 	for (int i = 0; i < neuron_index_map.size() * x_size; i++)
 		weights[i] = this->weights[i];
-	return neurons_width * neurons_height * x_size;
+	return neuron_index_map.size() * x_size;
 }
 
 std::vector<NeuronIndex> nnets_kohonen::KohonenNet::getNeurons()
