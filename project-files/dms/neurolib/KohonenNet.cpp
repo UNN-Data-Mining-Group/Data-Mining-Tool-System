@@ -33,6 +33,12 @@ void nnets_kohonen::setUseNormalization(bool norm, void* obj)
 	kn->setUseNormalization(norm);
 }
 
+size_t nnets_kohonen::getAllWeights(float * w, void * obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	return kn->getWeights(w);
+}
+
 void nnets_kohonen::disableNeurons(std::vector<int> neurons, void* obj)
 {
 	KohonenNet* kn = static_cast<KohonenNet*>(obj);
@@ -85,6 +91,19 @@ void nnets_kohonen::disableNeurons(std::vector<int> neurons, void* obj)
 	kn->classes = new_classes;
 	kn->weights = new_weights;
 	kn->neuron_index_map = new_neuron_map;
+}
+
+void * nnets_kohonen::copyKohonen(void * obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	return new KohonenNet(*kn);
+}
+
+void nnets_kohonen::freeKohonen(void *& obj)
+{
+	KohonenNet* kn = static_cast<KohonenNet*>(obj);
+	delete kn;
+	obj = nullptr;
 }
 
 const float* nnets_kohonen::getWeights(int neuron, void* obj)
@@ -324,7 +343,7 @@ size_t KohonenNet::getWeights(float* weights)
 {
 	for (int i = 0; i < neuron_index_map.size() * x_size; i++)
 		weights[i] = this->weights[i];
-	return neurons_width * neurons_height * x_size;
+	return neuron_index_map.size() * x_size;
 }
 
 std::vector<NeuronIndex> nnets_kohonen::KohonenNet::getNeurons()

@@ -48,6 +48,7 @@ namespace nnets_kohonen
 	size_t getWeightsMatrixSize(void* obj);
 	void setWeights(const float* w, void* obj);
 	void setUseNormalization(bool norm, void* obj);
+	size_t getAllWeights(float* w, void* obj);
 
 	int getMaxNeuronIndex(void* obj);
 	int getWinner(void* obj);
@@ -56,6 +57,8 @@ namespace nnets_kohonen
 	const float* getWeights(int neuron, void* obj);
 	void setY(int neuron, const float* y, void* obj);
 	void disableNeurons(std::vector<int> neurons, void* obj);
+	void* copyKohonen(void* obj);
+	void freeKohonen(void*& obj);
 
 	class KohonenNet : public nnets::NeuralNetwork
 	{
@@ -117,5 +120,6 @@ namespace nnets_kohonen
 		friend const float* getWeights(int neuron, void* obj);
 		friend void disableNeurons(std::vector<int> neurons, void* obj);
 		friend int getDistance(int neuron1, int neuron2, void* obj);
+		friend size_t getAllWeights(float* w, void* obj);
 	};
 }
