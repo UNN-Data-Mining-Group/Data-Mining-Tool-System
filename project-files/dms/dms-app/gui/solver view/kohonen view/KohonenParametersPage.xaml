@@ -13,9 +13,11 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="145"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition MinWidth="130"/>
         </Grid.ColumnDefinitions>
         <Label Content="Количество входов:" Grid.Row="0"/>
@@ -23,10 +25,15 @@
         <Label Content="Ширина слоя:" Grid.Row="2"/>
         <Label Content="Длина слоя:" Grid.Row="3"/>
         <Label Content="Метрика расстояния:" Grid.Row="4"/>
+        <Label Content="Инициализация выходного слоя:" Grid.Row="5"/>
+        <Label Content="Точность вычисления классов:" Grid.Row="6"/>
+        
         <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Inputs}" Grid.Row="0" Grid.Column="1" Margin="5"/>
         <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Outputs}" Grid.Row="1" Grid.Column="1" Margin="5"/>
         <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Width}" Grid.Row="2" Grid.Column="1" Margin="5"/>
         <exToolkit:IntegerUpDown Minimum="1" Value="{Binding Height}" Grid.Row="3" Grid.Column="1" Margin="5"/>
         <ComboBox Grid.Row="4" ItemsSource="{Binding Metrics}" SelectedItem="{Binding SelectedMetric}" Grid.Column="1" Margin="5"/>
+        <ComboBox Grid.Row="5" ItemsSource="{Binding ClassInitializers}" SelectedItem="{Binding SelectedInitializer}" Grid.Column="1" Margin="5"/>
+        <TextBox Grid.Row="6" Text="{Binding ClassEps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="5"/>
     </Grid>
 </UserControl>
