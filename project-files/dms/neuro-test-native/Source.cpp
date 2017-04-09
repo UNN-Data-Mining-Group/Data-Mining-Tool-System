@@ -43,7 +43,7 @@ void main()
 
 int accuracy_test_koh()
 {
-	nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2, 
+	nnets_kohonen::KohonenNet* kn1 = new nnets_kohonen::KohonenNet(3, 1, 2, 2, EPS, 
 		nnets_kohonen::KohonenNet::ClassInitializer::Statistical);
 	float w[] =
 	{
@@ -132,19 +132,17 @@ void kohonen_learning()
 	opers.setY = nnets_kohonen::setY;
 	opers.solve = nnets_kohonen::solve;
 
-	nnets_kohonen::KohonenNet* kn = new nnets_kohonen::KohonenNet(inputParams, 1, 5, 5,
-		nnets_kohonen::KohonenNet::ClassInitializer::Statistical);
-	KohonenSelfOrganizer *selfOrg = new KohonenSelfOrganizer(opers, 200, 27, 1.5f, 0.1f, 1e-7f, EPS);
-	StatisticalPretrainer* st = new StatisticalPretrainer(opers, EPS);
+	nnets_kohonen::KohonenNet* kn = new nnets_kohonen::KohonenNet(inputParams, 1, 5, 5, EPS,
+		nnets_kohonen::KohonenNet::ClassInitializer::Evenly);
+	KohonenSelfOrganizer *selfOrg = new KohonenSelfOrganizer(opers, 50, 27, 1.5f, 0.1f, 1e-7f, EPS, true);
 
-	KohonenClassifier* cl = new KohonenClassifier(opers,
-		selfOrg
-		//st
-		, EPS, 1000, 27, 0.8f, 1.0f, true);
+	KohonenClassifier* cl = new KohonenClassifier(opers, false
+		, EPS, 50, 27, 0.8f, 1.0f, true);
 	Selection s(x, y, rowsCount, inputParams, 1);
+	selfOrg->selfOrganize(s, kn);
+	//kn->setClasses(s.y, s.rowsCount);
 	cl->train(s, kn);
 	delete cl;
-	delete st;
 	delete selfOrg;
 	delete kn;
 

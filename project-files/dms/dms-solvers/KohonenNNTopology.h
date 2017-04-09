@@ -9,14 +9,15 @@ namespace dms::solvers::neural_nets::kohonen
 	{
 	public:
 		KohonenNNTopology(int inputs, int outputs, int width, int height,
-			System::String^ classInitializer, System::String^ metric) 
+			float classEps, System::String^ classInitializer, System::String^ metric) 
 			: inputs(inputs), outputs(outputs),
 			width(width), height(height), 
-			metric(metric), classInitializer(classInitializer)
+			metric(metric), classInitializer(classInitializer), classEps(classEps)
 		{}
 
 		int GetLayerWidth() { return width; }
 		int GetLayerHeight() { return height; }
+		float GetClassEps() { return classEps; }
 		System::String^ GetMetric() { return metric; }
 		static array<System::String^>^ GetAvaliableMetrics() 
 		{
@@ -49,11 +50,12 @@ namespace dms::solvers::neural_nets::kohonen
 				cl = nnets_kohonen::KohonenNet::ClassInitializer::Revert;
 			else throw gcnew System::ArgumentException();
 
-			return new nnets_kohonen::KohonenNet(inputs, outputs, width, height, cl, m);
+			return new nnets_kohonen::KohonenNet(inputs, outputs, width, height, classEps, cl, m);
 		}
 	private:
 		int inputs, outputs, width, height;
 		System::String^ metric;
 		System::String^ classInitializer;
+		float classEps;
 	};
 }

@@ -156,12 +156,12 @@ void KohonenNet::initByNeuronMap(std::vector<NeuronIndex> map)
 }
 
 KohonenNet::KohonenNet(int inputs_count, int outputs_count,
-	int koh_width, int koh_height, 
+	int koh_width, int koh_height, float classEps,
 	ClassInitializer initializer, Metric metric) :
 	winner({0,0}), 
 	neurons_width(koh_width), neurons_height(koh_height),
 	x_size(inputs_count), y_size(outputs_count), 
-	initializer(initializer), metric(metric)
+	initializer(initializer), metric(metric), class_eps(classEps)
 {
 	use_norm_x = false;
 	x_internal = new float[x_size];
@@ -178,6 +178,8 @@ KohonenNet::KohonenNet(KohonenNet& kn) : winner({0,0})
 	use_norm_x = kn.use_norm_x;
 	neurons_width = kn.neurons_width; neurons_height = kn.neurons_height;
 	x_size = kn.x_size; y_size = kn.y_size;
+	metric = kn.metric;	initializer = kn.initializer; 
+	class_eps = kn.class_eps;
 
 	x_internal = new float[x_size];
 
@@ -207,8 +209,8 @@ void KohonenNet::setClasses(float ** classes)
 
 void nnets_kohonen::KohonenNet::setClasses(float ** y, int rowsCount)
 {
-	ClassExtracter extr { 1e-5f };
-	extr.fit(y, rowsCount);
+	ClassExtracter extr { class_eps };
+	extr.fit(y, rowsCount, getOutputsCount());
 	auto distr = extr.getClassesDistributions();
 	int all_sizes = getMaxNeuronIndex(this);
 
@@ -295,6 +297,11 @@ void KohonenNet::setClass(NeuronIndex n, const float* y)
 		throw "Invalid neuron index";
 }
 
+void nnets_kohonen::KohonenNet::setClassEps(float eps)
+{
+	class_eps = eps;
+}
+
 void KohonenNet::setUseNormalization(bool norm)
 {
 	use_norm_x = norm;
@@ -306,6 +313,11 @@ size_t nnets_kohonen::KohonenNet::getClasses(float ** classes)
 		for (int j = 0; j < y_size; j++)
 			classes[i][j] = this->classes[i][j];
 	return neuron_index_map.size() * y_size;
+}
+
+float nnets_kohonen::KohonenNet::getClassEps()
+{
+	return class_eps;
 }
 
 size_t KohonenNet::getWeights(float* weights)

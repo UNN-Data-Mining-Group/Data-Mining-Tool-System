@@ -55,39 +55,33 @@ private:
 	bool is_equal(float* y, int size, std::vector<float> _class);
 };
 
-class IPretrainer
-{
-public:
-	virtual void pretrain(Selection s, void* trainedKn, int seed) = 0;
-};
-
-class KohonenSelfOrganizer : public IPretrainer
+class KohonenSelfOrganizer
 {
 public:
 	KohonenSelfOrganizer(OperatorList opers, int maxIter, int seed, float sigma0,
-		float l0, float minLearningRate, float eps):randomSeed(seed),
+		float l0, float minLearningRate, float eps, bool normalize):randomSeed(seed),
 		maxIterations(maxIter), sigma0(sigma0), l0(l0), 
 		minLearningRate(minLearningRate), eps(eps),
-		opers(opers) {}
+		opers(opers), has_norm(normalize) {}
 	
 	void selfOrganize(Selection trainSel, void* trainedKn);
-	virtual void pretrain(Selection s, void* trainedKn, int seed) override;
 private:
 	OperatorList opers;
 	int randomSeed;
 	int maxIterations;
 	float sigma0, l0, minLearningRate, eps;
+	bool has_norm;
 	
 	void initRandomWeights(void* trainedKn);
 	vector2d<float> clasterize(void* trainedKn, Selection s, ClassExtracter& c_ext);
 	void normalize(int ySize, void* trainedKn, ClassExtracter& c_extr, vector2d<float>& clasters);
 };
 
-class StatisticalPretrainer : public IPretrainer
+class StatisticalPretrainer
 {
 public:
 	StatisticalPretrainer(OperatorList opers, float eps) : eps(eps), opers(opers) {}
-	virtual void pretrain(Selection s, void* trainedKn, int seed) override;
+	virtual void pretrain(Selection s, void* trainedKn, int seed);
 private:
 	OperatorList opers;
 	float eps;
@@ -96,9 +90,9 @@ private:
 class KohonenClassifier
 {
 public:
-	KohonenClassifier(OperatorList opers, IPretrainer* trainer, float eps, 
+	KohonenClassifier(OperatorList opers, bool hasPretrainer, float eps, 
 		int maxIterations, int seed, float learnA, float learnB,
-		bool normalize):trainer(trainer), eps(eps),
+		bool normalize):hasPretrainer(hasPretrainer), eps(eps),
 		maxIterations(maxIterations), seed(seed), 
 		learnA(learnA), learnB(learnB), normalize(normalize) ,
 		opers(opers)
@@ -110,7 +104,7 @@ private:
 	float eps;
 	int maxIterations, seed;
 	float learnA, learnB;
-	IPretrainer* trainer;
+	bool hasPretrainer;
 	OperatorList opers;
 
 	bool is_equal(float* v1, float* v2, int size);

@@ -12,12 +12,16 @@ using pair = std::pair<int, int>;
 bool ClassExtracter::is_equal(float* y1, float* y2, int size)
 {
 	for (int i = 0; i < size; i++)
-		if (std::abs(y1[i] - y2[i]) > eps)
+	{
+		float yp = y1[i] - y2[i];
+		float err = std::fabs(y1[i] - y2[i]);
+		if (err > eps)
 			return false;
+	}
 	return true;
 }
 
-void ClassExtracter::fit(float** y, int rowsCount)
+void ClassExtracter::fit(float** y, int rowsCount, int ySize)
 {
 	distrib.clear();
 
@@ -27,7 +31,7 @@ void ClassExtracter::fit(float** y, int rowsCount)
 		int class_number = -1;
 		for (int k = 0; k < distrib.size(); k++)
 		{
-			if (is_equal(y[i], y[distrib[k].first], rowsCount) == true)
+			if (is_equal(y[i], y[distrib[k].first], ySize) == true)
 			{
 				class_number = k;
 				break;

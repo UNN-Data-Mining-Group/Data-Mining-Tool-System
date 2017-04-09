@@ -66,7 +66,9 @@ namespace nnets_kohonen
 		KohonenNet(KohonenNet& kn);
 		KohonenNet(int inputs_count, int outputs_count, 
 			int koh_width, int koh_height, 
-			ClassInitializer initializer, Metric metric = Default);
+			float classEps,
+			ClassInitializer initializer, 
+			Metric metric = Default);
 
 		size_t solve(const float* x, float* y) override;
 		size_t getInputsCount() override;
@@ -77,8 +79,10 @@ namespace nnets_kohonen
 		void setClasses(float** y, int rowsCount);	//init classes by train output vectors
 		void setNeurons(std::vector<NeuronIndex> &neurons);
 		void setClass(NeuronIndex n, const float* y);
+		void setClassEps(float eps);
 		void setUseNormalization(bool norm);
 		size_t getClasses(float** classes);
+		float getClassEps();
 		size_t getWeights(float* weights);
 		std::vector<NeuronIndex> getNeurons();
 		size_t getClass(NeuronIndex n, float* y);
@@ -88,6 +92,7 @@ namespace nnets_kohonen
 		virtual ~KohonenNet();
 	private:
 		bool use_norm_x;
+		float class_eps;
 		Metric metric;
 		ClassInitializer initializer;
 		std::vector<NeuronIndex> neuron_index_map;	//index - number of neuron data 
