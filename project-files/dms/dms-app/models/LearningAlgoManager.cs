@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using dms.neroNetLearningAlgoritms;
 using dms.solvers;
 
-
 namespace dms.iLearningAlgo
 {
     public interface ILearningAlgo
@@ -57,7 +56,18 @@ namespace dms.neroNetLearningAlgoritms
         }
         public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
         {
-            return lrAlgo.startLearn(solver, train_x, train_y);
+            float res;
+            try
+            {
+                res = lrAlgo.startLearn(solver, train_x, train_y);
+                ((dms.solvers.neural_nets.INeuralNetwork)solver).FetchNativeParameters();
+            }catch(ArgumentException e)
+            {
+                res = -1;
+                System.Windows.MessageBox.Show(e.Message);
+            }
+            
+            return res;
         }
     }
 }

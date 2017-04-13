@@ -190,7 +190,7 @@ namespace dms::neroNetLearningAlgoritms
 		if (usedAlgo->Equals(TeacherTypesList[0]))
 			res = startGenetic(static_cast<INeuralNetwork^>(solver), train_x, train_y);
 		else
-			throw gcnew System::ArgumentException("This algorithm is not supported yet", "usedAlgo");
+			throw gcnew System::ArgumentException("This algorithm is not supported yet", usedAlgo);
 			
 		return res;
 	}
