@@ -208,7 +208,7 @@
     <Compile Include="gui\preprocessing view\TemplateInfoPage.xaml.cs">
       <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="models\LearningAlgo.cs" />
+    <Compile Include="models\LearningAlgoManager.cs" />
     <Compile Include="models\LearningQuality.cs" />
     <Compile Include="services\preprocessing\DataHelper.cs" />
     <Compile Include="services\preprocessing\InversePreprocessing.cs" />

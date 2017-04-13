@@ -75,10 +75,10 @@ namespace dms.view_models.solver_view_models
                 float[] trainOutputDataset = GetOutputTrainData(OutputData, folds, k);
                 float[] testOutputDataset = GetTestOutputData(OutputData, folds, k);
 
-                LearningAlgo la = new LearningAlgo()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    GeneticParams = LS.LAParameters
 
                 };
                 PreprocessingManager preprocessing = new PreprocessingManager();
@@ -132,10 +132,10 @@ namespace dms.view_models.solver_view_models
 
             if (ISolver is INeuralNetwork)
             {
-                LearningAlgo la = new LearningAlgo()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    GeneticParams = LS.LAParameters
 
                 };
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
