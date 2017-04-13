@@ -68,7 +68,7 @@ namespace dms.models
 
     
 
-    public class LearningAlgoManger 
+    public class LearningAlgoManager 
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
@@ -83,7 +83,7 @@ namespace dms.models
             public float[] geneticParams;
         }
 
-        public LearningAlgoManger()
+        public LearningAlgoManager()
         {
             lrAlgo = new iLearningAlgo.ILearningAlgo[countAlgoLib];
             myTeacherTypeList = new string[countAlgoLib][];

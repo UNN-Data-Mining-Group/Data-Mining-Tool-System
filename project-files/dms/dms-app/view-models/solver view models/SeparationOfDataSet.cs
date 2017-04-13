@@ -75,7 +75,7 @@ namespace dms.view_models.solver_view_models
                 float[] trainOutputDataset = GetOutputTrainData(OutputData, folds, k);
                 float[] testOutputDataset = GetTestOutputData(OutputData, folds, k);
 
-                LearningAlgoManger la = new LearningAlgoManger()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
                     GeneticParams = LS.LAParameters
@@ -132,7 +132,7 @@ namespace dms.view_models.solver_view_models
 
             if (ISolver is INeuralNetwork)
             {
-                LearningAlgoManger la = new LearningAlgoManger()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
                     GeneticParams = LS.LAParameters
