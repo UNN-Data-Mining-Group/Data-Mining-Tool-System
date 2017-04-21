@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
-    class LearningQuality : Entity
+    public class LearningQuality : Entity
     {
         private int learnedSolverID;
         public int LearnedSolverID
@@ -67,6 +67,14 @@ namespace dms.models
         public LearningQuality()
         {
             this.nameTable = "LearningQuality";
+        }
+
+        public LearningQuality(archive.ArchiveLearningQuality q)
+        {
+            this.nameTable = "LearningQuality";
+            this.MistakeTest = q.MistakeTest;
+            this.MistakeTrain = q.MistakeTrain;
+            this.ClosingError = q.ClosingError;
         }
 
         public override Dictionary<string, string> mappingTable()

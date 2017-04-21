@@ -71,6 +71,14 @@ namespace dms.models
             this.nameTable = "LearnedSolver";
         }
 
+        public LearnedSolver(archive.ArchiveLearnedSolver solver)
+        {
+            this.nameTable = "LearnedSolver";
+            this.LearningScenarioID = solver.Scenario.ID;
+            this.selectionID = solver.Selection.ID;
+            this.taskSolverID = solver.TaskSolver.ID;
+        }
+
         public override Dictionary<string, string> mappingTable()
         {
             Dictionary<string, string> mappingTable = new Dictionary<string, string>();
