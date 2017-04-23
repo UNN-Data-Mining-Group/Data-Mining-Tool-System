@@ -103,6 +103,7 @@ namespace dms.view_models
 
         private string newTemplateName;
         public string NewTemplateName { get { return newTemplateName; } set { newTemplateName = value; NotifyPropertyChanged(); } }
+        
 
         public float EnumPercent { get; set; }
 
@@ -115,8 +116,8 @@ namespace dms.view_models
             TaskId = taskId;
             ParentTask = ((models.Task)services.DatabaseManager.SharedManager.entityById(taskId, typeof(models.Task))).Name;
             Random r = new Random();
-            SelectionName = "Выборка " + r.Next(1, 1000);
-            NewTemplateName = "Базовый шаблон для " + SelectionName;
+            SelectionName = "Selection " + r.Next(1, 1000);
+            NewTemplateName = "Base template for " + SelectionName;
             HasHeader = false;
             CountRows = 0;
             FilePath = "";
@@ -146,7 +147,11 @@ namespace dms.view_models
             }
             else
             {
-                string templateName = (newTemplateName == null || newTemplateName == "") ? "Template" : newTemplateName;
+                //Определение индекса последней выборки
+                List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskId", "=", TaskId.ToString()), typeof(TaskTemplate));
+                string templateNameForEmptyField = "Template " + ((taskTemplates != null) ? taskTemplates.Count + 1 : 1);
+                string templateName = (newTemplateName == null || newTemplateName == "") ? templateNameForEmptyField : newTemplateName;
                 DataHelper helper = new DataHelper();
 
                 //ppParameters = null для главного шаблона
@@ -168,8 +173,9 @@ namespace dms.view_models
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
-            openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.Filter = "data files (*.data)|*.data|csv files (*.csv)|*.csv|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = @"datasets";
+            openFileDialog.RestoreDirectory = true;
             if (openFileDialog.ShowDialog() == true)
             {
                 foreach (string filename in openFileDialog.FileNames)
@@ -257,5 +263,7 @@ namespace dms.view_models
             }
             return templates;
         }
+
+
     }
 }

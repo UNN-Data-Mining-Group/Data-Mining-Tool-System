@@ -112,8 +112,13 @@ namespace dms.view_models
                 originalColumns[i] = parameter.Name;
             }
             //рисуем содержимое
-            originalData = new string[CountRows][];
-            for (int i = 0; i < CountRows; i++)
+            int rows = 100;
+            if (CountRows < 100)
+            {
+                rows = CountRows;
+            }
+            originalData = new string[rows][];
+            for (int i = 0; i < rows; i++)
             {
                 originalData[i] = new string[parameters.Count];
             }
@@ -141,6 +146,11 @@ namespace dms.view_models
                         stepParam++;
                     }
                     stepRow++;
+                    if (stepRow >= rows)
+                    {
+                        break;
+                    }
+
                 }
             }
         }

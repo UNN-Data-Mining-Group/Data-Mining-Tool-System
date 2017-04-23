@@ -30,10 +30,35 @@ namespace dms.services.preprocessing
 
         public List<string> getAppropriateValues(List<string> obtainedValues, int selectionId, int parameterId)
         {
-            //
+            PreprocessingViewModel.PreprocessingTemplate prepParameters = getPreprocessingParameters(selectionId);
+            List<PreprocessingViewModel.SerializableList> inform = prepParameters.info;
+            List<Entity> valuesForParameter = null;
+            foreach(PreprocessingViewModel.SerializableList sel in inform)
+            {
+                if (selectionId.Equals(sel.selectionId))
+                {
+                    List<PreprocessingViewModel.ValuesForParameter> list = sel.parametersValues;
+                    foreach(PreprocessingViewModel.ValuesForParameter elem in list)
+                    {
+                        if (parameterId.Equals(elem.parameterId))
+                        {
+                            valuesForParameter = elem.values;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
             //       float valueDec = Convert.ToSingle(value.Replace(".", ","));
             //Формируем выборку для заданного параметра
-            List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
+            List<float> valuesForCurrParameter = new List<float>();
+            foreach (Entity value in valuesForParameter)
+            {
+                string numberStr = ((ValueParameter)value).Value;
+                float number = Convert.ToSingle(numberStr.Replace(".", ","));
+                valuesForCurrParameter.Add(number);
+            }
+            /*List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", selectionId.ToString()), typeof(SelectionRow));
 
             List<float> valuesForCurrParameter = new List<float>();
@@ -47,7 +72,7 @@ namespace dms.services.preprocessing
                 string numberStr = ((ValueParameter)valueForParamFromRow[0]).Value;
                 float number = Convert.ToSingle(numberStr.Replace(".", ","));
                 valuesForCurrParameter.Add(number);
-            }
+            }*/
             valuesForCurrParameter.Sort();
             //находим в выборке соответсвующее значение для value (переданного аргумента) и присваиваем его appropriateValue
             float step = 0;

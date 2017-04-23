@@ -13,9 +13,9 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <local:SelectionAddPane Grid.Row="0" Margin="8,0,0,0" Loaded="SelectionAddPane_Loaded"/>
+        <local:SelectionAddPane Grid.Row="0" Margin="8,0,0,0"/>
         <StackPanel Grid.Row="1" Margin="8,0,0,0" Orientation="Horizontal" IsEnabled="{Binding CanUseExitingTemplate}">
-            <CheckBox Name = "IsUsingExitingTemp" Content="Использовать существующий шаблон:" Margin="5" IsChecked="{Binding IsUsingExitingTemplate}" Click="IsUsingExitingTemp_Checked" Checked="IsUsingExitingTemp_Checked"/>
+            <CheckBox Name = "IsUsingExitingTemp" Content="Использовать существующий шаблон:" Margin="5" IsChecked="{Binding IsUsingExitingTemplate}"/>
             <ComboBox Margin="5" IsEnabled="{Binding IsUsingExitingTemplate}" SelectedItem="{Binding SelectedTemplate.Name}" ItemsSource="{Binding TemplateList}"/>
         </StackPanel>
         <Grid Grid.Row="2" IsEnabled="{Binding IsUsingNewTemplate}">
@@ -26,7 +26,7 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8,0,0,0">
                 <Label Content="Создание шаблона:" VerticalAlignment="Center"/>
-                <exToolkit:WatermarkTextBox Name ="TemplateName"  Watermark="Название шаблона" Text="{Binding NewTemplateName}" Margin="0,3" TextChanged="WatermarkTextBox_TextChanged"/>
+                <exToolkit:WatermarkTextBox Name ="TemplateName"  Watermark="Название шаблона" Text="{Binding NewTemplateName}" Margin="0,3"/>
             </StackPanel>
             <Label Content="Параметры:" Grid.Row="1" VerticalAlignment="Center" Margin="8,0,0,0"/>
             <Border Grid.Row="2" Margin="8,0,8,0" BorderBrush="Gray" BorderThickness="1">

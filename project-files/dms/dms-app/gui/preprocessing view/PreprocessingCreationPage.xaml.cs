@@ -41,48 +41,5 @@ namespace dms.gui
                 ParentDocument = null;
             }
         }
-
-        private void CreateTemplateForPreprocessing_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (CreateTemplateForPreprocessing.Text != null && CreateTemplateForPreprocessing.Text != "" || IsUsingExitingTemp.IsChecked.Value)
-            {
-                CreatePreprocessing.IsEnabled = true;
-            }
-            else
-            {
-                CreatePreprocessing.IsEnabled = false;
-            }
-        }
-
-        private void IsUsingExitingTemp_Checked(object sender, RoutedEventArgs e)
-        {
-            if (IsUsingExitingTemp.IsChecked.Value)
-            {
-                CreatePreprocessing.IsEnabled = true;
-            }
-            else
-            {
-                CreatePreprocessing.IsEnabled = false;
-            }
-        }
-
-        private void PreprocessingName_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (PreprocessingName.Text != null && PreprocessingName.Text != "")
-            {
-                if (CreateTemplateForPreprocessing.Text != null && CreateTemplateForPreprocessing.Text != "" || IsUsingExitingTemp.IsChecked.Value)
-                {
-                    CreatePreprocessing.IsEnabled = true;
-                }
-                else
-                {
-                    CreatePreprocessing.IsEnabled = false;
-                }
-            }
-            else
-            {
-                CreatePreprocessing.IsEnabled = false;
-            }
-        }
     }
 }

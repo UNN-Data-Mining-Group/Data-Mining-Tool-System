@@ -68,6 +68,8 @@ namespace dms.services.preprocessing
 
         public string[] getParametersTypes(string filePath, char delimiter, bool hasHeader, float enumPercent)
         {
+            if ("".Equals(filePath))
+                return null;
             using (StreamReader sr = new StreamReader(filePath))
             {
                 int iter = -1;

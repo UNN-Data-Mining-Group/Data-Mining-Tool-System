@@ -40,36 +40,5 @@ namespace dms.gui
                 ParentDocument = null;
             }
         }
-
-        private void WatermarkTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (TemplateName.Text != null && TemplateName.Text != "" || IsUsingExitingTemp.IsChecked.Value)
-            {
-                CreateSelection.IsEnabled = true;
-            }
-            else
-            {
-                CreateSelection.IsEnabled = false;
-            }
-        }
-
-        private void IsUsingExitingTemp_Checked(object sender, RoutedEventArgs e)
-        {
-            if (IsUsingExitingTemp.IsChecked.Value)
-            {
-                CreateSelection.IsEnabled = true;
-            }
-            else
-            {
-                CreateSelection.IsEnabled = false;
-            }
-        }
-
-        private void SelectionAddPane_Loaded(object sender, RoutedEventArgs e)
-        {
-            SelectionAddPane newWindow = new SelectionAddPane();
-
-            newWindow.CreateSelection_button = this.CreateSelection;
-        }
     }
 }

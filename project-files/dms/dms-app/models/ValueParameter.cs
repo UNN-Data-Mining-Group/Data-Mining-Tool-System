@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.models
 {
+    [Serializable()]
     public class ValueParameter : Entity
     {
         private int selectionRowID;
