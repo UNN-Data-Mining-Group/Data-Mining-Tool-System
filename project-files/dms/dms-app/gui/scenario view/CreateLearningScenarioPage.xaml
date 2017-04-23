@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:dms.gui.scenario_view"
              mc:Ignorable="d">
     <StackPanel>
-        <Grid>
+        <Grid Height="163">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
@@ -22,13 +22,15 @@
             <TextBox Text="{Binding Name}" Grid.Row="0" Grid.Column="1" Margin="5"/>
             <Label Content="Тип работы с выборкой:" Grid.Row="1" Grid.Column="0"/>
             <ComboBox ItemsSource="{Binding SelectionTypesList}" SelectedItem="{Binding SelectionType}" Grid.Row="1" Grid.Column="1" Margin="5"/>
-            <Label Content="Сид перемешивания выборки:" Grid.Row="2" Grid.Column="0"/>
-            <TextBox Text="{Binding MixSeed}" Grid.Row="2" Grid.Column="1" Margin="5"/>
-            <Label Content="Тип алгоритма обучения:" Grid.Row="3" Grid.Column="0"/>
-            <ComboBox ItemsSource="{Binding TeacherTypesList}" SelectedItem="{Binding TeacherType}" Grid.Row="3" Grid.Column="1" Margin="5"/>
+            <Label Content="{Binding SeparationParamName}" Grid.Row="2" Grid.Column="0"/>
+            <TextBox Text="{Binding SeparationParamValue}" Grid.Row="2" Grid.Column="1" Margin="5"/>
+            <Label Content="Сид перемешивания выборки:" Grid.Row="3" Grid.Column="0"/>
+            <TextBox Text="{Binding MixSeed}" Grid.Row="3" Grid.Column="1" Margin="5"/>
+            <Label Content="Тип алгоритма обучения:" Grid.Row="3" Grid.Column="0" Margin="0,36,0,-36"/>
+            <ComboBox ItemsSource="{Binding TeacherTypesList}" SelectedItem="{Binding TeacherType}" Grid.Row="3" Grid.Column="1" Margin="5,39,5,-29"/>
         </Grid>
         <GroupBox Header="Параметры алгоритма обучения">
-            <local:GeneticParams x:Name="GenParams"></local:GeneticParams>
+            <local:GeneticParams x:Name="GenParams"/>
         </GroupBox>
         <StackPanel Orientation="Horizontal" CanVerticallyScroll="True">
             <Button Content="Создать" Command="{Binding CreateCommand}" Margin="5" Width="100"/>

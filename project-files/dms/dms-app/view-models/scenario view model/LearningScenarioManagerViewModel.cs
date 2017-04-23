@@ -12,7 +12,10 @@ namespace dms.view_models
         private ActionHandler createHandler;
         private ActionHandler cancelHandler;
         private LearningAlgoManager learningAlgo;
-        private String selectionType;
+        private string selectionType;
+        private string separationParamName;
+        private string separationParamValue;
+
         public LearningScenarioViewModel()
         {
             createHandler = new ActionHandler(createScenario, e => true);
@@ -20,10 +23,12 @@ namespace dms.view_models
             learningAlgo = new LearningAlgoManager();
             Name = "Сценарий";
             MixSeed = "123";
+            SeparationParamName = SeparationParamNames[0];
             TeacherType = TeacherTypesList[0];
             SelectionType = SelectionTypesList[0];
             ParamsValue = learningAlgo.paramsValue;
             ID = -1;
+            SeparationParamValue = "80";
         }
 
         public string[] ParamsName { get { return learningAlgo.paramsName; } }
@@ -62,13 +67,51 @@ namespace dms.view_models
                 return selectionType;
             }
             set
-            {                
+            {
                 selectionType = value;
+                if (selectionType.Equals(SelectionTypesList[0]))
+                {
+                    SeparationParamName = SeparationParamNames[0];
+                    SeparationParamValue = "80";
+                }
+                else
+                {
+                    SeparationParamName = SeparationParamNames[1];
+                    SeparationParamValue = "5";
+                }
+                NotifyPropertyChanged("SelectionType");
+
+            }
+        }
+
+        public string SeparationParamName
+        {
+            get
+            {
+                return separationParamName;
+            }
+            set
+            {
+                separationParamName = value;
+                NotifyPropertyChanged("SeparationParamName");
             }
         }
         public string MixSeed { get; set; }
+        public string SeparationParamValue
+        {
+            get
+            {
+                return separationParamValue;
+            }
+            set
+            {
+                separationParamValue = value;
+                NotifyPropertyChanged("SeparationParamValue");
+            }
+        }
         public string[] TeacherTypesList { get { return learningAlgo.teacherTypesList; } }
         public string[] SelectionTypesList { get { return new string[] { "Тестовая/обучающая", "Кроссвалидация" }; } }
+        public string[] SeparationParamNames { get { return new string[] { "Процент на обучающую выборку", "Число разделений для kfold" }; } }
         public ICommand CreateCommand { get { return createHandler; } }
         public ICommand CancelCommand { get { return cancelHandler; } }
         public event EventHandler OnClose;
@@ -78,7 +121,7 @@ namespace dms.view_models
                 Name = this.Name,
                 LearningAlgorithmName = TeacherType,
                 LAParameters = GenParam,
-                SelectionParameters = SelectionType + "," + MixSeed
+                SelectionParameters = SelectionType + "," + MixSeed + "," + SeparationParamValue
             };
             ls.save();
             ID = ls.ID;
@@ -132,6 +175,7 @@ namespace dms.view_models
                     Name = learningScenario.Name,
                     SelectionType = learningScenario.SelectionParameters.Split(',')[0],
                     MixSeed = learningScenario.SelectionParameters.Split(',')[1],
+                    SeparationParamValue = learningScenario.SelectionParameters.Split(',')[2],
                     TeacherType = learningScenario.LearningAlgorithmName,
                     GenParam = learningScenario.LAParameters,
                     ID = learningScenario.ID
