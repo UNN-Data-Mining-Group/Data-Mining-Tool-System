@@ -52,18 +52,19 @@ namespace dms.view_models.solver_view_models
             mixDataset();
             if (selectionType.Equals("Тестовая/обучающая"))
             {
-                return simpleSeparation(); 
+                int percentTrain = int.Parse(LS.SelectionParameters.Split(',')[2]);
+                return simpleSeparation(percentTrain); 
             }
             else if (selectionType.Equals("Кроссвалидация"))
             {
-                return crossValidation();
+                int kfolds = int.Parse(LS.SelectionParameters.Split(',')[2]);
+                return crossValidation(kfolds);
             }
             else throw new Exception("Unknown error");
         }
 
-        private ISolver crossValidation()
+        private ISolver crossValidation(int folds)
         {
-            int folds = 5;
             ISolver curSolver = ISolver.Copy();
             List<float> listOfTestMistakes = new List<float>();
             for (int k = 0; k < folds; k++)
@@ -117,18 +118,18 @@ namespace dms.view_models.solver_view_models
             return ISolver;
         }
 
-        public ISolver simpleSeparation()
+        public ISolver simpleSeparation(int percentTrain)
         {
-            int sizeTrainDataset = Convert.ToInt32(InputData.Length * 0.5);
+            int sizeTrainDataset = Convert.ToInt32(InputData.Length * ((double)percentTrain / 100));
             int sizeTestDataset = InputData.Length - sizeTrainDataset;
             float[][] trainInputDataset = new float[sizeTrainDataset][];
             float[][] testInputDataset = new float[InputData.Length - sizeTrainDataset][];
             float[] trainOutputDataset = new float[sizeTrainDataset];
             float[] testOutputDataset = new float[InputData.Length - sizeTrainDataset];
             Array.Copy(InputData, trainInputDataset, sizeTrainDataset);
-            Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTrainDataset);
+            Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTestDataset);
             Array.Copy(OutputData, trainOutputDataset, sizeTrainDataset);
-            Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTrainDataset);
+            Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTestDataset);
 
             if (ISolver is INeuralNetwork)
             {
