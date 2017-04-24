@@ -17,7 +17,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Label Content="Название задачи" HorizontalAlignment="Center" Margin="8"/>
-            <exToolkit:WatermarkTextBox Name="TaskName" Grid.Column="1" Margin="8" Watermark="Введите название задачи" Text="{Binding TaskName, UpdateSourceTrigger=PropertyChanged}" TextChanged="WatermarkTextBox_TextChanged"/>
+            <exToolkit:WatermarkTextBox Name="TaskName" Grid.Column="1" Margin="8" Watermark="Введите название задачи" Text="{Binding TaskName, UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
         <Button Name="CreateTask" Content="Создать задачу" Command="{Binding CreateCommand}" Grid.Row="1" Margin="8,5,0,5" HorizontalAlignment="Left" Width="120" />
         <Button Content="Отмена" Command="{Binding CancelCommand}" Grid.Row="1" Margin="141,5,0,5" HorizontalAlignment="Left" Width="135"/>
