@@ -14,18 +14,30 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using dms.view_models;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace dms.gui
 {
     /// <summary>
     /// Interaction logic for CreateSolutionPage.xaml
     /// </summary>
-    public partial class CreateSolutionPage : UserControl
+    public partial class CreateSolutionPage : UserControl, tools.IDocumentContent
     {
         public CreateSolutionPage(CreateSolutionViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;
+            vm.OnClose += OnClose;
+        }
+
+        public LayoutDocument ParentDocument { get; set; }
+        private void OnClose(object sender, EventArgs e)
+        {
+            if (ParentDocument != null)
+            {
+                ParentDocument.Close();
+                ParentDocument = null;
+            }
         }
     }
 }

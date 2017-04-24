@@ -134,6 +134,7 @@ namespace dms.view_models
                     .addCondition("TaskTemplateID", "=", selection.TaskTemplateID.ToString()), typeof(dms.models.Parameter));
                     TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.getById(selection.TaskTemplateID, typeof(TaskTemplate));
                     int stepRow = 0;
+                    bool isNotStringOutputValue = true;
                     foreach (Entity selRow in selectionRows)
                     {
                         int selectionRowId = selRow.ID;
@@ -149,18 +150,24 @@ namespace dms.view_models
                                 string outputValue = ((ValueParameter)value[0]).Value;
                                 float outputFloat;
                                 if (!float.TryParse(outputValue, out outputFloat))
-                                    goto outerloop;
+                                {
+                                    isNotStringOutputValue = false;
+                                }
+                                goto outerloop;
                             }
                             stepParam++;
                         }
                         stepRow++;
                     }
 
-                    if (i == 0)
-                        LearningScenarioID = taskTemplate.ID;
-                    nameTaskTemplate.Add(taskTemplate.Name);
-                    i++;
-                outerloop:;
+                    outerloop:;
+                    if (isNotStringOutputValue)
+                    {
+                        if (i == 0)
+                            LearningScenarioID = taskTemplate.ID;
+                        nameTaskTemplate.Add(taskTemplate.Name);
+                        i++;
+                    }
                 }
                 if (nameTaskTemplate.Count == 0)
                 {

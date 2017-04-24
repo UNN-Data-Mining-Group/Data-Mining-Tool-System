@@ -78,6 +78,8 @@ namespace dms.view_models
         private ActionHandler saveHandler;
         private ActionHandler solveHandler;
         private LearningInfo selectedLearning;
+        private string selectedSolution;
+        private string[] solutions;
 
         public string SolverName { get; }
         public string TaskName { get; }
@@ -98,9 +100,54 @@ namespace dms.view_models
         public ICommand SaveCommand { get { return saveHandler; } }
         public int SelectionID { get; set; }
         public int ParameterID { get; set; }
+        public string SelectedSolution
+        {
+            get
+            {
+                return selectedSolution;
+            }
+            set
+            {
+                selectedSolution = value;
+                NotifyPropertyChanged("SelectedSolution");
+            }
+        }
+        public string[] Solutions
+        {
+            get
+            {
+                if (SelectedLearning == null)
+                    return new string[] { "" };
+                List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskID", "=", Convert.ToString(TaskID)), typeof(TaskTemplate));
+                List<string> solutions = new List<string>();
+                foreach (TaskTemplate taskTemplate in taskTemplates)
+                {
+                    List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskTemplateID", "=", Convert.ToString(taskTemplate.ID)), typeof(Selection));
+                    foreach (Selection selection in selections)
+                    {
+                        if (selection.Type.Equals("solution"))
+                            solutions.Add(selection.Name);
+                    }
+                }
+                if (solutions.Count == 0)
+                    solutions.Add("Нет созданных решений");
+                return solutions.ToArray();
+            }
+            set
+            {
+                solutions = value;
+                NotifyPropertyChanged("Solutions");
+
+            }
+        }
+
+        public int TaskID { get; private set; }
 
         public SolveViewModel(models.Task task, models.TaskSolver solver)
         {
+            TaskID = task.ID;
             SolvingList = new ObservableCollection<SolvingInstance>();
             SolverName = solver.Name;
             TaskName = task.Name;
@@ -141,10 +188,49 @@ namespace dms.view_models
                 SolvingList.Add(new SolvingInstance(this, this.SelectedLearning.TaskTemplate));
                 solveHandler.RaiseCanExecuteChanged();
                 saveHandler.RaiseCanExecuteChanged();
+                SelectedSolution = Solutions[0];
+                NotifyPropertyChanged("SelectedSolution");
+                NotifyPropertyChanged("Solutions");
             }, e=>SelectedLearning != null);
 
             solveHandler = new ActionHandler(Solve, e => SolvingList.Count > 0);
-            saveHandler = new ActionHandler(() => { }, e => SolvingList.Count > 0);
+            saveHandler = new ActionHandler(saveSolutions, e => SolvingList.Count > 0);
+
+            SelectedSolution = Solutions[0];
+        }
+
+        private void saveSolutions()
+        {
+            Selection selection = (Selection) Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                    .addCondition("Name", "=", SelectedSolution), typeof(Selection))[0];
+            models.TaskTemplate template = (models.TaskTemplate)models.TaskTemplate.getById(selection.TaskTemplateID, typeof(models.TaskTemplate));
+            models.Parameter parameter = (models.Parameter) models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskTemplateID", "=", Convert.ToString(template.ID)), typeof(models.Parameter))[0];
+
+            for (int i = 0; i < SolvingList.Count; i++)
+            {
+                var item = SolvingList[i];
+                SelectionRow sr = new SelectionRow()
+                {
+                    SelectionID = selection.ID,
+                    Number = i
+                };
+                sr.save();
+                List<string> values = new List<string>();
+                values.AddRange(item.X.Select(x => x.Value));
+                values.Add(outputValues[i]);
+                foreach (string value in values)
+                {
+                    TaskSLAnswer vp = new TaskSLAnswer()
+                    {
+                        SelectionRowID = sr.ID,
+                        Value = value,
+                        ParameterID = parameter.ID,
+                        LearnedSolverID = this.SelectedLearning.LearnedSolver.ID
+                    };
+                    vp.save();
+                }
+            }
         }
 
         public void DeleteSolvingInstance(SolvingInstance i)
@@ -165,7 +251,7 @@ namespace dms.view_models
                 curOutputValues.Add(Convert.ToString(isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray())[0]));
             }
             PreprocessingManager preprocessing = new PreprocessingManager();
-            List<string> outputValues = preprocessing.getAppropriateValuesAfterInversePreprocessing(curOutputValues, SelectionID, ParameterID);
+            outputValues = preprocessing.getAppropriateValuesAfterInversePreprocessing(curOutputValues, SelectionID, ParameterID);
             foreach (var item in SolvingList)
             {
                 for (int i = 0; i < item.Y.Count; i++)
@@ -174,5 +260,6 @@ namespace dms.view_models
                 }                
             }
         }
+        public List<string> outputValues { get; set; }
     }
 }

@@ -220,6 +220,7 @@
     <Compile Include="models\archive\ArchiveTemplate.cs" />
     <Compile Include="models\LearningAlgoManager.cs" />
     <Compile Include="models\LearningQuality.cs" />
+    <Compile Include="models\TaskSLAnswer.cs" />
     <Compile Include="services\archivation\ArchivatorService.cs" />
     <Compile Include="services\archivation\ExportService.cs" />
     <Compile Include="services\archivation\ImportService.cs" />
