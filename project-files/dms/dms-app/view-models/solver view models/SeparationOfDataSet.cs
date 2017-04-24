@@ -52,18 +52,19 @@ namespace dms.view_models.solver_view_models
             mixDataset();
             if (selectionType.Equals("Тестовая/обучающая"))
             {
-                return simpleSeparation(); 
+                int percentTrain = int.Parse(LS.SelectionParameters.Split(',')[2]);
+                return simpleSeparation(percentTrain); 
             }
             else if (selectionType.Equals("Кроссвалидация"))
             {
-                return crossValidation();
+                int kfolds = int.Parse(LS.SelectionParameters.Split(',')[2]);
+                return crossValidation(kfolds);
             }
             else throw new Exception("Unknown error");
         }
 
-        private ISolver crossValidation()
+        private ISolver crossValidation(int folds)
         {
-            int folds = 5;
             ISolver curSolver = ISolver.Copy();
             List<float> listOfTestMistakes = new List<float>();
             for (int k = 0; k < folds; k++)
@@ -75,10 +76,10 @@ namespace dms.view_models.solver_view_models
                 float[] trainOutputDataset = GetOutputTrainData(OutputData, folds, k);
                 float[] testOutputDataset = GetTestOutputData(OutputData, folds, k);
 
-                LearningAlgo la = new LearningAlgo()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    GeneticParams = LS.LAParameters
 
                 };
                 PreprocessingManager preprocessing = new PreprocessingManager();
@@ -117,25 +118,25 @@ namespace dms.view_models.solver_view_models
             return ISolver;
         }
 
-        public ISolver simpleSeparation()
+        public ISolver simpleSeparation(int percentTrain)
         {
-            int sizeTrainDataset = Convert.ToInt32(InputData.Length * 0.5);
+            int sizeTrainDataset = Convert.ToInt32(InputData.Length * ((double)percentTrain / 100));
             int sizeTestDataset = InputData.Length - sizeTrainDataset;
             float[][] trainInputDataset = new float[sizeTrainDataset][];
             float[][] testInputDataset = new float[InputData.Length - sizeTrainDataset][];
             float[] trainOutputDataset = new float[sizeTrainDataset];
             float[] testOutputDataset = new float[InputData.Length - sizeTrainDataset];
             Array.Copy(InputData, trainInputDataset, sizeTrainDataset);
-            Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTrainDataset);
+            Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTestDataset);
             Array.Copy(OutputData, trainOutputDataset, sizeTrainDataset);
-            Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTrainDataset);
+            Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTestDataset);
 
             if (ISolver is INeuralNetwork)
             {
-                LearningAlgo la = new LearningAlgo()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    GeneticParams = LS.LAParameters
 
                 };
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
@@ -192,14 +193,14 @@ namespace dms.view_models.solver_view_models
 
         float[][] GetInputTrainData(float[][] inputData, int numFolds, int fold)
         {
-            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); // first and last index of rows tagged as TEST data
-            int numTrain = inputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1); // tot num rows - num test rows
+            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); 
+            int numTrain = inputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1);
             float[][] result = new float[numTrain][];
-            int i = 0; // index into result/test data
-            int ia = 0; // index into all data
+            int i = 0; 
+            int ia = 0; 
             while (i < result.Length)
             {
-                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) // this is a TRAIN row
+                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) 
                 {
                     result[i] = inputData[ia];
                     ++i;
@@ -211,14 +212,14 @@ namespace dms.view_models.solver_view_models
 
         float[] GetOutputTrainData(float[] outputData, int numFolds, int fold)
         {
-            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); // first and last index of rows tagged as TEST data
-            int numTrain = outputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1); // tot num rows - num test rows
+            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); 
+            int numTrain = outputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1);
             float[] result = new float[numTrain];
-            int i = 0; // index into result/test data
-            int ia = 0; // index into all data
+            int i = 0; 
+            int ia = 0; 
             while (i < result.Length)
             {
-                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) // this is a TRAIN row
+                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) 
                 {
                     result[i] = outputData[ia];
                     ++i;
@@ -230,14 +231,14 @@ namespace dms.view_models.solver_view_models
 
         float[][] GetInputTestData(float[][] inputData, int numFolds, int fold)
         {
-            // return a reference to TEST data
-            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); // first and last index of rows tagged as TEST data
+            
+            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); 
             int numTest = firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1;
             float[][] result = new float[numTest][];
-            int ia = firstAndLastTest[fold][0]; // index into all data
+            int ia = firstAndLastTest[fold][0]; 
             for (int i = 0; i < result.Length; ++i)
             {
-                result[i] = inputData[ia]; // the test data indices are contiguous
+                result[i] = inputData[ia]; 
                 ++ia;
             }
             return result;
@@ -245,14 +246,14 @@ namespace dms.view_models.solver_view_models
 
         float[] GetTestOutputData(float[] outputData, int numFolds, int fold)
         {
-            // return a reference to TEST data
-            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); // first and last index of rows tagged as TEST data
+            
+            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); 
             int numTest = firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1;
             float[] result = new float[numTest];
-            int ia = firstAndLastTest[fold][0]; // index into all data
+            int ia = firstAndLastTest[fold][0]; 
             for (int i = 0; i < result.Length; ++i)
             {
-                result[i] = outputData[ia]; // the test data indices are contiguous
+                result[i] = outputData[ia]; 
                 ++ia;
             }
             return result;
@@ -260,21 +261,20 @@ namespace dms.view_models.solver_view_models
 
         int[][] GetFirstLastTest(int numDataItems, int numFolds)
         {
-            // return[fold][firstIndex][lastIndex] for k-fold cross validation TEST data
-            int interval = numDataItems / numFolds;  // if there are 32 data items and k = num folds = 3, then interval = 32/3 = 10
-            int[][] result = new int[numFolds][]; // pair of indices for each fold
+            int interval = numDataItems / numFolds;  
+            int[][] result = new int[numFolds][]; 
             for (int i = 0; i < result.Length; ++i)
                 result[i] = new int[2];
 
-            for (int k = 0; k < numFolds; ++k) // 0, 1, 2
+            for (int k = 0; k < numFolds; ++k) 
             {
-                int first = k * interval; // 0, 10, 20
-                int last = (k + 1) * interval - 1; // 9, 19, 29 (should be 31)
+                int first = k * interval; 
+                int last = (k + 1) * interval - 1; 
                 result[k][0] = first;
                 result[k][1] = last;
             }
 
-            result[numFolds - 1][1] = result[numFolds - 1][1] + numDataItems % numFolds; // 29->31
+            result[numFolds - 1][1] = result[numFolds - 1][1] + numDataItems % numFolds;
             return result;
         }
     }

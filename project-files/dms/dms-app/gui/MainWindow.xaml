@@ -25,6 +25,12 @@
                     <Button Width="65" Margin="5" Command="{Binding ShowLearningScenarioManagerCommand}">
                         <TextBlock Text="Cценарии обучения" TextWrapping="Wrap" TextAlignment="Center"/>
                     </Button>
+                    <Button Width="65" Margin="5" Command="{Binding ShowExportSystemDialogCommand}">
+                        <TextBlock Text="Экспорт системы" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </Button>
+                    <Button Width="65" Margin="5" Command="{Binding ShowImportSystemDialogCommand}">
+                        <TextBlock Text="Импорт системы" TextWrapping="Wrap" TextAlignment="Center"/>
+                    </Button>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Вид">

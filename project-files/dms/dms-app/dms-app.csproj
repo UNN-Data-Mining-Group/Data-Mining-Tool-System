@@ -208,8 +208,22 @@
     <Compile Include="gui\preprocessing view\TemplateInfoPage.xaml.cs">
       <DependentUpon>TemplateInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="models\LearningAlgo.cs" />
+    <Compile Include="models\archive\Archive.cs" />
+    <Compile Include="models\archive\ArchiveLearnedSolver.cs" />
+    <Compile Include="models\archive\ArchiveLearningQuality.cs" />
+    <Compile Include="models\archive\ArchiveModel.cs" />
+    <Compile Include="models\archive\ArchiveParameter.cs" />
+    <Compile Include="models\archive\ArchiveScenario.cs" />
+    <Compile Include="models\archive\ArchiveSelection.cs" />
+    <Compile Include="models\archive\ArchiveTask.cs" />
+    <Compile Include="models\archive\ArchiveTaskSolver.cs" />
+    <Compile Include="models\archive\ArchiveTemplate.cs" />
+    <Compile Include="models\LearningAlgoManager.cs" />
     <Compile Include="models\LearningQuality.cs" />
+    <Compile Include="models\TaskSLAnswer.cs" />
+    <Compile Include="services\archivation\ArchivatorService.cs" />
+    <Compile Include="services\archivation\ExportService.cs" />
+    <Compile Include="services\archivation\ImportService.cs" />
     <Compile Include="services\preprocessing\DataHelper.cs" />
     <Compile Include="services\preprocessing\InversePreprocessing.cs" />
     <Compile Include="services\preprocessing\normalization\EnumeratedParameter.cs" />

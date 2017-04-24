@@ -21,8 +21,8 @@
             <ComboBox ItemsSource="{Binding Templates}" SelectedItem="{Binding TemplateName}" Grid.Row="1" Grid.Column="1" Margin="5"/>
         </Grid>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Создать" Width="100" Margin="5"/>
-            <Button Content="Отмена" Width="100" Margin="5"/>
+            <Button Content="Создать" Command="{Binding CreateCommand}" Width="100" Margin="5"/>
+            <Button Content="Отмена"  Width="100" Margin="5"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

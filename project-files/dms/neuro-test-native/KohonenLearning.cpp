@@ -1,6 +1,8 @@
 #include "KohonenLearning.h"
 #include <iostream>
 
+//#define DEBUG_OUTPUT
+
 std::vector<int> Selection::getMixIndexes(float seed)
 {
 	std::srand(seed);
@@ -130,7 +132,10 @@ vector2d<float> KohonenSelfOrganizer::clasterize(void* trainedKn, Selection s, C
 			}
 		}
 
+#ifdef DEBUG_OUTPUT
 		float err = 0.0f;
+		float avg2 = 0.0f;
+		int count_mistakes = 0;
 		for (int row = 0; row < s.rowsCount; row++)
 		{
 			opers.solve(s.x[row], yp, trainedKn);
@@ -144,10 +149,28 @@ vector2d<float> KohonenSelfOrganizer::clasterize(void* trainedKn, Selection s, C
 			}
 			norm = sqrt(norm);
 			err += norm;
+
+			float miss = 0.0f;
+			float max_err = 0.0f;
+			for (int i = 0; i < s.ySize; i++)
+			{
+				float temp = s.y[row][i] - yp[i];
+				miss += temp * temp;
+				if (max_err < abs(temp))
+					max_err = abs(temp);
+			}
+			avg2 += miss;
+			if (max_err >= 0.5f)
+				count_mistakes++;
 		}
 		err /= s.rowsCount;
+		avg2 /= s.rowsCount;
 
-		std::cout << "Iteration " << iteration + 1 << " err:" << err << std::endl;
+		std::cout << "Iteration " << iteration + 1 
+			<< " err:" << err 
+			<< " avg2:" << avg2 
+			<< std::endl;
+#endif
 	}
 	delete[] yp;
 	return classDistribution;
@@ -155,6 +178,20 @@ vector2d<float> KohonenSelfOrganizer::clasterize(void* trainedKn, Selection s, C
 
 void KohonenSelfOrganizer::selfOrganize(Selection trainSel, void* trainedKn)
 {
+	opers.setUseNormalization(false, trainedKn);
+	if (has_norm == true)
+	{
+		for (int i = 0; i < trainSel.rowsCount; i++)
+		{
+			float norm = 0.0f;
+			for (int j = 0; j < trainSel.xSize; j++)
+				norm += trainSel.x[i][j] * trainSel.x[i][j];
+			norm = std::sqrt(norm);
+			for (int j = 0; j < trainSel.xSize; j++)
+				trainSel.x[i][j] = trainSel.x[i][j] / norm;
+		}
+	}
+
 	initRandomWeights(trainedKn);
 	std::vector<int> mixSel = trainSel.getMixIndexes(randomSeed);
 	
@@ -162,14 +199,45 @@ void KohonenSelfOrganizer::selfOrganize(Selection trainSel, void* trainedKn)
 	c_extr.fit(trainSel);
 	auto distr = clasterize(trainedKn, trainSel, c_extr);
 	normalize(trainSel.ySize, trainedKn, c_extr, distr);
+	opers.setUseNormalization(has_norm, trainedKn);
 }
 
-void KohonenSelfOrganizer::pretrain(Selection s, void* trainedKn, int seed)
+void KohonenSelfOrganizer::normalize(int ySize, void* trainedKn, ClassExtracter& c_extr, vector2d<float>& clasters)
 {
-	int temp = randomSeed;
-	randomSeed = seed;
-	selfOrganize(s, trainedKn);
-	randomSeed = temp;
+	int maxNeuron = opers.getMaxNeuronIndex(trainedKn);
+	vector2d<float> classes = c_extr.getClasses();
+	std::vector<int> unused_neurons;
+
+	float *yp = new float[ySize];
+	for (int x = 0; x < maxNeuron; x++)
+	{
+		auto& distrCurNeuron = clasters[x];
+		float sum = 0.0f;
+		for(int i = 0; i < distrCurNeuron.size(); i++)
+			sum += distrCurNeuron[i];
+
+		if (abs(sum) > eps)
+		{
+			int maxIndex = 0;
+			float max = distrCurNeuron[0];
+			for (int i = 0; i < distrCurNeuron.size(); i++)
+			{
+				if (max < distrCurNeuron[i])
+				{
+					max = distrCurNeuron[i];
+					maxIndex = i;
+				}
+			}
+			auto yClass = classes[maxIndex];
+			for (int j = 0; j < ySize; j++)
+				yp[j] = yClass[j];
+			opers.setY(x, yp, trainedKn);
+		}
+		else
+			unused_neurons.push_back(x);
+	}
+	opers.disableNeurons(unused_neurons, trainedKn);
+	delete[] yp;
 }
 
 void StatisticalPretrainer::pretrain(Selection s, void* trainedKn, int seed)
@@ -210,54 +278,10 @@ void StatisticalPretrainer::pretrain(Selection s, void* trainedKn, int seed)
 	}
 }
 
-void KohonenSelfOrganizer::normalize(int ySize, void* trainedKn, ClassExtracter& c_extr, vector2d<float>& clasters)
-{
-	int maxNeuron = opers.getMaxNeuronIndex(trainedKn);
-	vector2d<float> classes = c_extr.getClasses();
-	std::vector<int> unused_neurons;
-	std::cout << "Distribution:\n";
-	float *yp = new float[ySize];
-	for (int x = 0; x < maxNeuron; x++)
-	{
-		auto& distrCurNeuron = clasters[x];
-		float sum = 0.0f;
-		for(int i = 0; i < distrCurNeuron.size(); i++)
-			sum += distrCurNeuron[i];
-
-		if (abs(sum) > eps)
-		{
-			int maxIndex = 0;
-			float max = distrCurNeuron[0];
-			for (int i = 0; i < distrCurNeuron.size(); i++)
-			{
-				if (max < distrCurNeuron[i])
-				{
-					max = distrCurNeuron[i];
-					maxIndex = i;
-				}
-			}
-			auto yClass = classes[maxIndex];
-			for (int j = 0; j < ySize; j++)
-				yp[j] = yClass[j];
-			opers.setY(x, yp, trainedKn);
-
-			std::cout << maxIndex << "\t";
-		}
-		else
-		{
-			unused_neurons.push_back(x);
-			std::cout << "null\t";
-		}
-		std::cout << "\n";
-	}
-	opers.disableNeurons(unused_neurons, trainedKn);
-	delete[] yp;
-}
-
 bool KohonenClassifier::is_equal(float* v1, float* v2, int size)
 {
 	for (int i = 0; i < size; i++)
-		if (std::abs(v1[i] - v2[i]) > eps)
+		if (std::fabs(v1[i] - v2[i]) > eps)
 			return false;
 	return true;
 }
@@ -278,7 +302,12 @@ void KohonenClassifier::train(Selection trainSel, void* trainedKn)
 		}
 	}
 
-	trainer->pretrain(trainSel, trainedKn, seed);
+	if (hasPretrainer == true)
+	{
+		StatisticalPretrainer trainer(opers, eps);
+		trainer.pretrain(trainSel, trainedKn, seed);
+	}
+
 	std::vector<int> mixSel = trainSel.getMixIndexes(seed);
 	float *yp = new float[trainSel.ySize];
 
@@ -294,6 +323,7 @@ void KohonenClassifier::train(Selection trainSel, void* trainedKn)
 			opers.addmultWeights(winner, 1.0f - l, l, trainSel.x[rowIndex], trainedKn);
 		}
 
+#ifdef DEBUG_OUTPUT
 		float err = 0.0f;
 		int count_mistakes = 0;
 		for (int row = 0; row < trainSel.rowsCount; row++)
@@ -313,8 +343,9 @@ void KohonenClassifier::train(Selection trainSel, void* trainedKn)
 				count_mistakes++;
 		}
 		err /= trainSel.rowsCount;
-		std::cout << "Iteration " << iter + 1 << " err:" << err;
-		std::cout << " percent:" << static_cast<float>(count_mistakes) / trainSel.rowsCount * 100 << std::endl;
+		std::cout << "Iteration " << iter + 1 << " err:" << err << std::endl;
+		//std::cout << " percent:" << static_cast<float>(count_mistakes) / trainSel.rowsCount * 100 << std::endl;
+#endif 
 	}
 	opers.setUseNormalization(normalize, trainedKn);
 

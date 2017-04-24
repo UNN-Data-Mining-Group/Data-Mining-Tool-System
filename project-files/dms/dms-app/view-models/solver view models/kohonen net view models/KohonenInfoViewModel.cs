@@ -92,6 +92,8 @@ namespace dms.view_models
             Width = t.GetLayerWidth();
             Height = t.GetLayerHeight();
             Metric = t.GetMetric();
+            ClassInitializer = t.GetClassInitializer();
+            ClassEps = t.GetClassEps();
             Name = solver.Name;
             TaskName = task.Name;
             TileGraphs = new ObservableCollection<TileGraphViewModel>();
@@ -116,7 +118,9 @@ namespace dms.view_models
         public int Outputs { get; }
         public int Width { get; }
         public int Height { get; }
+        public float ClassEps { get; }
         public string Metric { get; }
+        public string ClassInitializer { get; }
         public string Name { get; }
         public string TaskName { get; }
         public int SizeOfTile

@@ -80,6 +80,13 @@ namespace dms.models
             this.nameTable = "TaskTemplate";
         }
 
+        public TaskTemplate(archive.ArchiveTemplate template)
+        {
+            this.nameTable = "TaskTemplate";
+            this.Name = template.Name;
+            this.PreprocessingParameters = template.PreprocessingParameters;
+        }
+
         public override Dictionary<string, Type> serializationParameters()
         {
             Dictionary<string, Type> serializationParameters = new Dictionary<string, Type>();

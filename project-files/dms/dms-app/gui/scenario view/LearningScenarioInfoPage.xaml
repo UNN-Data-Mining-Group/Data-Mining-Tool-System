@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:dms.gui.scenario_view"
       mc:Ignorable="d" >
     <StackPanel>
-        <Grid>
+        <Grid Height="149">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
@@ -21,13 +21,15 @@
             <Label Content="{Binding Name}" Grid.Row="0" Grid.Column="1"/>
             <Label Content="Тип работы с выборкой:" Grid.Row="1" Grid.Column="0"/>
             <Label Content="{Binding SelectionType}" Grid.Row="1" Grid.Column="1"/>
-            <Label Content="Сид перемешивания выборки:" Grid.Row="2" Grid.Column="0"/>
-            <Label Content="{Binding MixSeed}" Grid.Row="2" Grid.Column="1"/>
-            <Label Content="Тип алгоритма обучения:" Grid.Row="3" Grid.Column="0"/>
-            <Label Content="{Binding TeacherType}" Grid.Row="3" Grid.Column="1"/>
+            <Label Content="{Binding SeparationParamName}" Grid.Row="1" Grid.Column="0" Margin="0,28,0,3" Grid.RowSpan="2"/>
+            <Label Content="{Binding SeparationParamValue}" Grid.Row="1" Grid.Column="1" Margin="0,28,0,3" Grid.RowSpan="2"/>
+            <Label Content="Сид перемешивания выборки:" Grid.Row="2" Grid.Column="0" Margin="0,25,0,6" Grid.RowSpan="2"/>
+            <Label Content="{Binding MixSeed}" Grid.Row="2" Grid.Column="1" Margin="0,25,0,6" Grid.RowSpan="2"/>
+            <Label Content="Тип алгоритма обучения:" Grid.Row="3" Grid.Column="0" Margin="0,21,0,-22"/>
+            <Label Content="{Binding TeacherType}" Grid.Row="3" Grid.Column="1" Margin="0,22,0,-22"/>
         </Grid>
         <GroupBox Header="Параметры алгоритма обучения">
-            <local:GeneticParams></local:GeneticParams>
+            <local:GeneticParams/>
         </GroupBox>
     </StackPanel>
 </UserControl>

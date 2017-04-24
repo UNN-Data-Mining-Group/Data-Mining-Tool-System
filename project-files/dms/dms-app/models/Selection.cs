@@ -69,6 +69,14 @@ namespace dms.models
             this.nameTable = "Selection";
         }
 
+        public Selection(archive.ArchiveSelection selection)
+        {
+            this.nameTable = "Selection";
+            this.Name = selection.Name;
+            this.RowCount = selection.RowCount;
+            this.Type = selection.Type;
+        }
+
         public override Dictionary<string, string> mappingTable()
         {
             Dictionary<string, string> mappingTable = new Dictionary<string, string>();

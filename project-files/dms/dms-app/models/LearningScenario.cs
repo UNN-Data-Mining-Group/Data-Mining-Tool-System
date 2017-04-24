@@ -74,6 +74,15 @@ namespace dms.models
             this.nameTable = "LearningScenario";
         }
 
+        public LearningScenario(archive.ArchiveScenario scenario)
+        {
+            this.nameTable = "LearningScenario";
+            this.Name = scenario.Name;
+            this.LearningAlgorithmName = scenario.LearningAlgorithmName;
+            this.SelectionParameters = scenario.SelectionParameters;
+            this.LAParameters = scenario.LAParameters;
+        }
+
         public override Dictionary<string, string> mappingTable()
         {
             Dictionary<string, string> mappingTable = new Dictionary<string, string>();
