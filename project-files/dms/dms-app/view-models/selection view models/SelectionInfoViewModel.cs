@@ -40,7 +40,8 @@ namespace dms.view_models
             {
                 List<Entity> sels = TaskTemplate.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateId", "=", entity.ID.ToString())
-                .addCondition("Name", "=", SelectionName), typeof(Selection));
+                .addCondition("Name", "=", SelectionName)
+                .addCondition("Type", "=", "develop"), typeof(Selection));
                 if (sels.Count == 0)
                 {
                     continue;

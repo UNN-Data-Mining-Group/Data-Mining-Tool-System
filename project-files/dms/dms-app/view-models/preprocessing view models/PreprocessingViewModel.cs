@@ -16,7 +16,7 @@ namespace dms.view_models
         public int ParameterId { get; set; }
         public string ParameterName { get; set; }
         public string Type { get; set; }
-        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "нормализация 3 (к int)", "бинаризация", "без предобработки" }; } }
+        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "нормализация 3 (к int)", /*"бинаризация",*/ "без предобработки" }; } }
     }
 
     public class PreprocessingViewModel : ViewmodelBase
@@ -122,7 +122,7 @@ namespace dms.view_models
                 PreprocessingName = "Преобразование " + r.Next(1, 1000);
 
                 //Определение индекса последней выборки
-                string templateNameForEmptyField = "Template " + ((taskTemplates != null) ? taskTemplates.Count + 1 : 1);
+                string templateNameForEmptyField = "Шаблон " + ((taskTemplates != null) ? taskTemplates.Count + 1 : 1);
 
                 NewTemplateName = templateNameForEmptyField;//"Шаблон для " + PreprocessingName;
                 TaskTemplate template = null;
