@@ -47,7 +47,7 @@ namespace dms.services.preprocessing
         }
 
         private List<int> pars = new List<int>();
-        public IParameter executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public Dictionary<List<Entity>, IParameter> executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
         {
             models.Parameter oldParam = ((models.Parameter)DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             TypeParameter type;
@@ -91,6 +91,8 @@ namespace dms.services.preprocessing
                 index++;
             }
 
+            List<Entity> valuesForParameter = new List<Entity>();
+
             IParameter p = null;
             switch (prepType)
             {
@@ -100,30 +102,32 @@ namespace dms.services.preprocessing
                     if (oldParam.Type == TypeParameter.Real)
                     {
                         p = new RealParameter(values);
-                        normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
+                        valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     else if (oldParam.Type == TypeParameter.Int)
                     {
                         p = new IntegerParameter(values);
-                        normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
+                        valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     else if (oldParam.Type == TypeParameter.Enum)
                     {
                         p = new EnumeratedParameter(values);
-                        normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
+                        valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     break;
                 case "бинаризация":
-                    binarizationValues(valueParam, newParamId, newSelectionId, parameterPosition);
+                    valuesForParameter = binarizationValues(valueParam, newParamId, newSelectionId, parameterPosition);
                     break;
                 case "без предобработки":
-                    processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
+                    valuesForParameter = processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
                     break;
             }
-            return p;
+            Dictionary<List<Entity>, IParameter> res = new Dictionary<List<Entity>, IParameter>();
+            res.Add(valuesForParameter, p);
+            return res;
         }
 
-        private void processWithoutPreprocessing(List<Entity> values, int paramId, int newSelectionId)
+        private List<Entity> processWithoutPreprocessing(List<Entity> values, int paramId, int newSelectionId)
         {
             DataHelper helper = new DataHelper();
             List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
@@ -138,9 +142,10 @@ namespace dms.services.preprocessing
                 index++;
             }
             DatabaseManager.SharedManager.insertMultipleEntities(listValues);
+            return listValues;
         }
 
-        private void binarizationValues(List<Entity> values, int paramId, int newSelectionId, int parameterPosition)
+        private List<Entity> binarizationValues(List<Entity> values, int paramId, int newSelectionId, int parameterPosition)
         {
             DataHelper helper = new DataHelper();
             List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
@@ -164,9 +169,11 @@ namespace dms.services.preprocessing
                 index++;
             }
             DatabaseManager.SharedManager.insertMultipleEntities(listValues);
+
+            return listValues;
         }
 
-        private void normalizeValues(List<Entity> values, IParameter p, int paramId, int newSelectionId, string prepType)
+        private List<Entity> normalizeValues(List<Entity> values, IParameter p, int paramId, int newSelectionId, string prepType)
         {
             List<Entity> listValues = new List<Entity>();
             DataHelper helper = new DataHelper();
@@ -196,6 +203,8 @@ namespace dms.services.preprocessing
                 index++;
             }
             DatabaseManager.SharedManager.insertMultipleEntities(listValues);
+
+            return listValues;
         }
 
         private string normalize(int type, Entity value, IParameter p)

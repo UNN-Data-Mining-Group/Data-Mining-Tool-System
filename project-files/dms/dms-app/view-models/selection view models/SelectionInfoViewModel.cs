@@ -40,7 +40,8 @@ namespace dms.view_models
             {
                 List<Entity> sels = TaskTemplate.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateId", "=", entity.ID.ToString())
-                .addCondition("Name", "=", SelectionName), typeof(Selection));
+                .addCondition("Name", "=", SelectionName)
+                .addCondition("Type", "=", "develop"), typeof(Selection));
                 if (sels.Count == 0)
                 {
                     continue;
@@ -112,8 +113,13 @@ namespace dms.view_models
                 originalColumns[i] = parameter.Name;
             }
             //рисуем содержимое
-            originalData = new string[CountRows][];
-            for (int i = 0; i < CountRows; i++)
+            int rows = 100;
+            if (CountRows < 100)
+            {
+                rows = CountRows;
+            }
+            originalData = new string[rows][];
+            for (int i = 0; i < rows; i++)
             {
                 originalData[i] = new string[parameters.Count];
             }
@@ -141,6 +147,11 @@ namespace dms.view_models
                         stepParam++;
                     }
                     stepRow++;
+                    if (stepRow >= rows)
+                    {
+                        break;
+                    }
+
                 }
             }
         }

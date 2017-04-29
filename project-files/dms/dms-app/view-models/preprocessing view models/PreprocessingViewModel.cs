@@ -16,7 +16,7 @@ namespace dms.view_models
         public int ParameterId { get; set; }
         public string ParameterName { get; set; }
         public string Type { get; set; }
-        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "нормализация 3 (к int)", "бинаризация", "без предобработки" }; } }
+        public string[] TypesList { get { return new string[] { "Линейная нормализация 1 (к float)", "Нелинейная нормализация 2 (к float)", "нормализация 3 (к int)", /*"бинаризация",*/ "без предобработки" }; } }
     }
 
     public class PreprocessingViewModel : ViewmodelBase
@@ -46,11 +46,19 @@ namespace dms.view_models
         }
 
         [Serializable()]
+        public class ValuesForParameter
+        {
+            public int parameterId { get; set; }
+            public List<Entity> values = new List<Entity>();
+        }
+
+        [Serializable()]
         public class SerializableList
         {
             public int selectionId { get; set; }
             public List<int> parameterIds = new List<int>();
             public List<services.preprocessing.normalization.IParameter> prepParameters = new List<services.preprocessing.normalization.IParameter>();
+            public List<ValuesForParameter> parametersValues = new List<ValuesForParameter>();
         }
 
         [Serializable()]
@@ -112,7 +120,11 @@ namespace dms.view_models
                 IsUsingExitingTemplate = false;
                 Random r = new Random();
                 PreprocessingName = "Преобразование " + r.Next(1, 1000);
-                NewTemplateName = "New Template";
+
+                //Определение индекса последней выборки
+                string templateNameForEmptyField = "Шаблон " + ((taskTemplates != null) ? taskTemplates.Count + 1 : 1);
+
+                NewTemplateName = templateNameForEmptyField;//"Шаблон для " + PreprocessingName;
                 TaskTemplate template = null;
                 Pair pair = new Pair();
                 if (templateId == -1)
@@ -230,10 +242,11 @@ namespace dms.view_models
                 List<PreprocessingParameterViewModel> preprocessingParametersTemp = new List<PreprocessingParameterViewModel>();
                 List<string> types = new List<string>();
                 List<Parameter> parameters = new List<Parameter>();
-                List<services.preprocessing.normalization.IParameter> listOfIParameters = new List<services.preprocessing.normalization.IParameter>();
                 List<int> paramIds = new List<int>();
                 foreach (Entity sel in selections)
                 {
+                    List<services.preprocessing.normalization.IParameter> listOfIParameters = new List<services.preprocessing.normalization.IParameter>();
+                    List<ValuesForParameter> listOfValuesForParameter = new List<ValuesForParameter>();
                     int newSelectionId = PreprocessingManager.PrepManager.addNewEntitiesForPreprocessing(
                             ((Selection)sel).Name, ((Selection)sel).RowCount, Task.ID, newTaskTemplateId);
                     int oldSelectionId = sel.ID;
@@ -284,7 +297,9 @@ namespace dms.view_models
                                 }
 
                                 i++;
-                                services.preprocessing.normalization.IParameter p = PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, i - 1, entity.ID);
+                                Dictionary<List<Entity>, services.preprocessing.normalization.IParameter> output = PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, i - 1, entity.ID);
+                                services.preprocessing.normalization.IParameter p = output.Values.ElementAt(0);
+                                List<Entity> valuesForParameter = output.Keys.ElementAt(0);
                                 continue;
                             }
                         }
@@ -321,7 +336,16 @@ namespace dms.view_models
                                 preprocessingParametersTemp.Add(ppVM);
                             }
 
-                            services.preprocessing.normalization.IParameter p = PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, prepParam.Position, newParamId);
+                            Dictionary<List<Entity>, services.preprocessing.normalization.IParameter> output = PreprocessingManager.PrepManager.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, prepParam.Position, newParamId);
+                            services.preprocessing.normalization.IParameter p = output.Values.ElementAt(0);
+                            List<Entity> valuesForParameter = output.Keys.ElementAt(0);
+                            //->
+                            ValuesForParameter valuesList = new ValuesForParameter();
+                            valuesList.parameterId = newParamId;
+                            valuesList.values = valuesForParameter;
+
+                            listOfValuesForParameter.Add(valuesList);
+                            //<-
                             listOfIParameters.Add(p);
                             paramIds.Add(newParamId);
                         }
@@ -330,6 +354,7 @@ namespace dms.view_models
                     list.selectionId = newSelectionId;
                     list.parameterIds = paramIds;
                     list.prepParameters = listOfIParameters;
+                    list.parametersValues = listOfValuesForParameter;
                     pp.info.Add(list);
                 }
                 if (parameters != null && types != null)

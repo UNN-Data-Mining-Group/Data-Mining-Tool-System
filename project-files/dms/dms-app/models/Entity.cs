@@ -10,6 +10,7 @@ using dms.services;
 
 namespace dms.models
 {
+    [Serializable()]
     public class Entity
     {
         private int id = -1;

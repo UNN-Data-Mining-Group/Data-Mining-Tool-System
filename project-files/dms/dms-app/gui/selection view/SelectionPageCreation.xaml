@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
         <local:SelectionAddPane Grid.Row="0" Margin="8,0,0,0"/>
         <StackPanel Grid.Row="1" Margin="8,0,0,0" Orientation="Horizontal" IsEnabled="{Binding CanUseExitingTemplate}">
-            <CheckBox Content="Использовать существующий шаблон:" Margin="5" IsChecked="{Binding IsUsingExitingTemplate}"/>
+            <CheckBox Name = "IsUsingExitingTemp" Content="Использовать существующий шаблон:" Margin="5" IsChecked="{Binding IsUsingExitingTemplate}"/>
             <ComboBox Margin="5" IsEnabled="{Binding IsUsingExitingTemplate}" SelectedItem="{Binding SelectedTemplate.Name}" ItemsSource="{Binding TemplateList}"/>
         </StackPanel>
         <Grid Grid.Row="2" IsEnabled="{Binding IsUsingNewTemplate}">
@@ -26,7 +26,7 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="8,0,0,0">
                 <Label Content="Создание шаблона:" VerticalAlignment="Center"/>
-                <exToolkit:WatermarkTextBox Watermark="Название шаблона" Text="{Binding NewTemplateName}" Margin="0,3"/>
+                <exToolkit:WatermarkTextBox Name ="TemplateName"  Watermark="Название шаблона" Text="{Binding NewTemplateName}" Margin="0,3"/>
             </StackPanel>
             <Label Content="Параметры:" Grid.Row="1" VerticalAlignment="Center" Margin="8,0,0,0"/>
             <Border Grid.Row="2" Margin="8,0,8,0" BorderBrush="Gray" BorderThickness="1">
@@ -43,7 +43,7 @@
                 </ScrollViewer>
             </Border>
         </Grid>
-        <Button Command="{Binding CreateCommand}" IsEnabled="{Binding CreateCommand.CanExecuted}" Content="Создать выборку" Grid.Row="3" Margin="8,5" Width="150" HorizontalAlignment="Left"/>
+        <Button Name = "CreateSelection" Command="{Binding CreateCommand}" IsEnabled="{Binding CreateCommand.CanExecuted}" Content="Создать выборку" Grid.Row="3" Margin="8,5" Width="150" HorizontalAlignment="Left"/>
         <Button Command="{Binding CancelCommand}" Content="Отмена" Grid.Row="3" Margin="163,5,0,5" Width="150" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

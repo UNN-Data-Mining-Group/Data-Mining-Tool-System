@@ -117,6 +117,16 @@ namespace dms.services.preprocessing
                             .addCondition("SelectionRowID", "=", selectionRows[i].ID.ToString()), typeof(ValueParameter));
                     listForDelete = listForDelete.Concat(values).ToList();
                 }
+
+                List<Entity> learnedSolverList = LearnedSolver.where(new Query("LearnedSolver").addTypeQuery(TypeQuery.select)
+                            .addCondition("SelectionID", "=", sel.ID.ToString()), typeof(LearnedSolver));
+                listForDelete = listForDelete.Concat(learnedSolverList).ToList();
+                foreach(Entity lSolver in learnedSolverList)
+                {
+                    List<Entity> learningQualityList = LearningQuality.where(new Query("LearningQuality").addTypeQuery(TypeQuery.select)
+                            .addCondition("LearnedSolverID", "=", lSolver.ID.ToString()), typeof(LearningQuality));
+                    listForDelete = listForDelete.Concat(learningQualityList).ToList();
+                }
             }
 
             DatabaseManager.SharedManager.deleteMultipleEntities(listForDelete);
@@ -152,6 +162,16 @@ namespace dms.services.preprocessing
                         List<Entity> values = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
                                 .addCondition("SelectionRowID", "=", selectionRows[i].ID.ToString()), typeof(ValueParameter));
                         listForDelete = listForDelete.Concat(values).ToList();
+                    }
+
+                    List<Entity> learnedSolverList = LearnedSolver.where(new Query("LearnedSolver").addTypeQuery(TypeQuery.select)
+                            .addCondition("SelectionID", "=", selection.ID.ToString()), typeof(LearnedSolver));
+                    listForDelete = listForDelete.Concat(learnedSolverList).ToList();
+                    foreach (Entity lSolver in learnedSolverList)
+                    {
+                        List<Entity> learningQualityList = LearningQuality.where(new Query("LearningQuality").addTypeQuery(TypeQuery.select)
+                                .addCondition("LearnedSolverID", "=", lSolver.ID.ToString()), typeof(LearningQuality));
+                        listForDelete = listForDelete.Concat(learningQualityList).ToList();
                     }
                 }
             }
