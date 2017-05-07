@@ -187,6 +187,19 @@ namespace dms::neroNetLearningAlgoritms
 	{
 		float res = 0;
 
+		using dms::solvers::neural_nets::kohonen::KohonenManaged;
+		KohonenManaged^ kn = dynamic_cast<KohonenManaged^>(solver);
+		if (kn != nullptr)
+		{
+			array<array<float>^>^ out = gcnew array<array<float>^>(train_y->Length);
+			for (int i = 0; i < train_y->Length; i++)
+			{
+				out[i] = gcnew array<float>(1);
+				out[i][0] = train_y[i];
+			}
+			kn->setClasses(out);
+		}
+
 		if (usedAlgo->Equals(TeacherTypesList[0]))
 			res = startGenetic(static_cast<INeuralNetwork^>(solver), train_x, train_y);
 		else
