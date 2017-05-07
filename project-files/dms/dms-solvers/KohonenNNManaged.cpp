@@ -107,8 +107,8 @@ void KohonenManaged::PushNativeParameters()
 
 	std::vector<nnets_kohonen::NeuronIndex> ns;
 
-	float** cls = new float*[ns.size()];
-	for (int i = 0; i < ns.size(); i++)
+	float** cls = new float*[neurons->Count];
+	for (int i = 0; i < neurons->Count; i++)
 	{
 		Tuple<int, int>^ current = neurons[i];
 		ns.push_back(
@@ -132,6 +132,24 @@ dms::solvers::ISolver ^ dms::solvers::neural_nets::kohonen::KohonenManaged::Copy
 	return gcnew KohonenManaged(this);
 }
 
+void KohonenManaged::setClasses(array<array<float>^>^ outputs)
+{
+	auto kn = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
+	float** y = new float*[outputs->Length];
+	for (int i = 0; i < outputs->Length; i++)
+	{
+		y[i] = new float[outputs[i]->Length];
+		for (int j = 0; j < outputs[i]->Length; j++)
+			y[i][j] = outputs[i][j];
+	}
+
+	kn->setClasses(y, outputs->Length);
+
+	for (int i = 0; i < outputs->Length; i++)
+		delete[] y[i];
+	delete[] y;
+}
+
 array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()
 {
 	array<List<Tuple<int2d^, double>^>^>^ res =
@@ -142,7 +160,7 @@ array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()
 		for (int j = 0; j < neurons->Count; j++)
 		{
 			res[i]->Add(gcnew Tuple<int2d^, double>(
-				gcnew int2d(neurons[i]->Item1, neurons[i]->Item2),
+				gcnew int2d(neurons[j]->Item1, neurons[j]->Item2),
 				weights[j * GetInputsCount() + i]));
 		}
 	}
@@ -153,8 +171,8 @@ array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()
 		res[i + offset] = gcnew List<Tuple<int2d^, double>^>();
 		for (int j = 0; j < neurons->Count; j++)
 		{
-			res[i]->Add(gcnew Tuple<int2d^, double>(
-				gcnew int2d(neurons[i]->Item1, neurons[i]->Item2),
+			res[i + offset]->Add(gcnew Tuple<int2d^, double>(
+				gcnew int2d(neurons[j]->Item1, neurons[j]->Item2),
 				classes[j][i]));
 		}
 	}

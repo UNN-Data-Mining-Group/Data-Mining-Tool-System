@@ -31,7 +31,6 @@ namespace dms.gui
         {
             InitializeComponent();
             DataContext = vm;
-            GenParams.DataContext = vm;
             vm.OnClose += OnClose;
         }
 

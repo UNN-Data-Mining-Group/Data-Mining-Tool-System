@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using dms.neroNetLearningAlgoritms;
+using dms.models.kohonen_learning;
 using dms.solvers;
 
 namespace dms.iLearningAlgo
@@ -75,20 +76,17 @@ namespace dms.neroNetLearningAlgoritms
 
 namespace dms.models
 {
-
-    
-
     public class LearningAlgoManager 
     {
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
         private iLearningAlgo.ILearningAlgo[] lrAlgo;
-        private const int countAlgoLib = 1;
+        private const int countAlgoLib = 2;
         private string[][] myTeacherTypeList;
         private iLearningAlgo.ILearningAlgo usedLrAlgo;
 
         [Serializable()]
-        private class GeneticParam : ILAParameters
+        private class AlgoParam : ILAParameters
         {
             public float[] geneticParams;
         }
@@ -98,7 +96,8 @@ namespace dms.models
             lrAlgo = new iLearningAlgo.ILearningAlgo[countAlgoLib];
             myTeacherTypeList = new string[countAlgoLib][];
             lrAlgo[0] = new NeroNetLearningAlgoritm();
-            geneticParams = new GeneticParam();
+            lrAlgo[1] = new KohonenLearningAlgorithms();
+            algoParams = new AlgoParam();
             TeacherTypesList = new string[0];
             for (int i = 0; i < countAlgoLib; i++)
             {
@@ -193,18 +192,18 @@ namespace dms.models
             }
         }
 
-        private GeneticParam geneticParams;
-        public ILAParameters GeneticParams
+        private AlgoParam algoParams;
+        public ILAParameters LAParams
         {
             get
             {
-                geneticParams.geneticParams = paramsValue;
-                return (ILAParameters) geneticParams;
+                algoParams.geneticParams = paramsValue;
+                return (ILAParameters) algoParams;
             }
             set
             {
-                geneticParams = (GeneticParam)value;
-                paramsValue = geneticParams.geneticParams;
+                algoParams = (AlgoParam)value;
+                paramsValue = algoParams.geneticParams;
             }
         }
     }

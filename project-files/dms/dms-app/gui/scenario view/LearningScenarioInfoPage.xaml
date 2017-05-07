@@ -5,6 +5,20 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:dms.gui.scenario_view"
       mc:Ignorable="d" >
+    <UserControl.Resources>
+        <DataTemplate x:Key="geneticTemplate">
+            <local:GeneticParams x:Name="GenParams"/>
+        </DataTemplate>
+        <DataTemplate x:Key="vectQuantum">
+            <local:VectorQvantum/>
+        </DataTemplate>
+        <DataTemplate x:Key="selfOrganize">
+            <local:SelfOrganizer/>
+        </DataTemplate>
+        <DataTemplate x:Key="undefined">
+            <Label Content="Здесь могли быть ваши параметры"/>
+        </DataTemplate>
+    </UserControl.Resources>
     <StackPanel>
         <Grid Height="149">
             <Grid.RowDefinitions>
@@ -29,7 +43,26 @@
             <Label Content="{Binding TeacherType}" Grid.Row="3" Grid.Column="1" Margin="0,22,0,-22"/>
         </Grid>
         <GroupBox Header="Параметры алгоритма обучения">
-            <local:GeneticParams/>
+            <ContentControl Content="{Binding ParamsViewModel}">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TeacherType}" Value="Генетический алгоритм">
+                                <Setter Property="ContentTemplate" Value="{StaticResource geneticTemplate}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TeacherType}" Value="Векторное квантование">
+                                <Setter Property="ContentTemplate" Value="{StaticResource vectQuantum}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TeacherType}" Value="Обратное распространение ошибки">
+                                <Setter Property="ContentTemplate" Value="{StaticResource undefined}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TeacherType}" Value="Самоорганизация Кохонена">
+                                <Setter Property="ContentTemplate" Value="{StaticResource selfOrganize}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
         </GroupBox>
     </StackPanel>
 </UserControl>

@@ -31,7 +31,8 @@ namespace dms::solvers::neural_nets::kohonen
 		virtual void PushNativeParameters() override;
 
 		virtual ISolver^ Copy() override;
-		
+
+		void setClasses(array<array<float>^>^ outputs);
 		array<List<Tuple<int2d^, double>^>^>^ GetVisualData();
 	private:
 		array<float>^ weights;
