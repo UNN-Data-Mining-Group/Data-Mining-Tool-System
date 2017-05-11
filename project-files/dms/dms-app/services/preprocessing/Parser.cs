@@ -85,8 +85,9 @@ namespace dms.services.preprocessing
                 string[] types = new string[CountParameters];
 
                 //
-                List<string> [] differentValues = new List<string>[CountParameters];
+                List<string>[] differentValues = new List<string>[CountParameters];
                 List<int>[] counts = new List<int>[CountParameters];
+                bool[] hasEnum = new bool[CountParameters];
                 for (int i = 0; i < CountParameters; i++)
                 {
                     differentValues[i] = new List<string>();
@@ -122,6 +123,10 @@ namespace dms.services.preprocessing
                         {
                             type = doubleValue.GetType();
                         }
+                        else
+                        {
+                            hasEnum[index] = true;
+                        }
                         if (iter == 0)
                         {
                             types[index] = convertToType(type.Name);
@@ -151,13 +156,13 @@ namespace dms.services.preprocessing
 
                 countRows = iter + 1;
                 CountRows = countRows;
-                float percent = 50 * countRows / 100;
+                float percent = 5 * countRows / 100;
                 for (int i = 0; i < CountParameters; i++)
                 {
                     int size = differentValues[i].Count;
                     for (int j = 0; j < size; j++)
                     {
-                        if (counts[i][j]  >= percent)
+                        if (counts[i][j] >= percent && hasEnum[i])
                         {
                             string value = differentValues[i][j];
                             Type type = value.GetType();
