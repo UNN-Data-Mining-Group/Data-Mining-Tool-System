@@ -38,8 +38,8 @@ array<float>^ KohonenClassifier::getParams()
 bool KohonenClassifier::canTrain(dms::solvers::ISolver ^ solver)
 {
 	auto map = static_cast<std::map<std::string, void*>*>(solver->getOperations());
-	constexpr int count_funcs = 11;
-	std::string required_funcs[count_funcs] =
+	constexpr int count_funcs = 6;
+	std::string required_funcs[] =
 	{
 		"getWinner", "addmultWeights", "getMaxNeuronIndex",
 		"setY", "solve", "setUseNormalization"

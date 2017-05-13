@@ -375,6 +375,11 @@ bool nnets_kohonen::KohonenNet::getUseNormalization()
 	return use_norm_x;
 }
 
+int nnets_kohonen::KohonenNet::getWinnerIndex()
+{
+	return getInternalIndex(winner);
+}
+
 KohonenNet::~KohonenNet()
 {
 	delete[] kohonen_layer;

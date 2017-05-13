@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using dms.solvers;
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.kohonen;
 using dms.services.preprocessing;
 using dms.solvers.decision_tree;
 
@@ -87,11 +88,24 @@ namespace dms.view_models.solver_view_models
                 int sizeTrainDataset = trainInputDataset.Length;
                 List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
                 List<string> obtainedOutputValues = new List<string>();
+
+                if (ISolver is KohonenManaged)
+                {
+                    KohonenManaged koh = ISolver as KohonenManaged;
+                    koh.startLogWinners();
+                }
                 for (int i = 0; i < sizeTrainDataset; i++)
                 {
                     obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(trainInputDataset[i])[0]));
                 }
                 List<bool> comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+                if (ISolver is KohonenManaged)
+                {
+                    KohonenManaged koh = ISolver as KohonenManaged;
+                    koh.stopLogWinners();
+                    koh.declareWinnersOutput(comparisonOfResult);
+                }
+
                 var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
                 kMistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
 
@@ -151,11 +165,24 @@ namespace dms.view_models.solver_view_models
             mistakeTrain = 0;
             List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
             List<string> obtainedOutputValues = new List<string>();
+
+            if (ISolver is KohonenManaged)
+            {
+                KohonenManaged koh = ISolver as KohonenManaged;
+                koh.startLogWinners();
+            }
             for (int i = 0; i < sizeTrainDataset; i++)
             {
                 obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(trainInputDataset[i])[0]));
             }
             List<bool> comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+            if (ISolver is KohonenManaged)
+            {
+                KohonenManaged koh = ISolver as KohonenManaged;
+                koh.stopLogWinners();
+                koh.declareWinnersOutput(comparisonOfResult);
+            }
+
             var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
             mistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
 
