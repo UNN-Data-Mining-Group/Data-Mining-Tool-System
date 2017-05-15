@@ -5,6 +5,7 @@ using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets.ward_net;
+using dms.solvers.neural_nets.kohonen;
 using dms.tools;
 using dms.view_models.solver_view_models;
 using System;
@@ -328,6 +329,11 @@ namespace dms.view_models
                 {
                     WardNNTopology topology = Solver.Description as WardNNTopology;
                     isolver = new WardNNManaged(topology);
+                }
+                else if (Solver.Description is KohonenNNTopology)
+                {
+                    KohonenNNTopology topology = Solver.Description as KohonenNNTopology;
+                    isolver = new KohonenManaged(topology);
                 }
                 else if (Solver.Description is TreeDescription)
                 {

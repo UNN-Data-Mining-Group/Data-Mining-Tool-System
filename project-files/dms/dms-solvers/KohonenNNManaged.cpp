@@ -5,6 +5,13 @@ KohonenManaged::KohonenManaged(KohonenNNTopology ^ t) :
 	INeuralNetwork(t)
 {
 	FetchNativeParameters();
+
+	false_sols = gcnew array<int>(neurons->Count);
+	true_sols = gcnew array<int>(neurons->Count);
+	for (int i = 0; i < neurons->Count; i++)
+	{
+		true_sols[i] = false_sols[i] = 0;
+	}
 }
 
 KohonenManaged::KohonenManaged(KohonenManaged ^ k) :
@@ -27,6 +34,14 @@ KohonenManaged::KohonenManaged(KohonenManaged ^ k) :
 	neurons = gcnew List<Tuple<int, int>^>();
 	for (int i = 0; i < k->neurons->Count; i++)
 		neurons->Add(gcnew Tuple<int, int>(k->neurons[i]->Item1, k->neurons[i]->Item2));
+
+	false_sols = gcnew array<int>(neurons->Count);
+	true_sols = gcnew array<int>(neurons->Count);
+	for (int i = 0; i < neurons->Count; i++)
+	{
+		true_sols[i] = k->true_sols[i];
+		false_sols[i] = k->false_sols[i];
+	}
 
 	use_normalization = k->use_normalization;
 	PushNativeParameters();
@@ -107,8 +122,8 @@ void KohonenManaged::PushNativeParameters()
 
 	std::vector<nnets_kohonen::NeuronIndex> ns;
 
-	float** cls = new float*[ns.size()];
-	for (int i = 0; i < ns.size(); i++)
+	float** cls = new float*[neurons->Count];
+	for (int i = 0; i < neurons->Count; i++)
 	{
 		Tuple<int, int>^ current = neurons[i];
 		ns.push_back(
@@ -127,22 +142,53 @@ void KohonenManaged::PushNativeParameters()
 	delete[] cls;
 }
 
+array<Single>^ KohonenManaged::Solve(array<Single>^ x)
+{
+	array<Single>^ res = INeuralNetwork::Solve(x);
+	if (is_logging == true)
+	{
+		auto p_solver = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
+		int winner_index = p_solver->getWinnerIndex();
+		winners_log->Add(winner_index);
+	}
+	return res;
+}
+
 dms::solvers::ISolver ^ dms::solvers::neural_nets::kohonen::KohonenManaged::Copy()
 {
 	return gcnew KohonenManaged(this);
 }
 
+void KohonenManaged::setClasses(array<array<float>^>^ outputs)
+{
+	auto kn = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
+	float** y = new float*[outputs->Length];
+	for (int i = 0; i < outputs->Length; i++)
+	{
+		y[i] = new float[outputs[i]->Length];
+		for (int j = 0; j < outputs[i]->Length; j++)
+			y[i][j] = outputs[i][j];
+	}
+
+	kn->setClasses(y, outputs->Length);
+
+	for (int i = 0; i < outputs->Length; i++)
+		delete[] y[i];
+	delete[] y;
+}
+
 array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()
 {
 	array<List<Tuple<int2d^, double>^>^>^ res =
-		gcnew array<List<Tuple<int2d^, double>^>^>(GetInputsCount() + GetOutputsCount());
+		gcnew array<List<Tuple<int2d^, double>^>^>
+		(GetInputsCount() + GetOutputsCount() + 2);
 	for (int i = 0; i < GetInputsCount(); i++)
 	{
 		res[i] = gcnew List<Tuple<int2d^, double>^>();
 		for (int j = 0; j < neurons->Count; j++)
 		{
 			res[i]->Add(gcnew Tuple<int2d^, double>(
-				gcnew int2d(neurons[i]->Item1, neurons[i]->Item2),
+				gcnew int2d(neurons[j]->Item1, neurons[j]->Item2),
 				weights[j * GetInputsCount() + i]));
 		}
 	}
@@ -153,10 +199,62 @@ array<List<Tuple<int2d^, double>^>^>^ KohonenManaged::GetVisualData()
 		res[i + offset] = gcnew List<Tuple<int2d^, double>^>();
 		for (int j = 0; j < neurons->Count; j++)
 		{
-			res[i]->Add(gcnew Tuple<int2d^, double>(
-				gcnew int2d(neurons[i]->Item1, neurons[i]->Item2),
+			res[i + offset]->Add(gcnew Tuple<int2d^, double>(
+				gcnew int2d(neurons[j]->Item1, neurons[j]->Item2),
 				classes[j][i]));
 		}
 	}
+
+	offset = GetInputsCount() + GetOutputsCount();
+	res[offset] = gcnew List<Tuple<int2d^, double>^>();
+	res[offset + 1] = gcnew List <Tuple<int2d^, double>^>();
+	for (int j = 0; j < neurons->Count; j++)
+	{
+		res[offset]->Add(gcnew Tuple<int2d^, double>
+			(gcnew int2d(neurons[j]->Item1, neurons[j]->Item2), 
+				false_sols[j]));
+		res[offset+1]->Add(gcnew Tuple<int2d^, double>
+			(gcnew int2d(neurons[j]->Item1, neurons[j]->Item2),
+				true_sols[j]));
+	}
 	return res;
+}
+
+void KohonenManaged::declareWinnerOutput(bool is_positive)
+{
+	auto p_solver = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
+	int winner_index = p_solver->getWinnerIndex();
+	if (is_positive == true)
+		true_sols[winner_index]++;
+	else
+		false_sols[winner_index]++;
+}
+
+void KohonenManaged::startLogWinners()
+{
+	if (is_logging == true)
+		throw gcnew System::OperationCanceledException();
+	winners_log = gcnew List<int>();
+	is_logging = true;
+}
+
+void KohonenManaged::stopLogWinners()
+{
+	if (is_logging == false)
+		throw gcnew System::OperationCanceledException();
+	is_logging = false;
+}
+
+void KohonenManaged::declareWinnersOutput(List<bool>^ positives)
+{
+	if (is_logging == true)
+		throw gcnew System::OperationCanceledException();
+	for (int i = 0; i < winners_log->Count; i++)
+	{
+		if (positives[i] == true)
+			true_sols[winners_log[i]]++;
+		else
+			false_sols[winners_log[i]]++;
+	}
+	winners_log->Clear();
 }

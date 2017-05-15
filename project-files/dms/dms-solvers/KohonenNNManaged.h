@@ -30,13 +30,27 @@ namespace dms::solvers::neural_nets::kohonen
 		virtual void FetchNativeParameters() override;
 		virtual void PushNativeParameters() override;
 
+		virtual array<Single>^ Solve(array<Single>^ x) override;
+
 		virtual ISolver^ Copy() override;
-		
+
+		void setClasses(array<array<float>^>^ outputs);
 		array<List<Tuple<int2d^, double>^>^>^ GetVisualData();
+		void declareWinnerOutput(bool is_positive);
+		void startLogWinners();
+		void stopLogWinners();
+		void declareWinnersOutput(List<bool>^ positives);
 	private:
 		array<float>^ weights;
 		array<array<float>^>^ classes;
+		array<int>^ false_sols;
+		array<int>^ true_sols;
 		List<Tuple<int, int>^>^ neurons;
 		bool use_normalization;
+
+		[NonSerializedAttribute]
+		List<int>^ winners_log;
+		[NonSerializedAttribute]
+		bool is_logging;
 	};
 }

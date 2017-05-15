@@ -28,7 +28,7 @@ namespace dms.view_models
         public ICommand CreateCommand { get { return createHandler; } }
 
         public TaskCreationViewModel()
-        { 
+        {
             cancelHandler = new ActionHandler(Cancel, (e) => true);
             createHandler = new ActionHandler(CreateTask, (e) => true);
         }
