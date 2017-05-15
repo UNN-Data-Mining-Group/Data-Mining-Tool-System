@@ -34,10 +34,10 @@ void main()
 	std::cout << "->Kohonen: " << (accuracy_test_koh() == 0 ? "Success" : "Fail") << std::endl;
 
 	std::cout << std::endl << "=== Performance tests ===" << std::endl;
-	performance_test_perc();
+	/*performance_test_perc();
 	performance_test_ward();
 	performance_test_conv();
-	performance_test_af();
+	performance_test_af();*/
 	kohonen_learning();
 }
 
@@ -85,6 +85,8 @@ int accuracy_test_koh()
 
 void kohonen_learning()
 {
+	using namespace nnets_kohonen_learning;
+
 	std::ifstream input_file("iris_mod.data");
 	int rowsCount = 150;
 	int inputParams = 4;
@@ -133,14 +135,14 @@ void kohonen_learning()
 	opers.solve = nnets_kohonen::solve;
 
 	nnets_kohonen::KohonenNet* kn = new nnets_kohonen::KohonenNet(inputParams, 1, 5, 5, EPS,
-		nnets_kohonen::KohonenNet::ClassInitializer::Evenly);
+		nnets_kohonen::KohonenNet::ClassInitializer::Statistical);
 	KohonenSelfOrganizer *selfOrg = new KohonenSelfOrganizer(opers, 50, 27, 1.5f, 0.1f, 1e-7f, EPS, true);
 
-	KohonenClassifier* cl = new KohonenClassifier(opers, false
-		, EPS, 50, 27, 0.8f, 1.0f, true);
+	KohonenClassifier* cl = new KohonenClassifier(opers, true
+		, EPS, 50, 27, 0.01f, 1.0f, true);
 	Selection s(x, y, rowsCount, inputParams, 1);
-	selfOrg->selfOrganize(s, kn);
-	//kn->setClasses(s.y, s.rowsCount);
+	//selfOrg->selfOrganize(s, kn);
+	kn->setClasses(s.y, s.rowsCount);
 	cl->train(s, kn);
 	delete cl;
 	delete selfOrg;

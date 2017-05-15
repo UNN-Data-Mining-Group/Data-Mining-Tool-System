@@ -7,6 +7,99 @@ using System.Collections.Generic;
 
 namespace dms.view_models
 {
+    public class LearningAlgoParamsViewModel : ViewmodelBase
+    {
+        public string[] ParamsName { get; }
+        public float[] ParamsValue { get; set; }
+        public LearningAlgoParamsViewModel(string[] parNames, float[] parValues)
+        {
+            ParamsName = parNames;
+            ParamsValue = parValues;
+        }
+    }
+
+    public class VectorQuantumParamsViewModel : LearningAlgoParamsViewModel
+    {
+        public VectorQuantumParamsViewModel(string[] parNames, float[] parValues) 
+            : base(parNames, parValues) {}
+        public bool HasPretrain
+        {
+            get { return ParamsValue[0] == 1.0f; }
+            set { ParamsValue[0] = (value == true ? 1.0f : 0.0f); }
+        }
+        public float Eps
+        {
+            get { return ParamsValue[1]; }
+            set { ParamsValue[1] = value; }
+        }
+        public int Iterations
+        {
+            get { return Convert.ToInt32(ParamsValue[2]); }
+            set { ParamsValue[2] = value; }
+        }
+        public int Seed
+        {
+            get { return Convert.ToInt32(ParamsValue[3]); }
+            set { ParamsValue[3] = value; }
+        }
+        public float A
+        {
+            get { return ParamsValue[4]; }
+            set { ParamsValue[4] = value; }
+        }
+        public float B
+        {
+            get { return ParamsValue[5]; }
+            set { ParamsValue[5] = value; }
+        }
+        public bool Normalize
+        {
+            get { return ParamsValue[6] == 1.0f; }
+            set { ParamsValue[6] = (value == true ? 1.0f : 0.0f); }
+        }
+    }
+
+    public class SelfOrganizerParamsViewModel : LearningAlgoParamsViewModel
+    {
+        public SelfOrganizerParamsViewModel(string[] parNames, float[] parValues) 
+            : base(parNames, parValues) {}
+        public int Iterations
+        {
+            get { return Convert.ToInt32(ParamsValue[0]); }
+            set { ParamsValue[0] = value; }
+        }
+        public int Seed
+        {
+            get { return Convert.ToInt32(ParamsValue[1]); }
+            set { ParamsValue[1] = value; }
+        }
+        public float Sigma0
+        {
+            get { return ParamsValue[2]; }
+            set { ParamsValue[2] = value; }
+        }
+        public float L0
+        {
+            get { return ParamsValue[3]; }
+            set { ParamsValue[3] = value; }
+        }
+        public float minLearningRate
+        {
+            get { return ParamsValue[4]; }
+            set { ParamsValue[4] = value; }
+        }
+        public float Eps
+        {
+            get { return ParamsValue[5]; }
+            set { ParamsValue[5] = value; }
+        }
+        public bool Normalize
+        {
+            get { return ParamsValue[6] == 1.0f; }
+            set { ParamsValue[6] = (value == true ? 1.0f : 0.0f); }
+        }
+    }
+
     public class LearningScenarioViewModel : ViewmodelBase
     {
         private ActionHandler createHandler;
@@ -15,6 +108,7 @@ namespace dms.view_models
         private string selectionType;
         private string separationParamName;
         private string separationParamValue;
+        private LearningAlgoParamsViewModel paramsVm;
 
         public LearningScenarioViewModel()
         {
@@ -26,24 +120,18 @@ namespace dms.view_models
             SeparationParamName = SeparationParamNames[0];
             TeacherType = TeacherTypesList[0];
             SelectionType = SelectionTypesList[0];
-            ParamsValue = learningAlgo.paramsValue;
             ID = -1;
             SeparationParamValue = "80";
         }
-
-        public string[] ParamsName { get { return learningAlgo.paramsName; } }
-        public float[] ParamsValue { get; set; }
-        public  ILAParameters GenParam
+        public  ILAParameters AlgoParam
         {
             set
             {
-   //             ParamsValue = value.geneticParams;
-                learningAlgo.GeneticParams = value;
+                learningAlgo.LAParams = value;
             }
             get
             {
- //               learningAlgo.GeneticParams.geneticParams = ParamsValue;
-                return learningAlgo.GeneticParams;
+                return learningAlgo.LAParams;
             }
         }
 
@@ -58,7 +146,19 @@ namespace dms.view_models
             set
             {
                 learningAlgo.usedAlgo = value;
+                if (learningAlgo.usedAlgo == "Векторное квантование")
+                    ParamsViewModel = new VectorQuantumParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
+                else if (learningAlgo.usedAlgo == "Самоорганизация Кохонена")
+                    ParamsViewModel = new SelfOrganizerParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
+                else
+                    ParamsViewModel = new LearningAlgoParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
+                NotifyPropertyChanged();
             }
+        }
+        public LearningAlgoParamsViewModel ParamsViewModel
+        {
+            get { return paramsVm; }
+            private set { paramsVm = value; NotifyPropertyChanged(); }
         }
         public string SelectionType
         {
@@ -120,7 +220,7 @@ namespace dms.view_models
             LearningScenario ls = new LearningScenario() {
                 Name = this.Name,
                 LearningAlgorithmName = TeacherType,
-                LAParameters = GenParam,
+                LAParameters = AlgoParam,
                 SelectionParameters = SelectionType + "," + MixSeed + "," + SeparationParamValue
             };
             ls.save();
@@ -177,7 +277,7 @@ namespace dms.view_models
                     MixSeed = learningScenario.SelectionParameters.Split(',')[1],
                     SeparationParamValue = learningScenario.SelectionParameters.Split(',')[2],
                     TeacherType = learningScenario.LearningAlgorithmName,
-                    GenParam = learningScenario.LAParameters,
+                    AlgoParam = learningScenario.LAParameters,
                     ID = learningScenario.ID
                 });
             }

@@ -261,11 +261,15 @@ namespace dms.view_models
                 List<Entity> pars = models.Parameter.where(new Query("Parameter")
                     .addTypeQuery(TypeQuery.select).addCondition("TaskTemplateID", "=", t.ID.ToString()),
                     typeof(models.Parameter));
-                paramNames = new string[pars.Count];
+
+                int paramsCount = pars.Count + 2;
+                paramNames = new string[paramsCount];
                 foreach(models.Parameter parameter in pars)
                 {
                     paramNames[parameter.Index] = parameter.Name;
                 }
+                paramNames[pars.Count] = "Количество ошибок";
+                paramNames[pars.Count + 1] = "Количество верных ответов";
 
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("CanAddGraph");

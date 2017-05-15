@@ -16,18 +16,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "neuro-test-managed", "neuro
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "neuro-test-native", "neuro-test-native\neuro-test-native.vcxproj", "{36BF07A5-AFDA-4EC6-A003-DCA1E2B18D64}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B} = {DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "neurolib", "neurolib\neurolib.vcxproj", "{A7D4FB1E-7A45-4066-855E-C82C611B6116}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeneticAlgo", "GeneticAlgo\GeneticAlgo.vcxproj", "{7CEF56FF-8365-4EAB-AFE6-959E5F12A36C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dms-learning-algo", "dms-learning-algo\dms-learning-algo.vcxproj", "{6A7958AF-D58C-48B6-95D3-887A6D8FACE7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B} = {DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "decision-tree-lib", "decision-tree-lib\decision-tree-lib.csproj", "{33F1E3B3-A234-4FE0-BD5B-FA04AD0C9DD2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BackProp", "BackProp\BackProp.vcxproj", "{55E0612B-1101-49A6-9952-075FE979CD69}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BackPropTest", "BackPropTest\BackPropTest.vcxproj", "{EA3E4BC5-BEA0-4CBA-A13D-3EA6E7138AD7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KohonenLearning", "KohonenLearning\KohonenLearning.vcxproj", "{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -143,6 +151,16 @@ Global
 		{EA3E4BC5-BEA0-4CBA-A13D-3EA6E7138AD7}.Release|x64.Build.0 = Release|x64
 		{EA3E4BC5-BEA0-4CBA-A13D-3EA6E7138AD7}.Release|x86.ActiveCfg = Release|Win32
 		{EA3E4BC5-BEA0-4CBA-A13D-3EA6E7138AD7}.Release|x86.Build.0 = Release|Win32
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Debug|x64.ActiveCfg = Debug|x64
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Debug|x64.Build.0 = Debug|x64
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Debug|x86.ActiveCfg = Debug|Win32
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Debug|x86.Build.0 = Debug|Win32
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Release|x64.ActiveCfg = Release|x64
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Release|x64.Build.0 = Release|x64
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Release|x86.ActiveCfg = Release|Win32
+		{DA6C9AAE-46D5-41A1-9DB7-FED85D3A395B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

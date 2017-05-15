@@ -91,6 +91,7 @@ namespace nnets_kohonen
 		size_t getClass(NeuronIndex n, float* y);
 		size_t getWeightsMatrixSize();
 		bool getUseNormalization();
+		int getWinnerIndex();
 
 		virtual ~KohonenNet();
 	private:
