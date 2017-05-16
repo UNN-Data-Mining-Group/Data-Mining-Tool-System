@@ -113,12 +113,6 @@ void KohonenManaged::PushNativeParameters()
 	auto p_solver = static_cast<nnets_kohonen::KohonenNet*>(getNativeSolver());
 
 	int y_size = GetOutputsCount();
-	int w_size = p_solver->getWeightsMatrixSize();
-	float* w = new float[w_size];
-	for (int i = 0; i < w_size; i++)
-		w[i] = weights[i];
-	p_solver->setWeights(w);
-	delete[] w;
 
 	std::vector<nnets_kohonen::NeuronIndex> ns;
 
@@ -133,10 +127,18 @@ void KohonenManaged::PushNativeParameters()
 		for (int j = 0; j < y_size; j++)
 			cls[i][j] = classes[i][j];
 	}
+
+	int w_size = p_solver->getWeightsMatrixSize();
+	float* w = new float[w_size];
+	for (int i = 0; i < w_size; i++)
+		w[i] = weights[i];
+
 	p_solver->setNeurons(ns);
+	p_solver->setWeights(w);
 	p_solver->setClasses(cls);
 	p_solver->setUseNormalization(use_normalization);
 
+	delete[] w;
 	for (int i = 0; i < ns.size(); i++)
 		delete[] cls[i];
 	delete[] cls;

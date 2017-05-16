@@ -44,8 +44,6 @@ namespace nnets_kohonen_learning
 			int _rowsCount, int _xSize, int _ySize) :
 			x(_x), y(_y), rowsCount(_rowsCount),
 			xSize(_xSize), ySize(_ySize) {}
-
-		std::vector<int> getMixIndexes(float seed);
 	};
 
 	class ClassExtracter
