@@ -132,10 +132,10 @@ namespace dms::neroNetLearningAlgoritms
 
 	float NeroNetLearningAlgoritms::startBackProp(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
 	{
-		void* result_Solver;
+		void* result_solver;
 		int a = 0;
 		std::map<std::string, void*>* operations = (std::map<std::string, void*>*)solver->getOperations();
-		result_Solver = solver->getNativeSolver();
+		result_solver = solver->getNativeSolver();
 
 		typedef size_t(*Solve)(float*, float*, void*);
 		Solve get_res = (Solve)((*operations)["solve"]);
@@ -148,6 +148,10 @@ namespace dms::neroNetLearningAlgoritms
 
 		typedef size_t(*GetIterationValues)(float*, int, void*);
 		GetIterationValues get_next_activate = (GetIterationValues)((*operations)["getIterationValues"]);
+
+
+		typedef size_t(*GetIterationsCount)(void*);
+		int count_layers = ((GetIterationsCount)((*operations)["getIterationsCount"]))(result_solver);
 
 		float** inputs = new float*[train_x->GetLength(0)];
 		float* outputs = new float[train_y->Length];
@@ -167,12 +171,12 @@ namespace dms::neroNetLearningAlgoritms
 		}
 
 	
-		float res = startBackProp(result_Solver, inputs, outputs, train_y->Length, train_x[0]->Length,
-			get_res, set_next_weights,get_next_grads,get_next_activate,
+		float res = startBackProp(result_solver, inputs, outputs, train_y->Length, train_x[0]->Length,
+			get_res, set_next_weights,get_next_grads,get_next_activate,count_layers,
 
 			
 			
-			count_layers, count_neuron_per_layer, count_steps,
+			 count_neuron_per_layer, count_steps,
 			res_weights,
 			count_lauer_to_layer, count_weights_per_lauer,
 			start_lr);
