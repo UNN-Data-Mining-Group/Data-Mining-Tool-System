@@ -13,7 +13,7 @@ namespace backProp
 	float backProp::startBackProp(
 		void* solver, float** inputs, float* outputs, int count_row, int count_col,
 		float(*get_res)(void* solver, float* in),
-		void(*set_next_weights)(void* solver, int i, float* weights),
+		void(*set_next_weights)(float* weights, int i, void* solver),
 		void(*get_next_grads)(void* solver, int i, float* grads),
 		void(*get_next_activate)(void* solver, int i, float* activate),
 		int count_layers, int* count_neuron_per_layer, int count_steps, float** res_weights,
@@ -134,7 +134,7 @@ namespace backProp
 					}
 #endif // PRINT_DEBUG_BACK
 
-					set_next_weights(solver, k - 1, res_weights[k - 1]);
+					set_next_weights(res_weights[k - 1], k - 1, solver);
 				}
 
 				get_next_grads(solver, 1, grads[1]);
@@ -217,7 +217,7 @@ namespace backProp
 				}
 #endif // PRINT_DEBUG_BACK
 
-				set_next_weights(solver, 0, res_weights[0]);
+				set_next_weights(res_weights[0], 0, solver);
 			}
 		}
 

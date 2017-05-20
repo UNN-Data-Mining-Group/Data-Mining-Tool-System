@@ -130,6 +130,71 @@ namespace dms::neroNetLearningAlgoritms
 		return res;
 	}
 
+	float NeroNetLearningAlgoritms::startBackProp(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
+	{
+		void* result_Solver;
+		int a = 0;
+		std::map<std::string, void*>* operations = (std::map<std::string, void*>*)solver->getOperations();
+		result_Solver = solver->getNativeSolver();
+
+		typedef size_t(*Solve)(float*, float*, void*);
+		Solve get_res = (Solve)((*operations)["solve"]);
+
+		typedef size_t(*SetWeightsVector)(float*, int, void*);
+		SetWeightsVector set_next_weights = (SetWeightsVector)((*operations)["setWeightsVector"]);
+
+		float** inputs = new float*[train_x->GetLength(0)];
+		float* outputs = new float[train_y->Length];
+
+		for (int i = 0; i < train_x->GetLength(0); i++)
+		{
+			inputs[i] = new float[train_x[i]->Length];
+			for (int j = 0; j < train_x[i]->Length; j++)
+			{
+				inputs[i][j] = train_x[i][j];
+			}
+		}
+
+		for (int i = 0; i < train_y->Length; i++)
+		{
+			outputs[i] = train_y[i];
+		}
+
+	
+		float res = startBackProp(result_Solver, inputs, outputs, train_y->Length, train_x[0]->Length,
+			get_res, set_next_weights,
+
+			get_next_grads,
+			get_next_activate,
+			count_layers, count_neuron_per_layer, count_steps,
+			res_weights,
+			count_lauer_to_layer, count_weights_per_lauer,
+			start_lr);
+
+		set_weights(res_weights, result_Solver);
+
+
+
+
+		for (int i = 0; i < train_x->GetLength(0); i++)
+		{
+			delete[] inputs[i];
+		}
+		delete[] inputs;
+		delete[] outputs;
+		delete[] res_weights;
+
+		for (int i = 0; i < count_person; i++)
+		{
+			freeSolver(solvers[i]);
+		}
+		delete[] solvers;
+
+
+		solver->FetchNativeParameters();
+		return res;
+	}
+
 	NeroNetLearningAlgoritms::~NeroNetLearningAlgoritms()
 	{
 		delete[] TeacherTypesList;

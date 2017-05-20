@@ -17,6 +17,7 @@ namespace dms::neroNetLearningAlgoritms
 		array<System::String^>^ TeacherTypesList;
 		array<System::String^>^ ParamsNames;
 		float startGenetic(INeuralNetwork^ solver, array<array<float>^>^ train_x, array<float>^ train_y);
+		float startBackProp(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y);
 	public:
 		~NeroNetLearningAlgoritms();
 		NeroNetLearningAlgoritms();
