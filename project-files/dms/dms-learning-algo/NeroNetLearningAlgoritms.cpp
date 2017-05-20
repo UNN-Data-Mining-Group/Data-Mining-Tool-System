@@ -146,6 +146,9 @@ namespace dms::neroNetLearningAlgoritms
 		typedef size_t(*GetIterationDerivatives)(float*, int, void*);
 		GetIterationDerivatives get_next_grads = (GetIterationDerivatives)((*operations)["getIterationDerivatives"]);
 
+		typedef size_t(*GetIterationValues)(float*, int, void*);
+		GetIterationValues get_next_activate = (GetIterationValues)((*operations)["getIterationValues"]);
+
 		float** inputs = new float*[train_x->GetLength(0)];
 		float* outputs = new float[train_y->Length];
 
@@ -165,10 +168,10 @@ namespace dms::neroNetLearningAlgoritms
 
 	
 		float res = startBackProp(result_Solver, inputs, outputs, train_y->Length, train_x[0]->Length,
-			get_res, set_next_weights,get_next_grads,
+			get_res, set_next_weights,get_next_grads,get_next_activate,
 
 			
-			get_next_activate,
+			
 			count_layers, count_neuron_per_layer, count_steps,
 			res_weights,
 			count_lauer_to_layer, count_weights_per_lauer,
