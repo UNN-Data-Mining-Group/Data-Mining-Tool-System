@@ -153,6 +153,10 @@ namespace dms::neroNetLearningAlgoritms
 		typedef size_t(*GetIterationsCount)(void*);
 		int count_layers = ((GetIterationsCount)((*operations)["getIterationsCount"]))(result_solver);
 
+		int* count_neuron_per_layer = new int[count_layers];
+		typedef size_t(*GetIterationSizes)(int*, void*);
+		((GetIterationSizes)((*operations)["getIterationSizes"]))(count_neuron_per_layer, result_solver);
+
 		float** inputs = new float*[train_x->GetLength(0)];
 		float* outputs = new float[train_y->Length];
 
@@ -172,11 +176,11 @@ namespace dms::neroNetLearningAlgoritms
 
 	
 		float res = startBackProp(result_solver, inputs, outputs, train_y->Length, train_x[0]->Length,
-			get_res, set_next_weights,get_next_grads,get_next_activate,count_layers,
+			get_res, set_next_weights,get_next_grads,get_next_activate,count_layers, count_neuron_per_layer,
 
 			
 			
-			 count_neuron_per_layer, count_steps,
+			 count_steps,
 			res_weights,
 			count_lauer_to_layer, count_weights_per_lauer,
 			start_lr);
@@ -192,13 +196,9 @@ namespace dms::neroNetLearningAlgoritms
 		}
 		delete[] inputs;
 		delete[] outputs;
+		delete[] count_neuron_per_layer;
 		delete[] res_weights;
-
-		for (int i = 0; i < count_person; i++)
-		{
-			freeSolver(solvers[i]);
-		}
-		delete[] solvers;
+		
 
 
 		solver->FetchNativeParameters();
