@@ -49,8 +49,10 @@ namespace dms.view_models
                 var pers = new List<TaskSolver>();
                 var wards = new List<TaskSolver>();
                 var convnets = new List<TaskSolver>();
+                var dectrees = new List<TaskSolver>();
+                var kohnets = new List<TaskSolver>();
 
-                foreach(TaskSolver solver in solvers)
+                foreach (TaskSolver solver in solvers)
                 {
                     if (solver.TypeName.Equals("Perceptron"))
                         pers.Add(solver);
@@ -58,15 +60,20 @@ namespace dms.view_models
                         wards.Add(solver);
                     else if (solver.TypeName.Equals("ConvNN"))
                         convnets.Add(solver);
+                    else if (solver.TypeName.Equals("DecisionTree"))
+                        dectrees.Add(solver);
+                    else if (solver.TypeName.Equals("KohonenNet"))
+                        kohnets.Add(solver);
                 }
 
                 Tasks.Add(new TaskTree
                     (task,
                     selections.ToArray(),
                     pers.ToArray(),
-                    new TaskSolver[] { },
+                    dectrees.ToArray(), 
                     wards.ToArray(),
                     convnets.ToArray(),
+                    kohnets.ToArray(),
                     new string[] { },
                     this));
             }

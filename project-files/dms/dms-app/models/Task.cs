@@ -55,6 +55,12 @@ namespace dms.models
             this.nameTable = "Task";
         }
 
+        public Task(archive.ArchiveTask task)
+        {
+            this.nameTable = "Task";
+            this.Name = task.Name;
+        }
+
         public override Dictionary<string, string> mappingTable()
         {
             Dictionary<string, string> mappingTable = new Dictionary<string, string>();

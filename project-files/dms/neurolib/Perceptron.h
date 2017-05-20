@@ -54,7 +54,7 @@ namespace nnets_perceptron
 		size_t getInputsCount() override;
 		size_t getOutputsCount() override;
 
-		~Perceptron();
+		virtual ~Perceptron();
 	private:
 		void check_initializers(const int* neurons, const bool* has_delay, 
 			const nnets::ActivationFunctionType* afs, int layers);

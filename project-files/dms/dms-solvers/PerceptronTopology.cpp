@@ -1,4 +1,5 @@
 #include "PerceptronTopology.h"
+#include "Perceptron.h"
 
 namespace dms::solvers::neural_nets::perceptron
 {
@@ -28,6 +29,16 @@ namespace dms::solvers::neural_nets::perceptron
 			hasLayerDelay[i] = delays[i];
 			this->afs[i] = afs[i];
 		}
+
+		hasSmoothAfs = true;
+		for (int i = 0; i < layersCount - 1; i++)
+		{
+			if (ActivationFunctionTypes::hasSmoothDerivative(afs[i]) == false)
+			{
+				hasSmoothAfs = false;
+				break;
+			}
+		}
 	}
 
 	int PerceptronTopology::GetLayersCount()
@@ -54,12 +65,38 @@ namespace dms::solvers::neural_nets::perceptron
 		}
 		return layersCount - 1;
 	}
-	int PerceptronTopology::GetInputsCount()
+	System::Int64 PerceptronTopology::GetInputsCount()
 	{
 		return neuronsInLayers[0];
 	}
-	int PerceptronTopology::GetOutputsCount()
+	System::Int64 PerceptronTopology::GetOutputsCount()
 	{
 		return neuronsInLayers[layersCount - 1];
+	}
+	nnets::NeuralNetwork* PerceptronTopology::createNativeSolver()
+	{
+		nnets::ActivationFunctionType* afs = 
+			new nnets::ActivationFunctionType[layersCount - 1];
+		for (int i = 0; i < layersCount - 1; i++)
+			afs[i] = ActivationFunctionTypes::getType(this->afs[i]);
+
+		int* neurons = new int[layersCount];
+		bool* delays = new bool[layersCount - 1];
+
+		for (int i = 0; i < layersCount; i++)
+			neurons[i] = neuronsInLayers[i];
+		for (int i = 0; i < layersCount - 1; i++)
+		{
+			delays[i] = hasLayerDelay[i];
+		}
+
+		nnets_perceptron::Perceptron* psolver =
+			new nnets_perceptron::Perceptron(neurons, delays, afs, layersCount);
+
+		delete[] neurons;
+		delete[] delays;
+		delete[] afs;
+
+		return psolver;
 	}
 }

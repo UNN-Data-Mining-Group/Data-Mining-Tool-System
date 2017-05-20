@@ -19,44 +19,49 @@ namespace dms.view_models
         private string[][] originalData;
         private string[] originalColumns;
 
-        private string[][] preprocData;
-        private string[] preprocColumns;
-
         private int SelectionId { get; set; }
 
         public SelectionInfoViewModel(int taskId, int selectionId)
         {
-            Selection selection = ((Selection)dms.services.DatabaseManager.SharedManager.entityById(selectionId, typeof(Selection)));
+            Selection selection = ((Selection)services.DatabaseManager.SharedManager.entityById(selectionId, typeof(Selection)));
             SelectionId = selectionId;
             SelectionName = selection.Name;
             CountRows = selection.RowCount;
             TaskId = taskId;
-            TaskName = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
+            TaskName = ((models.Task)services.DatabaseManager.SharedManager.entityById(taskId, typeof(models.Task))).Name;
 
             List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskID", "=", taskId.ToString()), typeof(TaskTemplate));
-            PreprocessingListPair = new Pair[taskTemplates.Count];
-            PreprocessingList = new string[taskTemplates.Count];
+            int size = taskTemplates.Count;
+            PreprocessingIdList = new int[size];
+            PreprocessingList = new string[size];
             int index = 0;
             foreach (Entity entity in taskTemplates)
             {
                 List<Entity> sels = TaskTemplate.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateId", "=", entity.ID.ToString())
-                .addCondition("Name", "=", SelectionName), typeof(Selection));
+                .addCondition("Name", "=", SelectionName)
+                .addCondition("Type", "=", "develop"), typeof(Selection));
                 if (sels.Count == 0)
                 {
                     continue;
                 }
-                Pair pair = new Pair();
-                pair.Id = entity.ID;
-                pair.Name = ((TaskTemplate)entity).Name;
-                PreprocessingList[index] = pair.Name;
-                PreprocessingListPair[index] = pair;
+                PreprocessingList[index] = ((TaskTemplate)entity).Name;
+                PreprocessingIdList[index] = entity.ID;
                 index++;
             }
+            string[] lst = new string[index];
+            int[] lstId = new int[index];
+            for (int i = 0; i < index; i++)
+            {
+                lst[i] = PreprocessingList[i];
+                lstId[i] = PreprocessingIdList[i];
+            }
+            PreprocessingIdList = lstId;
+            PreprocessingList = lst;
 
-            updateTable(selection.TaskTemplateID);//taskTemplates[0].ID);
-            TaskTemplate taskTemplate = ((TaskTemplate)dms.services.DatabaseManager.SharedManager.entityById(selection.TaskTemplateID, typeof(TaskTemplate)));
+            updateTable(selection.TaskTemplateID);
+            TaskTemplate taskTemplate = ((TaskTemplate)services.DatabaseManager.SharedManager.entityById(selection.TaskTemplateID, typeof(TaskTemplate)));
 
             SelectedPreprocessing = taskTemplate.Name;
             
@@ -67,7 +72,7 @@ namespace dms.view_models
         public string SelectionName { get; }
         public int CountRows { get; }
         public string[] PreprocessingList { get; }
-        public Pair[] PreprocessingListPair { get; }
+        public int[] PreprocessingIdList { get; }
         public string SelectedPreprocessing
         {
             get { return selectedPreprocessing; }
@@ -81,15 +86,14 @@ namespace dms.view_models
                 updateTable(taskTemplateId);
                 for (int i = 0; i < PreprocessingList.Length; i++)
                 {
-                    if (selectedPreprocessing.Equals(PreprocessingListPair[i].Name))
+                    if (selectedPreprocessing.Equals(PreprocessingList[i]))
                     {
                         Data = originalData;
                         DataColumns = originalColumns;
-                        taskTemplateId = PreprocessingListPair[i].Id;
+                        taskTemplateId = PreprocessingIdList[i];
                         break;
                     }
                 }
-             //   updateTable(taskTemplateId);
                 NotifyPropertyChanged("Data");
                 NotifyPropertyChanged("DataColumns");
             }
@@ -100,17 +104,22 @@ namespace dms.view_models
         private void updateTable(int taskTemplateId)
         {
             //рисуем заголовки
-            List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(dms.models.Parameter));
+            List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", taskTemplateId.ToString()), typeof(models.Parameter));
             originalColumns = new string[parameters.Count];
             for (int i = 0; i < parameters.Count; i++)
             {
-                dms.models.Parameter parameter = (dms.models.Parameter)parameters[i];
+                models.Parameter parameter = (models.Parameter)parameters[i];
                 originalColumns[i] = parameter.Name;
             }
             //рисуем содержимое
-            originalData = new string[CountRows][];
-            for (int i = 0; i < CountRows; i++)
+            int rows = 100;
+            if (CountRows < 100)
+            {
+                rows = CountRows;
+            }
+            originalData = new string[rows][];
+            for (int i = 0; i < rows; i++)
             {
                 originalData[i] = new string[parameters.Count];
             }
@@ -138,6 +147,11 @@ namespace dms.view_models
                         stepParam++;
                     }
                     stepRow++;
+                    if (stepRow >= rows)
+                    {
+                        break;
+                    }
+
                 }
             }
         }

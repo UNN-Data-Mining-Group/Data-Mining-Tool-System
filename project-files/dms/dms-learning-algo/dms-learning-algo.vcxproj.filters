@@ -21,7 +21,10 @@
     <ClInclude Include="..\dms-solvers\resource.h">
       <Filter>Common\Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="LearningAlgoritms.h">
+    <ClInclude Include="NeroNetLearningAlgoritms.h">
+      <Filter>Common\Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="KohonenLearningAlgorithms.h">
       <Filter>Common\Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,7 +32,10 @@
     <ClCompile Include="AssemblyInfo.cpp">
       <Filter>Common\Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="LearningAlgoritms.cpp">
+    <ClCompile Include="NeroNetLearningAlgoritms.cpp">
+      <Filter>Common\Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="KohonenLearningAlgorithms.cpp">
       <Filter>Common\Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

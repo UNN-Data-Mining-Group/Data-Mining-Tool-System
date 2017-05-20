@@ -13,12 +13,14 @@ namespace dms.view_models
     [Serializable]
     public class Parameter
     {
-        public Parameter(string name, string type, string comment)
+        public Parameter(string name, string type, string comment, int id)
         {
+            Id = id;
             Name = name;
             Type = type;
             Comment = comment;
         }
+        public int Id { get; }
         public string Name { get; }
         public string Type { get; }
         public string Comment { get; }
@@ -26,7 +28,7 @@ namespace dms.view_models
 
     public class Preprocessing
     {
-        public Preprocessing(string name, string baseTemplate, 
+        public Preprocessing(string name, string baseTemplate,
             string performedTemplate, Tuple<Parameter, string>[] preproc, int id)
         {
             PerformedTemplateId = id;
@@ -81,13 +83,12 @@ namespace dms.view_models
                 {
                     PreprocessingViewModel.PreprocessingTemplate pp =
                         (PreprocessingViewModel.PreprocessingTemplate)template.PreprocessingParameters;
-                    Dictionary<Parameter, string> dictionary = pp.get();
-                    Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[dictionary.Count];
-                    int i = 0;
-                    foreach (KeyValuePair<Parameter, string> kp in dictionary)
-                    {
-                        tuple[i] = new Tuple<Parameter, string>(kp.Key, kp.Value);
-                        i++;
+                    List<Parameter> parameters = pp.parameters;
+                    List<string> types = pp.types;
+                    Tuple<Parameter, string>[] tuple = new Tuple<Parameter, string>[parameters.Count];
+                    for (int i = 0; i < parameters.Count; i++)
+                    {//???
+                        tuple[i] = new Tuple<Parameter, string>(parameters[i], types[i]);
                     }
                     PreprocessingList[index] = new Preprocessing(pp.PreprocessingName, pp.BaseTemplate.Name, template.Name, tuple, template.ID);
 
@@ -96,7 +97,7 @@ namespace dms.view_models
                 SelectedTemplate = Templates[0];
             }
 
-            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task.ID, SelectedPreprocessing.PerformedTemplateId)), o => SelectedPreprocessing != null);
+            moreHandler = new ActionHandler(() => OnShowPreprocessingDetails?.Invoke(new PreprocessingViewModel(task, SelectedPreprocessing.PerformedTemplateId)), o => SelectedPreprocessing != null);
         }
 
         public string TaskName { get; }

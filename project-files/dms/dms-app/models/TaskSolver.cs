@@ -71,6 +71,14 @@ namespace dms.models
             this.nameTable = "TaskSolver";
         }
 
+        public TaskSolver(archive.ArchiveTaskSolver solv)
+        {
+            this.nameTable = "TaskSolver";
+            this.Name = solv.Name;
+            this.TypeName = solv.TypeName;
+            this.Description = solv.Description;
+        }
+
         public override Dictionary<string, string> mappingTable()
         {
             Dictionary<string, string> mappingTable = new Dictionary<string, string>();

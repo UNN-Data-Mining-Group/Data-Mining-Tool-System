@@ -112,6 +112,20 @@ namespace dms.services
             }
         }
 
+        public void deleteMultipleEntities(List<Entity> list)
+        {
+            startTransaction();
+            foreach (Entity entity in list)
+            {
+                deleteEntity(entity);
+            }
+            endTransaction(true);
+            foreach (Entity entity in list)
+            {
+                entity.ID = -1;
+            }
+        }
+
         public void deleteEntity(Entity entity)
         {
             if (entity.ID == -1)

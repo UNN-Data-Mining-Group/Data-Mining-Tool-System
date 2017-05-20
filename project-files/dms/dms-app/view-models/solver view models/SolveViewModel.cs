@@ -13,6 +13,7 @@ using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.ward_net;
 using dms.models;
 using dms.solvers;
+using dms.services.preprocessing;
 
 namespace dms.view_models
 {
@@ -23,18 +24,33 @@ namespace dms.view_models
         public string PreprocessingName { get; set; }
         public float TrainMistake { get; set; }
         public float TestMistake { get; set; }
+        public float ClosingError { get; set; }
+        public int SelectionID { get; set; }
+        public int ParameterID { get; set; }
 
         public models.TaskTemplate TaskTemplate { get; set; }
         public models.LearnedSolver LearnedSolver { get; set; }
     }
 
-    public struct X
+    public class X : ViewmodelBase
     {
-        public string Value { get; set; }
+        private string value;
+        public string Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+                this.value = value;
+            }
+        }
         public string ParameterDescription { get; set; }
     }
 
-    public class SolvingInstance
+    public class SolvingInstance : ViewmodelBase
     {
         private ActionHandler deleteHandler;
 
@@ -45,13 +61,11 @@ namespace dms.view_models
         {
             deleteHandler = new ActionHandler(() => vm.DeleteSolvingInstance(this), e => true);
             List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
-            //List<X> inputParams = new List<X>();
             X = new ObservableCollection<X>();
             foreach (models.Parameter par in parameters.Where(par => par.IsOutput == 0))
             {
-                X.Add(new X { ParameterDescription = par.Name, Value = "2" });
+                X.Add(new X { ParameterDescription = par.Name });
             }
-            //X = inputParams.ToArray();
             Y = new ObservableCollection<string>(new string[parameters.Count(par => par.IsOutput != 0)]);
         }
 
@@ -64,6 +78,8 @@ namespace dms.view_models
         private ActionHandler saveHandler;
         private ActionHandler solveHandler;
         private LearningInfo selectedLearning;
+        private string selectedSolution;
+        private string[] solutions;
 
         public string SolverName { get; }
         public string TaskName { get; }
@@ -82,9 +98,56 @@ namespace dms.view_models
         public ICommand AddSolvingInstance { get { return addHandler; } }
         public ICommand SolveCommand { get { return solveHandler; } }
         public ICommand SaveCommand { get { return saveHandler; } }
+        public int SelectionID { get; set; }
+        public int ParameterID { get; set; }
+        public string SelectedSolution
+        {
+            get
+            {
+                return selectedSolution;
+            }
+            set
+            {
+                selectedSolution = value;
+                NotifyPropertyChanged("SelectedSolution");
+            }
+        }
+        public string[] Solutions
+        {
+            get
+            {
+                if (SelectedLearning == null)
+                    return new string[] { "" };
+                List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskID", "=", Convert.ToString(TaskID)), typeof(TaskTemplate));
+                List<string> solutions = new List<string>();
+                foreach (TaskTemplate taskTemplate in taskTemplates)
+                {
+                    List<Entity> selections = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskTemplateID", "=", Convert.ToString(taskTemplate.ID)), typeof(Selection));
+                    foreach (Selection selection in selections)
+                    {
+                        if (selection.Type.Equals("solution"))
+                            solutions.Add(selection.Name);
+                    }
+                }
+                if (solutions.Count == 0)
+                    solutions.Add("Нет созданных решений");
+                return solutions.ToArray();
+            }
+            set
+            {
+                solutions = value;
+                NotifyPropertyChanged("Solutions");
+
+            }
+        }
+
+        public int TaskID { get; private set; }
 
         public SolveViewModel(models.Task task, models.TaskSolver solver)
         {
+            TaskID = task.ID;
             SolvingList = new ObservableCollection<SolvingInstance>();
             SolverName = solver.Name;
             TaskName = task.Name;
@@ -97,13 +160,24 @@ namespace dms.view_models
                 models.LearningScenario scenario = (models.LearningScenario)models.LearningScenario.getById(learnedSolver.LearningScenarioID, typeof(models.LearningScenario));
                 models.TaskTemplate template = (models.TaskTemplate)models.TaskTemplate.getById(selection.TaskTemplateID, typeof(models.TaskTemplate));
                 models.LearningQuality quality = (qualities != null && qualities.Count > 0) ? qualities[0] : null;
+                List<models.Parameter> parameters = models.Parameter.parametersOfTaskTemplateId(template.ID);
+                int outputParam = 0;
+                foreach (models.Parameter param in parameters) {
+                    if (param.IsOutput == 1) {
+                        outputParam = param.ID;
+                        break;
+                    }
+                }
                 learningList.Add(new LearningInfo
                 {
+                    SelectionID = selection.ID,
+                    ParameterID = outputParam,
                     SelectionName = selection.Name, 
                     LearningScenarioName = scenario.Name,
                     PreprocessingName = template.Name,
                     TestMistake = (quality != null) ? quality.MistakeTest : 0,
                     TrainMistake = (quality != null) ? quality.MistakeTrain : 0,
+                    ClosingError = Convert.ToSingle((quality != null) ? quality.ClosingError : 0),
                     TaskTemplate = template,
                     LearnedSolver = learnedSolver
                 });
@@ -114,10 +188,49 @@ namespace dms.view_models
                 SolvingList.Add(new SolvingInstance(this, this.SelectedLearning.TaskTemplate));
                 solveHandler.RaiseCanExecuteChanged();
                 saveHandler.RaiseCanExecuteChanged();
+                SelectedSolution = Solutions[0];
+                NotifyPropertyChanged("SelectedSolution");
+                NotifyPropertyChanged("Solutions");
             }, e=>SelectedLearning != null);
 
             solveHandler = new ActionHandler(Solve, e => SolvingList.Count > 0);
-            saveHandler = new ActionHandler(() => { }, e => SolvingList.Count > 0);
+            saveHandler = new ActionHandler(saveSolutions, e => SolvingList.Count > 0);
+
+            SelectedSolution = Solutions[0];
+        }
+
+        private void saveSolutions()
+        {
+            Selection selection = (Selection) Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
+                    .addCondition("Name", "=", SelectedSolution), typeof(Selection))[0];
+            models.TaskTemplate template = (models.TaskTemplate)models.TaskTemplate.getById(selection.TaskTemplateID, typeof(models.TaskTemplate));
+            models.Parameter parameter = (models.Parameter) models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskTemplateID", "=", Convert.ToString(template.ID)), typeof(models.Parameter))[0];
+
+            for (int i = 0; i < SolvingList.Count; i++)
+            {
+                var item = SolvingList[i];
+                SelectionRow sr = new SelectionRow()
+                {
+                    SelectionID = selection.ID,
+                    Number = i
+                };
+                sr.save();
+                List<string> values = new List<string>();
+                values.AddRange(item.X.Select(x => x.Value));
+                values.Add(outputValues[i]);
+                foreach (string value in values)
+                {
+                    TaskSLAnswer vp = new TaskSLAnswer()
+                    {
+                        SelectionRowID = sr.ID,
+                        Value = value,
+                        ParameterID = parameter.ID,
+                        LearnedSolverID = this.SelectedLearning.LearnedSolver.ID
+                    };
+                    vp.save();
+                }
+            }
         }
 
         public void DeleteSolvingInstance(SolvingInstance i)
@@ -129,30 +242,24 @@ namespace dms.view_models
 
         public void Solve()
         {
-            ISolver isolver = FactorySolver(this.SelectedLearning.LearnedSolver);
+            SelectionID = SelectedLearning.SelectionID;
+            ParameterID = SelectedLearning.ParameterID;
+            ISolver isolver = this.SelectedLearning.LearnedSolver.Soul;
+            List<string> curOutputValues = new List<string>();
             foreach (var item in SolvingList)
             {
-                float[] y = isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray());
+                curOutputValues.Add(Convert.ToString(isolver.Solve(item.X.Select(x => float.Parse(x.Value)).ToArray())[0]));
+            }
+            PreprocessingManager preprocessing = new PreprocessingManager();
+            outputValues = preprocessing.getAppropriateValuesAfterInversePreprocessing(curOutputValues, SelectionID, ParameterID);
+            foreach (var item in SolvingList)
+            {
                 for (int i = 0; i < item.Y.Count; i++)
                 {
-                    item.Y[i] = Convert.ToString(y[i]);
+                    item.Y[i] = outputValues[i];
                 }                
-            } 
-        }
-
-        public ISolver FactorySolver(LearnedSolver ls)
-        {
-            if (ls.Soul is INeuralNetwork)
-            {
-                INeuralNetwork isolver = ls.Soul as INeuralNetwork;
-                isolver.PushNativeParameters();
-                return isolver;
             }
-            // New ifelse will be added for desicion tree;
-            else throw new EntryPointNotFoundException();
         }
-
-        public string[] Solutions { get { return new string[] { "Решение 1", "Решение 2" }; } }
-        public string SelectedSolution { get; set; }
+        public List<string> outputValues { get; set; }
     }
 }

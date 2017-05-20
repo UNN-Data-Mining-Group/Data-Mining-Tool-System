@@ -20,22 +20,18 @@ namespace dms.view_models
             public string Name { get; set; }
             public int Id { get; set; }
         }
-        public int selectionId;
+
         public event Action<bool> selectionCreate;
         private ActionHandler browseFileCommandHandler;
         private ActionHandler cancelHandler;
         private ActionHandler createHandler;
+
+        public int selectionId;
         private string selectionName;
-        private bool hasHeader;
-        private int countRows;
-        private string filePath;
-        private string delimiter;
+
         private bool canUseExitingTemplate;
         private bool canCreateTemplate;
         private bool isUsingExitingTemplate;
-        private Pair selectedTemplate;
-        private ObservableCollection<string> templateList;
-        private string newTemplateName;
 
         public event EventHandler OnClose;
 
@@ -46,11 +42,20 @@ namespace dms.view_models
         public int TaskId { get; set; }
         public string ParentTask { get; set; }
         public string SelectionName { get { return selectionName; } set { selectionName = value; NotifyPropertyChanged(); } }
+
+        private bool hasHeader;
         public bool HasHeader { get { return hasHeader; } set { hasHeader = value; NotifyPropertyChanged(); } }
+
+        private int countRows;
         public int CountRows { get { return countRows; } set { countRows = value; NotifyPropertyChanged(); } }
+
+        private string filePath;
         public string FilePath { get { return filePath; } set { filePath = value; NotifyPropertyChanged(); } }
+
+        private string delimiter;
         public List<string> DelimiterList { get { return new List<string> { ".", "," , "|"}; } }
         public string Delimiter { get { return delimiter; } set { delimiter = value; NotifyPropertyChanged(); } }
+
         public bool CanUseExitingTemplate
         {
             get { return canUseExitingTemplate; }
@@ -67,7 +72,7 @@ namespace dms.view_models
             get { return canCreateTemplate; }
             set
             {
-                canCreateTemplate = value;
+                canCreateTemplate = value;// && (NewTemplateName != null && NewTemplateName != "");
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("IsUsingNewTemplate");
                 createHandler.RaiseCanExecuteChanged();
@@ -84,15 +89,22 @@ namespace dms.view_models
                 NotifyPropertyChanged("IsUsingNewTemplate");
             }
         }
-       
+
+        private Pair selectedTemplate;
         public Pair SelectedTemplate
         {
             get { return selectedTemplate; }
             set { selectedTemplate = value;
                 NotifyPropertyChanged(); }
         }
+
+        private ObservableCollection<string> templateList;
         public ObservableCollection<string> TemplateList { get { return templateList; } set { templateList = value; NotifyPropertyChanged(); } }
+
+        private string newTemplateName;
         public string NewTemplateName { get { return newTemplateName; } set { newTemplateName = value; NotifyPropertyChanged(); } }
+        
+
         public float EnumPercent { get; set; }
 
         public ObservableCollection<ParameterCreationViewModel> Parameters { get; set; }
@@ -102,10 +114,11 @@ namespace dms.view_models
         {
             taskTreeVM = vm;
             TaskId = taskId;
-            ParentTask = ((dms.models.Task)dms.services.DatabaseManager.SharedManager.entityById(taskId, typeof(dms.models.Task))).Name;
+            ParentTask = ((models.Task)services.DatabaseManager.SharedManager.entityById(taskId, typeof(models.Task))).Name;
             Random r = new Random();
-            SelectionName = "Выборка " + r.Next(1, 1000);
-            NewTemplateName = "New Template";
+            int number = r.Next(1, 1000);
+            SelectionName = "Выборка " + number;
+            NewTemplateName = "Базовый шаблон для Выборки " + number;
             HasHeader = false;
             CountRows = 0;
             FilePath = "";
@@ -114,7 +127,7 @@ namespace dms.view_models
 
             browseFileCommandHandler = new ActionHandler(BrowseFile, (o) => true);
             cancelHandler = new ActionHandler(Cancel, o => true);
-            createHandler = new ActionHandler(Create, o => CanUseExitingTemplate && CanCreateTemplate);
+            createHandler = new ActionHandler(Create, o => (CanUseExitingTemplate || CanCreateTemplate));
 
             Parameters = new ObservableCollection<ParameterCreationViewModel>();
             CanUseExitingTemplate = CanCreateTemplate = false;
@@ -132,9 +145,14 @@ namespace dms.view_models
             if (IsUsingExitingTemplate)
             {
                 taskTemplateId = SelectedTemplate.Id;
-            } else
+            }
+            else
             {
-                string templateName = (newTemplateName == null || newTemplateName == "") ? "Template" : newTemplateName;
+                //Определение индекса последней выборки
+                List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                    .addCondition("TaskId", "=", TaskId.ToString()), typeof(TaskTemplate));
+                string templateNameForEmptyField = "Template " + ((taskTemplates != null) ? taskTemplates.Count + 1 : 1);
+                string templateName = (newTemplateName == null || newTemplateName == "") ? templateNameForEmptyField : newTemplateName;
                 DataHelper helper = new DataHelper();
 
                 //ppParameters = null для главного шаблона
@@ -156,12 +174,13 @@ namespace dms.view_models
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
-            openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openFileDialog.Filter = "data files (*.data)|*.data|csv files (*.csv)|*.csv|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = @"datasets";
+            openFileDialog.RestoreDirectory = true;
             if (openFileDialog.ShowDialog() == true)
             {
                 foreach (string filename in openFileDialog.FileNames)
-                    FilePath = Path.GetFullPath(filename);//.GetFileName(filename);
+                    FilePath = Path.GetFullPath(filename);
             }
             updateAllowedTemplates();
         }
@@ -216,15 +235,15 @@ namespace dms.view_models
             foreach (Entity taskTemplate in taskTemplates)
             {
                 bool canAbord = false;
-                List<Entity> parameters = dms.models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
-                .addCondition("TaskTemplateID", "=", taskTemplate.ID.ToString()), typeof(dms.models.Parameter));
+                List<Entity> parameters = models.Parameter.where(new Query("Parameter").addTypeQuery(TypeQuery.select)
+                .addCondition("TaskTemplateID", "=", taskTemplate.ID.ToString()), typeof(models.Parameter));
 
                 if (selParameters.Length == parameters.Count)
                 {
                     int index = 0;
                     foreach (string parameter in selParameters)
                     {
-                        if (((dms.models.Parameter)parameters[index]).Type !=
+                        if (((models.Parameter)parameters[index]).Type !=
                             Parser.SelectionParser.getTypeParameter(selParameters[index]))
                         {
                             canAbord = true;
@@ -239,11 +258,13 @@ namespace dms.view_models
                     }
                 }
             }
-            if (templates.Count == 0)
+            if (templates.Count.Equals(0))
             {
-                TemplateList.Add("");
+                CanUseExitingTemplate = false;
             }
             return templates;
         }
+
+
     }
 }

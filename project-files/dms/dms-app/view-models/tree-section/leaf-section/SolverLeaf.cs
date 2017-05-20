@@ -34,12 +34,14 @@ namespace dms.view_models
         {
             if (solver.TypeName.Equals("Perceptron"))
                 return new PerceptronInfoViewModel(parentTask, solver);
-            else if (solverType.Equals("Дерево решений"))
+            else if (solverType.Equals("DecisionTree"))
                 return new DecisionTreeInfoViewModel(parentTask, solver);
             else if (solver.TypeName.Equals("WardNN"))
                 return new WardNetInfoViewModel(parentTask, solver);
             else if (solver.TypeName.Equals("ConvNN"))
                 return new ConvNNInfoViewModel(parentTask, solver);
+            else if (solver.TypeName.Equals("KohonenNet"))
+                return new KohonenInfoViewModel(parentTask, solver);
             else
                 return null;
         }

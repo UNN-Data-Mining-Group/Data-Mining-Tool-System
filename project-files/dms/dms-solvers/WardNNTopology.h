@@ -1,5 +1,5 @@
 #pragma once
-#include "ISolverDescription.h"
+#include "ITopology.h"
 #include "ActivationFunctionTypes.h"
 
 using System::Collections::Generic::List;
@@ -32,15 +32,18 @@ namespace dms::solvers::neural_nets::ward_net
 	};
 
 	[System::SerializableAttribute]
-	public ref class WardNNTopology : public ISolverDescription
+	public ref class WardNNTopology : public ITopology
 	{
 	public:
 		WardNNTopology(InputLayer^ input, List<Layer^>^ layers);
-		System::Int64 GetInputsCount();
-		System::Int64 GetOutputsCount();
 		InputLayer^ GetInputLayer();
 		List<Layer^>^ GetLayers();
+		bool HasSmoothAfs() { return hasSmoothAfs; }
+		virtual System::Int64 GetInputsCount();
+		virtual System::Int64 GetOutputsCount();
+		virtual nnets::NeuralNetwork * createNativeSolver();
 	private:
+		bool hasSmoothAfs;
 		InputLayer^ inputLayer;
 		List<Layer^>^ layers;
 	};

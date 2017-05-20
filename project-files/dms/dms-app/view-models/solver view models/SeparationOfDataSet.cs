@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using dms.solvers;
 using dms.solvers.neural_nets;
+using dms.solvers.neural_nets.kohonen;
+using dms.services.preprocessing;
+using dms.solvers.decision_tree;
 
 namespace dms.view_models.solver_view_models
 {
@@ -13,7 +16,7 @@ namespace dms.view_models.solver_view_models
     {
         private float mistakeTrain = 0;
         private float mistakeTest = 0;
-        public SeparationOfDataSet(INeuralNetwork solver, LearningScenario learnignScenario, float [][]x, float []y)
+        public SeparationOfDataSet(ISolver solver, LearningScenario learnignScenario, float [][]x, float []y)
         {
             ISolver = solver;
             LS = learnignScenario;
@@ -35,28 +38,36 @@ namespace dms.view_models.solver_view_models
                 return mistakeTrain * 100;
             }
         }
+        public float ClosingError { get; set; }
         public LearningScenario LS { get; private set; }
         public float[] OutputData { get; private set; }
-        public INeuralNetwork ISolver { get; private set; }
+        public ISolver ISolver { get; private set; }
+        public int SelectionID { get; private set; }
+        public int ParameterID { get; private set; }
 
-        public void separationAndLearn()
+        public ISolver separationAndLearn(int selectionID, int parameterID)
         {
+            SelectionID = selectionID;
+            ParameterID = parameterID;
             string selectionType = LS.SelectionParameters.Split(',')[0];
             mixDataset();
             if (selectionType.Equals("Тестовая/обучающая"))
             {
-                simpleSeparation(); 
+                int percentTrain = int.Parse(LS.SelectionParameters.Split(',')[2]);
+                return simpleSeparation(percentTrain); 
             }
             else if (selectionType.Equals("Кроссвалидация"))
             {
-                crossValidation();
+                int kfolds = int.Parse(LS.SelectionParameters.Split(',')[2]);
+                return crossValidation(kfolds);
             }
             else throw new Exception("Unknown error");
         }
 
-        private void crossValidation()
+        private ISolver crossValidation(int folds)
         {
-            int folds = 5;
+            ISolver curSolver = ISolver.Copy();
+            List<float> listOfTestMistakes = new List<float>();
             for (int k = 0; k < folds; k++)
             {
                 float kMistakeTrain = 0;
@@ -66,88 +77,127 @@ namespace dms.view_models.solver_view_models
                 float[] trainOutputDataset = GetOutputTrainData(OutputData, folds, k);
                 float[] testOutputDataset = GetTestOutputData(OutputData, folds, k);
 
-                LearningAlgo la = new LearningAlgo()
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
                     usedAlgo = LS.LearningAlgorithmName,
-                    GeneticParams = (GeneticParam)LS.LAParameters
+                    LAParams = LS.LAParameters
 
                 };
-
-                la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-                ISolver.FetchNativeParameters();
+                PreprocessingManager preprocessing = new PreprocessingManager();
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
                 int sizeTrainDataset = trainInputDataset.Length;
+                List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
+                List<string> obtainedOutputValues = new List<string>();
+
+                if (ISolver is KohonenManaged)
+                {
+                    KohonenManaged koh = ISolver as KohonenManaged;
+                    koh.startLogWinners();
+                }
                 for (int i = 0; i < sizeTrainDataset; i++)
                 {
-                    float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
-                    if (expectedOutputDataset[0] != trainOutputDataset[i])
-                    {
-                        kMistakeTrain++;
-                    }
+                    obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(trainInputDataset[i])[0]));
                 }
-                kMistakeTrain /= sizeTrainDataset;
-                
-                int sizeTestDataset = trainOutputDataset.Length;
+                List<bool> comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+                if (ISolver is KohonenManaged)
+                {
+                    KohonenManaged koh = ISolver as KohonenManaged;
+                    koh.stopLogWinners();
+                    koh.declareWinnersOutput(comparisonOfResult);
+                }
+
+                var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+                kMistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
+
+                int sizeTestDataset = testOutputDataset.Length;
+                expectedOutputValues = testOutputDataset.Select(x => Convert.ToString(x)).ToList();
+                obtainedOutputValues.Clear();
                 for (int i = 0; i < sizeTestDataset; i++)
                 {
-                    float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
-                    if (expectedOutputDataset[0] != testOutputDataset[i])
-                    {
-                        kMistakeTest++;
-                    }
+                    obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(testInputDataset[i])[0]));
                 }
-                kMistakeTest /= sizeTestDataset;
-
-                mistakeTrain += kMistakeTrain;
-                mistakeTest += kMistakeTest;
+                comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+                counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+                kMistakeTest = (float)counts[false] / (float)sizeTestDataset;
+                if (k != 0 && kMistakeTest < listOfTestMistakes.Min())
+                {
+                    curSolver = ISolver.Copy();
+                    mistakeTest = kMistakeTest;
+                    mistakeTrain = kMistakeTrain;
+                }
+                listOfTestMistakes.Add(kMistakeTest);
             }
-            mistakeTrain /= folds;
-            mistakeTest /= folds;
+            ISolver = curSolver.Copy() as INeuralNetwork;
+
+            return ISolver;
         }
 
-        public void simpleSeparation()
+        public ISolver simpleSeparation(int percentTrain)
         {
-            int sizeTrainDataset = Convert.ToInt32(InputData.Length * 0.5);
+            int sizeTrainDataset = Convert.ToInt32(InputData.Length * ((double)percentTrain / 100));
             int sizeTestDataset = InputData.Length - sizeTrainDataset;
-            float [][] trainInputDataset = new float[sizeTrainDataset][];
-            float [][] testInputDataset = new float[InputData.Length - sizeTrainDataset][];
+            float[][] trainInputDataset = new float[sizeTrainDataset][];
+            float[][] testInputDataset = new float[InputData.Length - sizeTrainDataset][];
             float[] trainOutputDataset = new float[sizeTrainDataset];
             float[] testOutputDataset = new float[InputData.Length - sizeTrainDataset];
             Array.Copy(InputData, trainInputDataset, sizeTrainDataset);
-            Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTrainDataset);
+            Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTestDataset);
             Array.Copy(OutputData, trainOutputDataset, sizeTrainDataset);
-            Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTrainDataset);
+            Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTestDataset);
 
-
-            LearningAlgo la = new LearningAlgo()
+            if (ISolver is INeuralNetwork)
             {
-                usedAlgo = LS.LearningAlgorithmName,
-                GeneticParams = (GeneticParam)LS.LAParameters
-
-            };
-
-            la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-            ISolver.FetchNativeParameters();
-            mistakeTrain = 0;
-            for(int i = 0; i < sizeTrainDataset; i++)
-            {
-                float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
-                if (expectedOutputDataset[0] != trainOutputDataset[i])
+                LearningAlgoManager la = new LearningAlgoManager()
                 {
-                    mistakeTrain++;
-                }
+                    usedAlgo = LS.LearningAlgorithmName,
+                    LAParams = LS.LAParameters
+
+                };
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             }
-            mistakeTrain /= sizeTrainDataset;
+            else if (ISolver is DecisionTree)
+            {
+                DecisionTreeLearning la = new DecisionTreeLearning();
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+            }
+
+            PreprocessingManager preprocessing = new PreprocessingManager();
+            mistakeTrain = 0;
+            List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
+            List<string> obtainedOutputValues = new List<string>();
+
+            if (ISolver is KohonenManaged)
+            {
+                KohonenManaged koh = ISolver as KohonenManaged;
+                koh.startLogWinners();
+            }
+            for (int i = 0; i < sizeTrainDataset; i++)
+            {
+                obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(trainInputDataset[i])[0]));
+            }
+            List<bool> comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+            if (ISolver is KohonenManaged)
+            {
+                KohonenManaged koh = ISolver as KohonenManaged;
+                koh.stopLogWinners();
+                koh.declareWinnersOutput(comparisonOfResult);
+            }
+
+            var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+            mistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
 
             mistakeTest = 0;
+            expectedOutputValues = testOutputDataset.Select(x => Convert.ToString(x)).ToList();
+            obtainedOutputValues.Clear();
             for (int i = 0; i < sizeTestDataset; i++)
             {
-                float[] expectedOutputDataset = ISolver.Solve(trainInputDataset[i]);
-                if (expectedOutputDataset[0] != testOutputDataset[i])
-                {
-                    mistakeTest++;
-                }
+                obtainedOutputValues.Add(Convert.ToString(ISolver.Solve(testInputDataset[i])[0]));
             }
-            mistakeTest /= sizeTestDataset;
+            comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
+            counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+            mistakeTest = (float)counts[false] / (float)sizeTestDataset;
+
+            return ISolver;
         }
 
         private void mixDataset()
@@ -170,14 +220,14 @@ namespace dms.view_models.solver_view_models
 
         float[][] GetInputTrainData(float[][] inputData, int numFolds, int fold)
         {
-            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); // first and last index of rows tagged as TEST data
-            int numTrain = inputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1); // tot num rows - num test rows
+            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); 
+            int numTrain = inputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1);
             float[][] result = new float[numTrain][];
-            int i = 0; // index into result/test data
-            int ia = 0; // index into all data
+            int i = 0; 
+            int ia = 0; 
             while (i < result.Length)
             {
-                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) // this is a TRAIN row
+                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) 
                 {
                     result[i] = inputData[ia];
                     ++i;
@@ -189,14 +239,14 @@ namespace dms.view_models.solver_view_models
 
         float[] GetOutputTrainData(float[] outputData, int numFolds, int fold)
         {
-            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); // first and last index of rows tagged as TEST data
-            int numTrain = outputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1); // tot num rows - num test rows
+            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); 
+            int numTrain = outputData.Length - (firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1);
             float[] result = new float[numTrain];
-            int i = 0; // index into result/test data
-            int ia = 0; // index into all data
+            int i = 0; 
+            int ia = 0; 
             while (i < result.Length)
             {
-                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) // this is a TRAIN row
+                if (ia < firstAndLastTest[fold][0] || ia > firstAndLastTest[fold][1]) 
                 {
                     result[i] = outputData[ia];
                     ++i;
@@ -208,14 +258,14 @@ namespace dms.view_models.solver_view_models
 
         float[][] GetInputTestData(float[][] inputData, int numFolds, int fold)
         {
-            // return a reference to TEST data
-            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); // first and last index of rows tagged as TEST data
+            
+            int[][] firstAndLastTest = GetFirstLastTest(inputData.Length, numFolds); 
             int numTest = firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1;
             float[][] result = new float[numTest][];
-            int ia = firstAndLastTest[fold][0]; // index into all data
+            int ia = firstAndLastTest[fold][0]; 
             for (int i = 0; i < result.Length; ++i)
             {
-                result[i] = inputData[ia]; // the test data indices are contiguous
+                result[i] = inputData[ia]; 
                 ++ia;
             }
             return result;
@@ -223,14 +273,14 @@ namespace dms.view_models.solver_view_models
 
         float[] GetTestOutputData(float[] outputData, int numFolds, int fold)
         {
-            // return a reference to TEST data
-            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); // first and last index of rows tagged as TEST data
+            
+            int[][] firstAndLastTest = GetFirstLastTest(outputData.Length, numFolds); 
             int numTest = firstAndLastTest[fold][1] - firstAndLastTest[fold][0] + 1;
             float[] result = new float[numTest];
-            int ia = firstAndLastTest[fold][0]; // index into all data
+            int ia = firstAndLastTest[fold][0]; 
             for (int i = 0; i < result.Length; ++i)
             {
-                result[i] = outputData[ia]; // the test data indices are contiguous
+                result[i] = outputData[ia]; 
                 ++ia;
             }
             return result;
@@ -238,21 +288,20 @@ namespace dms.view_models.solver_view_models
 
         int[][] GetFirstLastTest(int numDataItems, int numFolds)
         {
-            // return[fold][firstIndex][lastIndex] for k-fold cross validation TEST data
-            int interval = numDataItems / numFolds;  // if there are 32 data items and k = num folds = 3, then interval = 32/3 = 10
-            int[][] result = new int[numFolds][]; // pair of indices for each fold
+            int interval = numDataItems / numFolds;  
+            int[][] result = new int[numFolds][]; 
             for (int i = 0; i < result.Length; ++i)
                 result[i] = new int[2];
 
-            for (int k = 0; k < numFolds; ++k) // 0, 1, 2
+            for (int k = 0; k < numFolds; ++k) 
             {
-                int first = k * interval; // 0, 10, 20
-                int last = (k + 1) * interval - 1; // 9, 19, 29 (should be 31)
+                int first = k * interval; 
+                int last = (k + 1) * interval - 1; 
                 result[k][0] = first;
                 result[k][1] = last;
             }
 
-            result[numFolds - 1][1] = result[numFolds - 1][1] + numDataItems % numFolds; // 29->31
+            result[numFolds - 1][1] = result[numFolds - 1][1] + numDataItems % numFolds;
             return result;
         }
     }

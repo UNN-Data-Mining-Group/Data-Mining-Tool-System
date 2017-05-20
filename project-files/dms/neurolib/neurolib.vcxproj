@@ -169,12 +169,16 @@
   <ItemGroup>
     <ClCompile Include="ActivationFunction.cpp" />
     <ClCompile Include="ConvNN.cpp" />
+    <ClCompile Include="KohonenNet.cpp" />
+    <ClCompile Include="KohonenPretrain.cpp" />
     <ClCompile Include="Perceptron.cpp" />
     <ClCompile Include="WardNN.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActivationFunctions.h" />
     <ClInclude Include="ConvNN.h" />
+    <ClInclude Include="KohonenNet.h" />
+    <ClInclude Include="KohonenPretrain.h" />
     <ClInclude Include="mkl_types.h" />
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Perceptron.h" />

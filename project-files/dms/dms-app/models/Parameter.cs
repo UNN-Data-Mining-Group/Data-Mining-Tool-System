@@ -105,6 +105,16 @@ namespace dms.models
             this.nameTable = "Parameter";
         }
 
+        public Parameter(archive.ArchiveParameter par)
+        {
+            this.nameTable = "Parameter";
+            this.Name = par.Name;
+            this.Index = par.Index;
+            this.Type = par.Type;
+            this.Comment = par.Comment;
+            this.IsOutput = par.IsOutput;
+        }
+
         public override Dictionary<string, string> mappingTable()
         {
             Dictionary<string, string> mappingTable = new Dictionary<string, string>();
