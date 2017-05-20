@@ -2,10 +2,20 @@
 #include <list>
 #include <map>
 #include "GeneticAlgo.h"
+#include "BackPropAlgo.h"
+#define PRINT_DEBUG_BACK 1
+
+#ifdef PRINT_DEBUG_BACK
+#include"stdio.h"
+#include <fstream>
+#include <iostream>
+#endif // PRINT_DEBUG_BACK
+
 using namespace System;
 using namespace dms::solvers;
 using namespace dms::solvers::neural_nets;
 using namespace geneticAlgo;
+using namespace backPropAlgo;
 
 namespace dms::neroNetLearningAlgoritms
 {

@@ -1,25 +1,40 @@
-#include "BackProp.h"
+#include "BackPropAlgo.h"
 #include "mkl_cblas.h"
 #include "mkl_vml.h"
 #define PRINT_DEBUG_BACK 1
 
 #ifdef PRINT_DEBUG_BACK
 #include"stdio.h"
+#include <fstream>
+#include <iostream>
+using namespace std;
 #endif // PRINT_DEBUG_BACK
 
 
-namespace backProp
+namespace backPropAlgo
 {
-	float backProp::startBackProp(
-		void* solver, float** inputs, float* outputs, int count_row, int count_col,
-		float(*get_res)(void* solver, float* in),
-		void(*set_next_weights)(float* weights, int i, void* solver),
-		void(*get_next_grads)(float* grads, int i, void* solver),
-		void(*get_next_activate)(float* activate, int i, void* solver),
+
+	float minus(float* a, float* b, int size)
+	{
+		float res = 0;
+		for (int i = 0; i < size; i++)
+		{						//#################################
+			res = a[i] - b[i];	//########_FIX_ME!!!_##############
+		}						//#################################
+		return res;
+	}
+
+	float backPropAlgo::startBackPropAlgo(
+		void* solver, float** inputs, float** outputs, int count_row, int count_col,
+		size_t(*get_res)(float* in, float* out, void* solver),
+		size_t(*set_next_weights)(float* weights, int i, void* solver),
+		size_t(*get_next_grads)(float* grads, int i, void* solver),
+		size_t(*get_next_activate)(float* activate, int i, void* solver),
 		int count_layers, int* count_neuron_per_layer, int count_steps, float** res_weights,
-		int count_lauer_to_layer, int* count_weights_per_lauer, float start_lr
+		int count_lauer_to_layer, int* count_weights_per_lauer, float start_lr, int out_size
 	)
 	{
+		float* result = new float[out_size];
 		float tmp;
 		float error = 0;
 		float** grads = (float**)malloc(count_layers * sizeof(float*));
@@ -27,6 +42,20 @@ namespace backProp
 		float** delts = (float**)malloc(count_lauer_to_layer * sizeof(float*));
 		float** sigma = (float**)malloc(count_layers * sizeof(float*));
 
+		for (int i = 0; i < count_lauer_to_layer; i++)
+		{
+			for (int j = 0; j < count_neuron_per_layer[i]; j++)
+			{
+				res_weights[i][j]= ((float)rand()) / RAND_MAX;
+			}
+			set_next_weights(res_weights[i],i, solver);
+		}
+
+#ifdef PRINT_DEBUG_BACK
+		ofstream fout;
+		fout.open("BackProp_debug.txt", ios_base::trunc);
+		fout.close();
+#endif // PRINT_DEBUG_BACK
 		for (int i = 0; i < count_lauer_to_layer; i++)
 		{
 			delts[i] = (float*)malloc(count_weights_per_lauer[i] * sizeof(float));
@@ -40,25 +69,40 @@ namespace backProp
 		}
 
 
+
 		for (int i = 0; i < count_steps; i++)
 		{
 			for (int j = 0; j < count_row; j++)
 			{
-				tmp = get_res(solver, inputs[j]);
-				error = (tmp - outputs[j])*(tmp - outputs[j]);
-				sigma[count_layers - 1][0] = (tmp - outputs[j]);
+				get_res(inputs[j], result, solver);
+				tmp = minus(result, outputs[j], out_size);
+				error = tmp*tmp;
+				sigma[count_layers - 1][0] = tmp;
+#ifdef PRINT_DEBUG_BACK
+				fout.open("BackProp_debug.txt", ios::app);
+				fout << "tmp = " << tmp << endl;
+				fout << "err, " << error << endl;
+				fout << "out_gold, " << outputs[j][0] << endl;
+				fout << "res, " << result[0] << endl;
+				fout.close();
+
+#endif // PRINT_DEBUG_BACK
 				for (int k = count_layers - 1; k > 1; k--)
 				{
 					get_next_grads(grads[k], k, solver);
 					get_next_activate(activate_numbers[k - 1], k-1, solver);
 					//Считаем сигму для нейронов к-го слоя
 #ifdef PRINT_DEBUG_BACK
-					printf("Start sigma*grads, %d\n", k);
+					fout.open("BackProp_debug.txt", ios::app);
+					fout << "Start sigma*grads, "<< k<< endl;
 					for (int l = 0; l < count_neuron_per_layer[k]; l++)
 					{
-						printf("sigma %d = %f\n", l, sigma[k][l]);
-						printf("grads %d = %f\n", l, grads[k][l]);
+						fout << "sigma "<< l <<" = "<< sigma[k][l] << endl;
+						fout << "grads "<< l<<" = "<< grads[k][l] << endl;
 					}
+					fout << "Finish sigma*grads, " << k << endl;
+					fout.close();
+
 #endif // PRINT_DEBUG_BACK
 					vsMul(
 						count_neuron_per_layer[k],
@@ -67,25 +111,29 @@ namespace backProp
 						sigma[k]
 					);
 #ifdef PRINT_DEBUG_BACK
-					printf("Result:\n");
+					fout.open("BackProp_debug.txt", ios::app);
+					fout << "Result:" << endl;
 					for (int l = 0; l < count_neuron_per_layer[k]; l++)
 					{
-						printf("sigma %d = %f\n", l, sigma[k][l]);
+						fout << "sigma "<< l<<" = "<< sigma[k][l] << endl;
 					}
+					fout.close();
 #endif // PRINT_DEBUG_BACK
 
 
 #ifdef PRINT_DEBUG_BACK
-					printf("Start start_lr * sigma x activate_numbers, %d\n", k);
-					printf("start_lr = %f\n", start_lr);
+					fout.open("BackProp_debug.txt", ios::app);
+					fout << "Start start_lr * sigma x activate_numbers, "<< k << endl;
+					fout << "start_lr = "<< start_lr << endl;
 					for (int l = 0; l < count_neuron_per_layer[k]; l++)
 					{
-						printf("sigma %d = %f\n", l, sigma[k][l]);
+						fout << "sigma "<< l<<" = "<< sigma[k][l] << endl;
 					}
 					for (int l = 0; l < count_neuron_per_layer[k-1]; l++)
 					{
-						printf("activate_numbers %d = %f\n", l, activate_numbers[k - 1][l]);
+						fout << "activate_numbers "<< l<<" = "<< activate_numbers[k - 1][l] << endl;
 					}
+					fout.close();
 #endif // PRINT_DEBUG_BACK
 					//Считаем смещение для весов
 					cblas_sgemm(
@@ -95,11 +143,13 @@ namespace backProp
 						count_neuron_per_layer[k-1], 0.0f, delts[k-1], count_neuron_per_layer[k-1]
 					);
 #ifdef PRINT_DEBUG_BACK
-					printf("Result:\n");
+					fout.open("BackProp_debug.txt", ios::app);
+					fout << "Result:" << endl;
 					for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
 					{
-						printf("delts %d = %f\n", l, delts[k - 1][l]);
+						fout << "delts "<< l<<" = "<< delts[k - 1][l] << endl;
 					}
+					fout.close();
 #endif // PRINT_DEBUG_BACK
 										
 					//Передаём ошибку на след слой

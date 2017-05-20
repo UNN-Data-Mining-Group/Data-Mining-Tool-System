@@ -1,5 +1,6 @@
-#include "NeroNetLearningAlgoritms.h"
 
+
+#include "NeroNetLearningAlgoritms.h"
 float get_res_(void* solver, float* in)
 {
 	return 0;
@@ -132,6 +133,12 @@ namespace dms::neroNetLearningAlgoritms
 
 	float NeroNetLearningAlgoritms::startBackProp(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
 	{
+#ifdef PRINT_DEBUG_BACK
+		std::ofstream fout;
+		fout.open("BackProp_debug1.txt", std::ios_base::trunc);
+		fout.close();
+#endif // PRINT_DEBUG_BACK
+
 		void* result_solver;
 		int a = 0;
 		std::map<std::string, void*>* operations = (std::map<std::string, void*>*)solver->getOperations();
@@ -158,7 +165,7 @@ namespace dms::neroNetLearningAlgoritms
 		((GetIterationSizes)((*operations)["getIterationSizes"]))(count_neuron_per_layer, result_solver);
 
 		float** inputs = new float*[train_x->GetLength(0)];
-		float* outputs = new float[train_y->Length];
+		float** outputs = new float*[train_y->Length];
 
 		for (int i = 0; i < train_x->GetLength(0); i++)
 		{
@@ -169,23 +176,48 @@ namespace dms::neroNetLearningAlgoritms
 			}
 		}
 
+
+		int out_size = 1;
 		for (int i = 0; i < train_y->Length; i++)
 		{
-			outputs[i] = train_y[i];
+			outputs[i] = new float[out_size];
+			for (int j = 0; j < out_size; j++)
+			{
+				outputs[i][0] = train_y[i];
+			}
 		}
 
-	
-		float res = startBackProp(result_solver, inputs, outputs, train_y->Length, train_x[0]->Length,
-			get_res, set_next_weights,get_next_grads,get_next_activate,count_layers, count_neuron_per_layer,
+		typedef size_t(*GetWeightsVectorsCount)(void*);
+		int count_lauer_to_layer = ((GetWeightsVectorsCount)((*operations)["getWeightsVectorsCount"]))(result_solver);
+		float** res_weights = new float*[count_lauer_to_layer];
+		
+		int* count_weights_per_lauer = new int[count_lauer_to_layer];
+		typedef size_t(*GetWeightsVectorSize)(int,void*);
+		for (int i = 0; i < count_lauer_to_layer; i++)
+		{
+#ifdef PRINT_DEBUG_BACK
+			fout.open("BackProp_debug1.txt", std::ios::app);
+			fout << "Start sigma*grads, " << i;			
+			fout.close();
 
-			
-			
-			 count_steps,
+#endif // PRINT_DEBUG_BACK
+			size_t tm =  ((GetWeightsVectorSize)((*operations)["getWeightsVectorSize"]))(i, result_solver);
+			count_weights_per_lauer[i] = tm;
+			res_weights[i] = new float[count_weights_per_lauer[i]];
+		}
+		
+
+
+		int count_steps = params[0];
+		float start_lr = params[1];
+		
+		float res = startBackPropAlgo(result_solver, inputs, outputs, train_y->Length, train_x[0]->Length,
+			get_res, set_next_weights,get_next_grads,get_next_activate,count_layers, count_neuron_per_layer,count_steps,
 			res_weights,
 			count_lauer_to_layer, count_weights_per_lauer,
-			start_lr);
+			start_lr, out_size);
 
-		set_weights(res_weights, result_Solver);
+//		set_weights(res_weights, result_Solver);
 
 
 
@@ -193,6 +225,14 @@ namespace dms::neroNetLearningAlgoritms
 		for (int i = 0; i < train_x->GetLength(0); i++)
 		{
 			delete[] inputs[i];
+		}
+		for (int i = 0; i < count_lauer_to_layer; i++)
+		{
+			delete[] res_weights[i];
+		}
+		for (int i = 0; i < train_y->Length; i++)
+		{
+			delete[] outputs[i];
 		}
 		delete[] inputs;
 		delete[] outputs;
@@ -275,10 +315,16 @@ namespace dms::neroNetLearningAlgoritms
 			kn->setClasses(out);
 		}
 
-		if (usedAlgo->Equals(TeacherTypesList[0]))
-			res = startGenetic(static_cast<INeuralNetwork^>(solver), train_x, train_y);
+		if (usedAlgo->Equals(TeacherTypesList[0])) // startGenetic
+			res = startBackProp(static_cast<INeuralNetwork^>(solver), train_x, train_y);
 		else
-			throw gcnew System::ArgumentException("This algorithm is not supported yet", usedAlgo);
+		{
+			if (usedAlgo->Equals(TeacherTypesList[0]))
+				res = startBackProp(static_cast<INeuralNetwork^>(solver), train_x, train_y);
+			else
+				throw gcnew System::ArgumentException("This algorithm is not supported yet", usedAlgo);
+		}
+			
 			
 		return res;
 	}
