@@ -14,7 +14,7 @@ namespace backProp
 		void* solver, float** inputs, float* outputs, int count_row, int count_col,
 		float(*get_res)(void* solver, float* in),
 		void(*set_next_weights)(float* weights, int i, void* solver),
-		void(*get_next_grads)(void* solver, int i, float* grads),
+		void(*get_next_grads)(float* grads, int i, void* solver),
 		void(*get_next_activate)(void* solver, int i, float* activate),
 		int count_layers, int* count_neuron_per_layer, int count_steps, float** res_weights,
 		int count_lauer_to_layer, int* count_weights_per_lauer, float start_lr
@@ -49,7 +49,7 @@ namespace backProp
 				sigma[count_layers - 1][0] = (tmp - outputs[j]);
 				for (int k = count_layers - 1; k > 1; k--)
 				{
-					get_next_grads(solver, k, grads[k]);
+					get_next_grads(grads[k], k, solver);
 					get_next_activate(solver, k-1, activate_numbers[k-1]);
 					//—читаем сигму дл€ нейронов к-го сло€
 #ifdef PRINT_DEBUG_BACK
@@ -137,7 +137,7 @@ namespace backProp
 					set_next_weights(res_weights[k - 1], k - 1, solver);
 				}
 
-				get_next_grads(solver, 1, grads[1]);
+				get_next_grads(grads[1], 1, solver);
 #ifdef PRINT_DEBUG_BACK
 				printf("Start sigma*grads, %d\n", 1);
 				for (int l = 0; l < count_neuron_per_layer[1]; l++)
