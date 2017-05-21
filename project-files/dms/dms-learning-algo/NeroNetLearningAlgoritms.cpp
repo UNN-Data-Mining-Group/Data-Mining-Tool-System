@@ -157,11 +157,11 @@ namespace dms::neroNetLearningAlgoritms
 		GetIterationValues get_next_activate = (GetIterationValues)((*operations)["getIterationValues"]);
 
 
-		typedef size_t(*GetIterationsCount)(void*);
+		typedef int(*GetIterationsCount)(void*);
 		int count_layers = ((GetIterationsCount)((*operations)["getIterationsCount"]))(result_solver);
 
-		int* count_neuron_per_layer = new int[count_layers];
-		typedef size_t(*GetIterationSizes)(int*, void*);
+		size_t* count_neuron_per_layer = new size_t[count_layers];
+		typedef int(*GetIterationSizes)(size_t*, void*);
 		((GetIterationSizes)((*operations)["getIterationSizes"]))(count_neuron_per_layer, result_solver);
 
 		float** inputs = new float*[train_x->GetLength(0)];
@@ -187,7 +187,7 @@ namespace dms::neroNetLearningAlgoritms
 			}
 		}
 
-		typedef size_t(*GetWeightsVectorsCount)(void*);
+		typedef int(*GetWeightsVectorsCount)(void*);
 		int count_lauer_to_layer = ((GetWeightsVectorsCount)((*operations)["getWeightsVectorsCount"]))(result_solver);
 		float** res_weights = new float*[count_lauer_to_layer];
 		

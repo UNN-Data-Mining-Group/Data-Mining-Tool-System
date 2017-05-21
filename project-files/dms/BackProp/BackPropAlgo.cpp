@@ -30,7 +30,7 @@ namespace backPropAlgo
 		size_t(*set_next_weights)(float* weights, int i, void* solver),
 		size_t(*get_next_grads)(float* grads, int i, void* solver),
 		size_t(*get_next_activate)(float* activate, int i, void* solver),
-		int count_layers, int* count_neuron_per_layer, int count_steps, float** res_weights,
+		int count_layers, size_t* count_neuron_per_layer, int count_steps, float** res_weights,
 		int count_lauer_to_layer, int* count_weights_per_lauer, float start_lr, int out_size
 	)
 	{
@@ -44,7 +44,7 @@ namespace backPropAlgo
 
 		for (int i = 0; i < count_lauer_to_layer; i++)
 		{
-			for (int j = 0; j < count_neuron_per_layer[i]; j++)
+			for (int j = 0; j < count_weights_per_lauer[i]; j++)
 			{
 				res_weights[i][j]= ((float)rand()) / RAND_MAX;
 			}
@@ -54,35 +54,38 @@ namespace backPropAlgo
 #ifdef PRINT_DEBUG_BACK
 		ofstream fout;
 		fout.open("BackProp_debug.txt", ios_base::trunc);
+		fout << "Count step = " << count_steps << endl;
+		fout << "count_layers = " << count_layers << endl;
+		fout << "count_lauer_to_layer = " << count_lauer_to_layer << endl;
 		fout.close();
 #endif // PRINT_DEBUG_BACK
-		for (int i = 0; i < count_lauer_to_layer; i++)
+		for (int num_layer_to_layer = 0; num_layer_to_layer < count_lauer_to_layer; num_layer_to_layer++)
 		{
-			delts[i] = (float*)malloc(count_weights_per_lauer[i] * sizeof(float));
+			delts[num_layer_to_layer] = (float*)malloc(count_weights_per_lauer[num_layer_to_layer] * sizeof(float));
 		}
 
-		for (int i = 0; i < count_layers; i++)
+		for (int num_layer = 0; num_layer < count_layers; num_layer++)
 		{
-			grads[i] = (float*)malloc(count_neuron_per_layer[i] * sizeof(float));
-			activate_numbers[i] = (float*)malloc(count_neuron_per_layer[i] * sizeof(float));			
-			sigma[i] = (float*)malloc(count_neuron_per_layer[i] * sizeof(float));
+			grads[num_layer] = (float*)malloc(count_neuron_per_layer[num_layer] * sizeof(float));
+			activate_numbers[num_layer] = (float*)malloc(count_neuron_per_layer[num_layer] * sizeof(float));			
+			sigma[num_layer] = (float*)malloc(count_neuron_per_layer[num_layer] * sizeof(float));
 		}
 
 
 
-		for (int i = 0; i < count_steps; i++)
+		for (int num_step = 0; num_step < count_steps; num_step++)
 		{
-			for (int j = 0; j < count_row; j++)
+			for (int num_row = 0; num_row < count_row; num_row++)
 			{
-				get_res(inputs[j], result, solver);
-				tmp = minus(result, outputs[j], out_size);
+				get_res(inputs[num_row], result, solver);
+				tmp = minus(result, outputs[num_row], out_size);
 				error = tmp*tmp;
 				sigma[count_layers - 1][0] = tmp;
 #ifdef PRINT_DEBUG_BACK
 				fout.open("BackProp_debug.txt", ios::app);
 				fout << "tmp = " << tmp << endl;
 				fout << "err, " << error << endl;
-				fout << "out_gold, " << outputs[j][0] << endl;
+				fout << "out_gold, " << outputs[num_row][0] << endl;
 				fout << "res, " << result[0] << endl;
 				fout.close();
 
@@ -163,12 +166,14 @@ namespace backPropAlgo
 					//Смещаем веса
 
 #ifdef PRINT_DEBUG_BACK
-					printf("Start weights, %d\n",k-1);
+					fout.open("BackProp_debug.txt", ios::app);
+					fout << "Start weights =" << k - 1 << endl;
 					for (int l = 0; l < count_weights_per_lauer[k-1]; l++)
 					{
-						printf("Weight %d = %f\n", l, res_weights[k - 1][l]);
-						printf("delts %d = %f\n", l, delts[k - 1][l]);
+						fout << "Weight "<< l<<" = "<<res_weights[k - 1][l] << endl;
+						fout << "delts "<<l << " = " << delts[k - 1][l] << endl;
 					}
+					fout.close();
 #endif // PRINT_DEBUG_BACK
 
 					cblas_saxpy(
@@ -177,11 +182,13 @@ namespace backPropAlgo
 					);
 					
 #ifdef PRINT_DEBUG_BACK
-					printf("Finish weights, %d\n", k - 1);
+					fout.open("BackProp_debug.txt", ios::app);
+					fout << "Finish weights" << k - 1 << endl;;
 					for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
 					{
-						printf("Weight %d = %f\n", l, res_weights[k - 1][l]);
+						fout << "Weight "<<l<<" = "<< res_weights[k - 1][l] << endl;;
 					}
+					fout.close();
 #endif // PRINT_DEBUG_BACK
 
 					set_next_weights(res_weights[k - 1], k - 1, solver);
@@ -292,5 +299,16 @@ namespace backPropAlgo
 
 
 		return error;
+	}
+	float tmp_(size_t * count, float ** in_1, float ** in_2, float ** out)
+	{
+		int k = 0;
+		vsMul(
+			count[0],
+			in_1[k],
+			in_2[k],
+			out[k]
+		);
+		return 0;
 	}
 }

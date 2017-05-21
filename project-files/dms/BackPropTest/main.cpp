@@ -1,4 +1,4 @@
-#include"../BackProp/BackProp.h"
+#include"../BackProp/BackPropAlgo.h"
 #include "main.h"
 #include"stdio.h"
 
@@ -81,15 +81,15 @@ void first_test()
 		}
 		outputs[i] = i;
 	}
-	backProp::startBackProp(
-		solver, inputs, outputs, count_row, count_col,
-		get_res,
-		set_next_weights,
-		get_next_grads_,
-		get_next_activate,
-		count_layers, count_neuron_per_layer, count_steps, res_weights,
-		count_lauer_to_layer, count_weights_per_lauer, start_lr
-	);
+//	backPropAlgo::startBackPropAlgo(
+//		solver, inputs, outputs, count_row, count_col,
+//		get_res,
+//		set_next_weights,
+//		get_next_grads_,
+//		get_next_activate,
+//		count_layers, count_neuron_per_layer, count_steps, res_weights,
+//		count_lauer_to_layer, count_weights_per_lauer, start_lr
+//	);
 
 	for (int i = 0; i < count_lauer_to_layer; i++)
 	{
@@ -107,11 +107,45 @@ void first_test()
 	free(inputs);
 	free(outputs);
 }
-
+/*
 int main()
 {
 	float weigth;
 	first_test();
 	scanf("%f", &weigth);
+	return 0;
+}
+*/
+
+int main()
+{
+	size_t * count;
+	float ** in_1;
+	float ** in_2;
+
+	count = new size_t[1];
+	count[0] = 5;
+	in_1 = new float*[1];
+	in_2 = new float*[1];
+
+	in_1[0] = new float[count[0]];
+	in_2[0] = new float[count[0]];
+
+	for (int i = 0; i < count[0]; i++)
+	{
+		in_1[0][i] = i;
+		in_2[0][i] = i;
+		printf("in %d = %d\n",i,(int)(in_1[0][i]));
+	}
+
+	backPropAlgo::tmp_(count, in_1, in_2, in_1);
+
+	printf("\n\n\n");
+
+	for (int i = 0; i < count[0]; i++)
+	{
+		printf("out %d = %d\n", i, (int)(in_1[0][i]));
+	}
+
 	return 0;
 }
