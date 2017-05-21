@@ -119,32 +119,63 @@ int main()
 
 int main()
 {
-	size_t * count;
-	float ** in_1;
-	float ** in_2;
+	int countLayers = 2;
+	int k = countLayers - 1;
+	size_t* count_neuron_per_layer = new size_t[countLayers];
+	float** sigma = new float*[countLayers];
+	float** grads = new float*[countLayers];
+	float start_lr = 1;
+	float** activate_numbers = new float*[countLayers];
+	float** delts = new float*[countLayers];
+	int* count_weights_per_lauer = new int[k];
+	float** res_weights = new float*[k];
+	float* gold_sigma = new float[3];
+	count_weights_per_lauer[0] = 6;
+	res_weights[0] = new float[6];
+	res_weights[0][0] = 0.3f;
+	res_weights[0][1] = -0.1f;
+	res_weights[0][2] = 0.7f;
+	res_weights[0][3] = 0.4f;
+	res_weights[0][4] = -0.5f;
+	res_weights[0][5] = -0.2f;
 
-	count = new size_t[1];
-	count[0] = 5;
-	in_1 = new float*[1];
-	in_2 = new float*[1];
+	delts[0] = new float[6];
 
-	in_1[0] = new float[count[0]];
-	in_2[0] = new float[count[0]];
+	count_neuron_per_layer[0] = 3;
+	count_neuron_per_layer[1] = 2;
 
-	for (int i = 0; i < count[0]; i++)
+	activate_numbers[0] = new float[3];
+	activate_numbers[0][0] = 0.3f;
+	activate_numbers[0][1] = 0.6f;
+	activate_numbers[0][2] = 0.1f;
+
+	grads[1] = new float[2];
+	grads[1][0] = 1.0f;
+	grads[1][1] = 0.2f;
+
+	sigma[0] = new float[3];
+	sigma[1] = new float[2];
+	sigma[1][0] = 1.0f;
+	sigma[1][1] = -1.0f;
+
+	backPropAlgo::tmp_(k, count_neuron_per_layer,
+		sigma, grads, start_lr,
+		activate_numbers, delts,
+		count_weights_per_lauer, res_weights);
+
+	for (int i = 0; i < 3; i++)
 	{
-		in_1[0][i] = i;
-		in_2[0][i] = i;
-		printf("in %d = %d\n",i,(int)(in_1[0][i]));
+		printf("%f\n", sigma[0][i]);
 	}
 
-	backPropAlgo::tmp_(count, in_1, in_2, in_1);
+	gold_sigma[0] = 0.22f;
+	gold_sigma[1] = 0.f;
+	gold_sigma[2] = 0.74f;
 
-	printf("\n\n\n");
-
-	for (int i = 0; i < count[0]; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		printf("out %d = %d\n", i, (int)(in_1[0][i]));
+		if (gold_sigma[i] != sigma[0][i])
+			printf("ERROR!!!!gold_sigma != sigma: %f != %f\n", gold_sigma[i], sigma[0][i]);
 	}
 
 	return 0;

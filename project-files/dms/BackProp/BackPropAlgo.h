@@ -14,5 +14,8 @@ namespace backPropAlgo
 		int count_lauer_to_layer,int* count_weights_per_lauer,
 		float start_lr, int out_size);
 
-	float tmp_(size_t* count, float** in_1,float** in_2,float**out);
+	float tmp_(int k, size_t* count_neuron_per_layer,
+		float** sigma, float** grads, float start_lr,
+		float** activate_numbers, float** delts,
+		int* count_weights_per_lauer, float** res_weights);
 }

@@ -1,7 +1,7 @@
 #include "BackPropAlgo.h"
 #include "mkl_cblas.h"
 #include "mkl_vml.h"
-#define PRINT_DEBUG_BACK 1
+//#define PRINT_DEBUG_BACK 1
 
 #ifdef PRINT_DEBUG_BACK
 #include"stdio.h"
@@ -9,7 +9,117 @@
 #include <iostream>
 using namespace std;
 #endif // PRINT_DEBUG_BACK
+#ifdef PRINT_DEBUG_BACK
+ofstream fout;
+#endif // PRINT_DEBUG_BACK
 
+void get_next_weights(int k, size_t* count_neuron_per_layer, float** sigma,
+	float* grads, float start_lr, float* activate_numbers, float** delts,
+	int* count_weights_per_lauer, float** res_weights)
+{
+	//Считаем сигму для нейронов к-го слоя
+#ifdef PRINT_DEBUG_BACK
+	fout.open("BackProp_debug.txt", ios::app);
+	fout << endl;
+	fout << "Start sigma*grads, " << k << endl;
+	for (int l = 0; l < count_neuron_per_layer[k]; l++)
+	{
+		fout << "sigma " << l << " = " << sigma[k][l] << endl;
+		fout << "grads " << l << " = " << grads[l] << endl;
+	}
+	fout << "Finish sigma*grads, " << k << endl;
+	fout.close();
+
+#endif // PRINT_DEBUG_BACK
+	vsMul(
+		count_neuron_per_layer[k],
+		sigma[k],
+		grads,
+		sigma[k]
+	);
+#ifdef PRINT_DEBUG_BACK
+	fout.open("BackProp_debug.txt", ios::app);
+	fout << "Result:" << endl;
+	for (int l = 0; l < count_neuron_per_layer[k]; l++)
+	{
+		fout << "sigma " << l << " = " << sigma[k][l] << endl;
+	}
+	fout.close();
+#endif // PRINT_DEBUG_BACK
+
+
+#ifdef PRINT_DEBUG_BACK
+	fout.open("BackProp_debug.txt", ios::app);
+	fout << endl;
+	fout << "Start start_lr * sigma x activate_numbers, " << k << endl;
+	fout << "start_lr = " << start_lr << endl;
+	for (int l = 0; l < count_neuron_per_layer[k]; l++)
+	{
+		fout << "sigma " << l << " = " << sigma[k][l] << endl;
+	}
+	for (int l = 0; l < count_neuron_per_layer[k - 1]; l++)
+	{
+		fout << "activate_numbers " << l << " = " << activate_numbers[l] << endl;
+	}
+	fout.close();
+#endif // PRINT_DEBUG_BACK
+	//Считаем смещение для весов
+	cblas_sgemm(
+		CblasRowMajor, CblasNoTrans, CblasNoTrans, count_neuron_per_layer[k], count_neuron_per_layer[k - 1], 1,
+		start_lr, sigma[k],
+		1, activate_numbers,
+		count_neuron_per_layer[k - 1], 0.0f, delts[k - 1], count_neuron_per_layer[k - 1]
+	);
+#ifdef PRINT_DEBUG_BACK
+	fout.open("BackProp_debug.txt", ios::app);
+	fout << endl;
+	fout << "Result:" << endl;
+	for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
+	{
+		fout << "delts " << l << " = " << delts[k - 1][l] << endl;
+	}
+	fout.close();
+#endif // PRINT_DEBUG_BACK
+
+	//Передаём ошибку на след слой
+	cblas_sgemv(
+	//	CblasRowMajor, CblasTrans, count_neuron_per_layer[k - 1], count_neuron_per_layer[k],
+		CblasRowMajor, CblasTrans, count_neuron_per_layer[k], count_neuron_per_layer[k - 1],
+		1.0f, res_weights[k - 1],
+		count_neuron_per_layer[k - 1], sigma[k],
+		1, 0.0f, sigma[k - 1], 1
+	);
+
+	//Смещаем веса
+
+#ifdef PRINT_DEBUG_BACK
+	fout.open("BackProp_debug.txt", ios::app);
+	fout << endl;
+	fout << "Start weights =" << k - 1 << endl;
+	for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
+	{
+		fout << "Weight " << l << " = " << res_weights[k - 1][l] << endl;
+		fout << "delts " << l << " = " << delts[k - 1][l] << endl;
+	}
+	fout.close();
+#endif // PRINT_DEBUG_BACK
+
+	cblas_saxpy(
+		count_weights_per_lauer[k - 1],
+		1.0f, delts[k - 1], 1, res_weights[k - 1], 1
+	);
+
+#ifdef PRINT_DEBUG_BACK
+	fout.open("BackProp_debug.txt", ios::app);
+	fout << endl;
+	fout << "Finish weights" << k - 1 << endl;;
+	for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
+	{
+		fout << "Weight " << l << " = " << res_weights[k - 1][l] << endl;;
+	}
+	fout.close();
+#endif // PRINT_DEBUG_BACK
+}
 
 namespace backPropAlgo
 {
@@ -42,23 +152,29 @@ namespace backPropAlgo
 		float** delts = (float**)malloc(count_lauer_to_layer * sizeof(float*));
 		float** sigma = (float**)malloc(count_layers * sizeof(float*));
 
+		//###################
+		//######_FIX_ME_#####
+		//###################
+		start_lr /= 10.f;
+
 		for (int i = 0; i < count_lauer_to_layer; i++)
 		{
 			for (int j = 0; j < count_weights_per_lauer[i]; j++)
 			{
-				res_weights[i][j]= ((float)rand()) / RAND_MAX;
+				res_weights[i][j]= (((float)rand()) / RAND_MAX - 0.5f)*0.0001f;
 			}
 			set_next_weights(res_weights[i],i, solver);
 		}
 
 #ifdef PRINT_DEBUG_BACK
-		ofstream fout;
 		fout.open("BackProp_debug.txt", ios_base::trunc);
 		fout << "Count step = " << count_steps << endl;
 		fout << "count_layers = " << count_layers << endl;
 		fout << "count_lauer_to_layer = " << count_lauer_to_layer << endl;
+		fout << "start_lr = " << start_lr << endl;
 		fout.close();
 #endif // PRINT_DEBUG_BACK
+
 		for (int num_layer_to_layer = 0; num_layer_to_layer < count_lauer_to_layer; num_layer_to_layer++)
 		{
 			delts[num_layer_to_layer] = (float*)malloc(count_weights_per_lauer[num_layer_to_layer] * sizeof(float));
@@ -75,10 +191,22 @@ namespace backPropAlgo
 
 		for (int num_step = 0; num_step < count_steps; num_step++)
 		{
+#ifdef PRINT_DEBUG_BACK
+			fout.open("BackProp_debug.txt", ios::app);
+			fout << "num_step = " << num_step << endl;
+			fout.close();
+#endif // PRINT_DEBUG_BACK
+
 			for (int num_row = 0; num_row < count_row; num_row++)
 			{
+#ifdef PRINT_DEBUG_BACK
+				fout.open("BackProp_debug.txt", ios::app);
+				fout << "num_row = " << num_row << endl;
+				fout.close();
+#endif // PRINT_DEBUG_BACK
+				
 				get_res(inputs[num_row], result, solver);
-				tmp = minus(result, outputs[num_row], out_size);
+				tmp = minus(outputs[num_row], result, out_size);
 				error = tmp*tmp;
 				sigma[count_layers - 1][0] = tmp;
 #ifdef PRINT_DEBUG_BACK
@@ -94,107 +222,22 @@ namespace backPropAlgo
 				{
 					get_next_grads(grads[k], k, solver);
 					get_next_activate(activate_numbers[k - 1], k-1, solver);
-					//Считаем сигму для нейронов к-го слоя
-#ifdef PRINT_DEBUG_BACK
-					fout.open("BackProp_debug.txt", ios::app);
-					fout << "Start sigma*grads, "<< k<< endl;
-					for (int l = 0; l < count_neuron_per_layer[k]; l++)
-					{
-						fout << "sigma "<< l <<" = "<< sigma[k][l] << endl;
-						fout << "grads "<< l<<" = "<< grads[k][l] << endl;
-					}
-					fout << "Finish sigma*grads, " << k << endl;
-					fout.close();
 
-#endif // PRINT_DEBUG_BACK
-					vsMul(
-						count_neuron_per_layer[k],
-						sigma[k],
-						grads[k],
-						sigma[k]
-					);
-#ifdef PRINT_DEBUG_BACK
-					fout.open("BackProp_debug.txt", ios::app);
-					fout << "Result:" << endl;
-					for (int l = 0; l < count_neuron_per_layer[k]; l++)
-					{
-						fout << "sigma "<< l<<" = "<< sigma[k][l] << endl;
-					}
-					fout.close();
-#endif // PRINT_DEBUG_BACK
-
-
-#ifdef PRINT_DEBUG_BACK
-					fout.open("BackProp_debug.txt", ios::app);
-					fout << "Start start_lr * sigma x activate_numbers, "<< k << endl;
-					fout << "start_lr = "<< start_lr << endl;
-					for (int l = 0; l < count_neuron_per_layer[k]; l++)
-					{
-						fout << "sigma "<< l<<" = "<< sigma[k][l] << endl;
-					}
-					for (int l = 0; l < count_neuron_per_layer[k-1]; l++)
-					{
-						fout << "activate_numbers "<< l<<" = "<< activate_numbers[k - 1][l] << endl;
-					}
-					fout.close();
-#endif // PRINT_DEBUG_BACK
-					//Считаем смещение для весов
-					cblas_sgemm(
-						CblasRowMajor, CblasNoTrans, CblasNoTrans, count_neuron_per_layer[k], count_neuron_per_layer[k-1], 1,
-						start_lr, sigma[k],
-						1, activate_numbers[k - 1],
-						count_neuron_per_layer[k-1], 0.0f, delts[k-1], count_neuron_per_layer[k-1]
-					);
-#ifdef PRINT_DEBUG_BACK
-					fout.open("BackProp_debug.txt", ios::app);
-					fout << "Result:" << endl;
-					for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
-					{
-						fout << "delts "<< l<<" = "<< delts[k - 1][l] << endl;
-					}
-					fout.close();
-#endif // PRINT_DEBUG_BACK
-										
-					//Передаём ошибку на след слой
-					cblas_sgemv(
-						CblasRowMajor, CblasTrans, count_neuron_per_layer[k - 1], count_neuron_per_layer[k],
-						1.0f, res_weights[k - 1],
-						count_neuron_per_layer[k - 1], sigma[k],
-						1, 0.0f, sigma[k - 1], 1
-					);
-
-					//Смещаем веса
-
-#ifdef PRINT_DEBUG_BACK
-					fout.open("BackProp_debug.txt", ios::app);
-					fout << "Start weights =" << k - 1 << endl;
-					for (int l = 0; l < count_weights_per_lauer[k-1]; l++)
-					{
-						fout << "Weight "<< l<<" = "<<res_weights[k - 1][l] << endl;
-						fout << "delts "<<l << " = " << delts[k - 1][l] << endl;
-					}
-					fout.close();
-#endif // PRINT_DEBUG_BACK
-
-					cblas_saxpy(
-						count_weights_per_lauer[k - 1],
-						1.0f, delts[k - 1], 1, res_weights[k - 1], 1
-					);
-					
-#ifdef PRINT_DEBUG_BACK
-					fout.open("BackProp_debug.txt", ios::app);
-					fout << "Finish weights" << k - 1 << endl;;
-					for (int l = 0; l < count_weights_per_lauer[k - 1]; l++)
-					{
-						fout << "Weight "<<l<<" = "<< res_weights[k - 1][l] << endl;;
-					}
-					fout.close();
-#endif // PRINT_DEBUG_BACK
+					get_next_weights(k, count_neuron_per_layer, sigma,
+						grads[k], start_lr, activate_numbers[k-1], delts,
+						count_weights_per_lauer, res_weights);
 
 					set_next_weights(res_weights[k - 1], k - 1, solver);
 				}
 
 				get_next_grads(grads[1], 1, solver);
+
+				get_next_weights(1, count_neuron_per_layer, sigma,
+					grads[1], start_lr, inputs[num_row], delts,
+					count_weights_per_lauer, res_weights);
+
+/*
+
 #ifdef PRINT_DEBUG_BACK
 				printf("Start sigma*grads, %d\n", 1);
 				for (int l = 0; l < count_neuron_per_layer[1]; l++)
@@ -273,7 +316,7 @@ namespace backPropAlgo
 					printf("Weight %d = %f\n", l, res_weights[0][l]);
 				}
 #endif // PRINT_DEBUG_BACK
-
+*/
 				set_next_weights(res_weights[0], 0, solver);
 			}
 		}
@@ -300,15 +343,17 @@ namespace backPropAlgo
 
 		return error;
 	}
-	float tmp_(size_t * count, float ** in_1, float ** in_2, float ** out)
+	float tmp_ (int k, size_t* count_neuron_per_layer, float** sigma,
+		float** grads, float start_lr, float** activate_numbers, float** delts,
+		int* count_weights_per_lauer, float** res_weights)
 	{
-		int k = 0;
-		vsMul(
-			count[0],
-			in_1[k],
-			in_2[k],
-			out[k]
-		);
+#ifdef PRINT_DEBUG_BACK
+		fout.open("BackProp_debug.txt", ios_base::trunc);
+		fout.close();
+#endif // PRINT_DEBUG_BACK
+		get_next_weights(k, count_neuron_per_layer, sigma,
+			grads[k], start_lr, activate_numbers[k-1], delts,
+			count_weights_per_lauer, res_weights);
 		return 0;
 	}
 }
