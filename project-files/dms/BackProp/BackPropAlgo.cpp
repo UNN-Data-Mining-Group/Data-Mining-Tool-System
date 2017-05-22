@@ -151,17 +151,12 @@ namespace backPropAlgo
 		float** activate_numbers = (float**)malloc(count_layers * sizeof(float*));
 		float** delts = (float**)malloc(count_lauer_to_layer * sizeof(float*));
 		float** sigma = (float**)malloc(count_layers * sizeof(float*));
-
-		//###################
-		//######_FIX_ME_#####
-		//###################
-		start_lr /= 10.f;
-
+		
 		for (int i = 0; i < count_lauer_to_layer; i++)
 		{
 			for (int j = 0; j < count_weights_per_lauer[i]; j++)
 			{
-				res_weights[i][j]= (((float)rand()) / RAND_MAX - 0.5f)*0.0001f;
+				res_weights[i][j]= (((float)rand()) / RAND_MAX - 0.5f)*0.01f;
 			}
 			set_next_weights(res_weights[i],i, solver);
 		}

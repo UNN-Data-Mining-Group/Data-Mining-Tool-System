@@ -24,6 +24,28 @@ void set_weights_(void* solver, float* weights)
 
 namespace dms::neroNetLearningAlgoritms
 {
+	void NeroNetLearningAlgoritms::setGeneticParams()
+	{
+		ParamsNames = gcnew array<String^>(4);
+		ParamsNames[0] = "Количество особей";
+		ParamsNames[1] = "Количество эпох";
+		ParamsNames[2] = "Процент особей для скрещивания";
+		ParamsNames[3] = "Коэффициент мутации";
+		params = gcnew array< float >(4);
+		params[0] = 100.0f;
+		params[1] = 100.0f;
+		params[2] = 50.0f;
+		params[3] = 0.2f;
+	}
+	void NeroNetLearningAlgoritms::setBackPropParams()
+	{
+		ParamsNames = gcnew array<String^>(2);
+		ParamsNames[0] = "Число итераций";
+		ParamsNames[1] = "Скорость обучения";
+		params = gcnew array< float >(2);
+		params[0] = 100;
+		params[1] = 0.01f;
+	}
 	float NeroNetLearningAlgoritms::startGenetic(INeuralNetwork ^ solver, array<array<float>^>^ train_x, array<float>^ train_y)
 	{
 		int count_person = params[0];
@@ -252,27 +274,28 @@ namespace dms::neroNetLearningAlgoritms
 		delete[] params;
 	}
 
+
+
 	NeroNetLearningAlgoritms::NeroNetLearningAlgoritms()
 	{		
 		TeacherTypesList = gcnew array<String^>(2);
 		TeacherTypesList[0] = "Генетический алгоритм";
 		TeacherTypesList[1] = "Обратное распространение ошибки";
 		usedAlgo = TeacherTypesList[0];
-		ParamsNames = gcnew array<String^>(4);
-		ParamsNames[0] = "Количество особей";
-		ParamsNames[1] = "Количество эпох";
-		ParamsNames[2] = "Процент особей для скрещивания";
-		ParamsNames[3] = "Коэффициент мутации";
-		params = gcnew array< float >(4);
-		params[0] = 100.0f;
-		params[1] = 100.0f;
-		params[2] = 50.0f;
-		params[3] = 0.2f;		
+		setGeneticParams();
 	}
 
 	void NeroNetLearningAlgoritms::setUsedAlgo(System::String ^ usedAlgo_)
 	{
 		usedAlgo = usedAlgo_;
+		if (usedAlgo == TeacherTypesList[0])
+		{
+			setGeneticParams();
+		}
+		else
+		{
+			setBackPropParams();
+		}
 	}
 
 	array<System::String^>^ NeroNetLearningAlgoritms::getTeacherTypesList()
@@ -316,10 +339,10 @@ namespace dms::neroNetLearningAlgoritms
 		}
 
 		if (usedAlgo->Equals(TeacherTypesList[0])) // startGenetic
-			res = startBackProp(static_cast<INeuralNetwork^>(solver), train_x, train_y);
+			res = startGenetic(static_cast<INeuralNetwork^>(solver), train_x, train_y);
 		else
 		{
-			if (usedAlgo->Equals(TeacherTypesList[0]))
+			if (usedAlgo->Equals(TeacherTypesList[1]))
 				res = startBackProp(static_cast<INeuralNetwork^>(solver), train_x, train_y);
 			else
 				throw gcnew System::ArgumentException("This algorithm is not supported yet", usedAlgo);

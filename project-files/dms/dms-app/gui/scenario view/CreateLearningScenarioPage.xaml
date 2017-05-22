@@ -16,6 +16,9 @@
         <DataTemplate x:Key="selfOrganize">
             <local:SelfOrganizer/>
         </DataTemplate>
+        <DataTemplate x:Key="backPropParams">
+            <local:BackPropParams x:Name="BackPropParams"/>
+        </DataTemplate>
         <DataTemplate x:Key="undefined">
             <Label Content="Здесь могли быть ваши параметры"/>
         </DataTemplate>
@@ -55,7 +58,7 @@
                                 <Setter Property="ContentTemplate" Value="{StaticResource vectQuantum}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding TeacherType}" Value="Обратное распространение ошибки">
-                                <Setter Property="ContentTemplate" Value="{StaticResource undefined}" />
+                                <Setter Property="ContentTemplate" Value="{StaticResource backPropParams}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding TeacherType}" Value="Самоорганизация Кохонена">
                                 <Setter Property="ContentTemplate" Value="{StaticResource selfOrganize}" />

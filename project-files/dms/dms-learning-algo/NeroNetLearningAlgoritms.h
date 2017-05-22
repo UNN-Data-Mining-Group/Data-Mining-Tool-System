@@ -22,6 +22,8 @@ namespace dms::neroNetLearningAlgoritms
 	public ref class NeroNetLearningAlgoritms 
 	{
 	private:
+		void setGeneticParams();
+		void setBackPropParams();
 		array<float>^ params;
 		System::String^ usedAlgo;
 		array<System::String^>^ TeacherTypesList;
