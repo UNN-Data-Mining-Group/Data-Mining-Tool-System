@@ -1,0 +1,48 @@
+
+Start sigma*grads, 1
+sigma 0 = 1
+grads 0 = 1
+sigma 1 = -1
+grads 1 = 0.2
+Finish sigma*grads, 1
+Result:
+sigma 0 = 1
+sigma 1 = -0.2
+
+Start start_lr * sigma x activate_numbers, 1
+start_lr = 1
+sigma 0 = 1
+sigma 1 = -0.2
+activate_numbers 0 = 0.3
+activate_numbers 1 = 0.6
+activate_numbers 2 = 0.1
+
+Result:
+delts 0 = 0.3
+delts 1 = 0.6
+delts 2 = 0.1
+delts 3 = -0.06
+delts 4 = -0.12
+delts 5 = -0.02
+
+Start weights =0
+Weight 0 = 0.3
+delts 0 = 0.3
+Weight 1 = -0.1
+delts 1 = 0.6
+Weight 2 = 0.7
+delts 2 = 0.1
+Weight 3 = 0.4
+delts 3 = -0.06
+Weight 4 = -0.5
+delts 4 = -0.12
+Weight 5 = -0.2
+delts 5 = -0.02
+
+Finish weights0
+Weight 0 = 0.6
+Weight 1 = 0.5
+Weight 2 = 0.8
+Weight 3 = 0.34
+Weight 4 = -0.62
+Weight 5 = -0.22

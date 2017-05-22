@@ -82,7 +82,7 @@ namespace dms.services.preprocessing
             {
                 float obtainedValue = Convert.ToSingle(obtainedValues[j].Replace(".", ","));
 
-                float prev = valuesForCurrParameter[0];
+                /*float prev = valuesForCurrParameter[0];
                 for (int i = 1; i < valuesForCurrParameter.Count; i++)
                 {
                     float next = valuesForCurrParameter[i];
@@ -93,7 +93,20 @@ namespace dms.services.preprocessing
                         break;
                     }
                     prev = next;
+                }*/
+                float min = Math.Abs( valuesForCurrParameter[0] - obtainedValue);
+                float tmpMin;
+                int obtainedValueID = 0;
+                for (int i = 1; i < valuesForCurrParameter.Count; i++)
+                {
+                    tmpMin = Math.Abs(valuesForCurrParameter[i] - obtainedValue);
+                    if (tmpMin < min)
+                    {
+                        min = tmpMin;
+                        obtainedValueID = i;
+                    }
                 }
+                appropriateValues.Add(valuesForCurrParameter[obtainedValueID].ToString());
                 //проверка на выод за границу диапозона значений в выборке ???
                 if (appropriateValues[j].Equals(""))
                 {
