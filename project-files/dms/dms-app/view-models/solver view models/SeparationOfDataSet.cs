@@ -157,7 +157,7 @@ namespace dms.view_models.solver_view_models
             }
             else if (ISolver is DecisionTree)
             {
-                DecisionTreeLearning la = new DecisionTreeLearning();
+                DecisionTreeCARTLearningAlgo la = new DecisionTreeCARTLearningAlgo();
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             }
 
