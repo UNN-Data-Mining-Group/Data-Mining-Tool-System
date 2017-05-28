@@ -290,29 +290,16 @@ namespace dms.view_models
                     inputData[i] = new float[parameters.Count - 1];
                 }
                 int outputParam = 0;
-                foreach (Entity selRow in selectionRows)
+                string[][] vals = Selection.valuesOfSelectionId(selection.ID);
+                float[][] fvals = new float[selection.RowCount][];
+                for(int i = 0; i < selection.RowCount - 1; i++)
                 {
-                    int selectionRowId = selRow.ID;
-                    int stepParam = 0;
-                    foreach (Entity param in parameters)
+                    fvals[i] = new float[parameters.Count];
+                    for(int j = 0; j < parameters.Count - 1; j++)
                     {
-                        int paramId = param.ID;
-                        List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
-                            .addCondition("ParameterID", "=", paramId.ToString()).
-                            addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
-                        if (((dms.models.Parameter)param).IsOutput == 1)
-                        {
-                            outputParam = param.ID;
-                            string outputValue = ((ValueParameter)value[0]).Value;
-                            float outputFloat;
-                            if (float.TryParse(outputValue, out outputFloat))
-                                outputData[stepRow] = outputFloat;
-                        }
-                        else
-                            inputData[stepRow][stepParam] = float.Parse(((ValueParameter)value[0]).Value, CultureInfo.InvariantCulture.NumberFormat);
-                        stepParam++;
+                        inputData[i][j] = float.Parse(vals[i][j].Replace(".",","));
                     }
-                    stepRow++;
+                    outputData[i] = float.Parse(vals[i][parameters.Count - 1].Replace(".", ","));
                 }
                 ISolver isolver = null;
                 if (Solver.Description is PerceptronTopology)

@@ -25,6 +25,11 @@
                     <Label Content="Тип представления:"/>
                     <ComboBox ItemsSource="{Binding PreprocessingList}" SelectedItem="{Binding SelectedPreprocessing}"/>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="&lt;&lt;" Command="{Binding LeftPage}" Margin="5" Width="35"/>
+                    <Label Content="{Binding Page}"/>
+                    <Button Content="&gt;&gt;" Command="{Binding RightPage}" Margin="5" Width="35"/>
+                </StackPanel>
                 <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True" RowDetailsVisibilityMode="Visible"/>
             </StackPanel>
         </Grid>
