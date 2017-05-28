@@ -120,6 +120,9 @@
     <Compile Include="gui\LearnProcessPage.xaml.cs">
       <DependentUpon>LearnProcessPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\scenario view\learning algo params view\BackPropParams.xaml.cs">
+      <DependentUpon>BackPropParams.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\scenario view\learning algo params view\GeneticParams.xaml.cs">
       <DependentUpon>GeneticParams.xaml</DependentUpon>
     </Compile>
@@ -300,6 +303,10 @@
     <Compile Include="view-models\tree-section\WardTree.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
     <Page Include="gui\LearnProcessPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\learning algo params view\BackPropParams.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

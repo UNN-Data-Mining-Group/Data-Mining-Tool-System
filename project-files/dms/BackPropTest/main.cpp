@@ -1,4 +1,4 @@
-#include"../BackProp/BackProp.h"
+#include"../BackProp/BackPropAlgo.h"
 #include "main.h"
 #include"stdio.h"
 
@@ -81,15 +81,15 @@ void first_test()
 		}
 		outputs[i] = i;
 	}
-	backProp::startBackProp(
-		solver, inputs, outputs, count_row, count_col,
-		get_res,
-		set_next_weights,
-		get_next_grads_,
-		get_next_activate,
-		count_layers, count_neuron_per_layer, count_steps, res_weights,
-		count_lauer_to_layer, count_weights_per_lauer, start_lr
-	);
+//	backPropAlgo::startBackPropAlgo(
+//		solver, inputs, outputs, count_row, count_col,
+//		get_res,
+//		set_next_weights,
+//		get_next_grads_,
+//		get_next_activate,
+//		count_layers, count_neuron_per_layer, count_steps, res_weights,
+//		count_lauer_to_layer, count_weights_per_lauer, start_lr
+//	);
 
 	for (int i = 0; i < count_lauer_to_layer; i++)
 	{
@@ -107,11 +107,76 @@ void first_test()
 	free(inputs);
 	free(outputs);
 }
-
+/*
 int main()
 {
 	float weigth;
 	first_test();
 	scanf("%f", &weigth);
+	return 0;
+}
+*/
+
+int main()
+{
+	int countLayers = 2;
+	int k = countLayers - 1;
+	size_t* count_neuron_per_layer = new size_t[countLayers];
+	float** sigma = new float*[countLayers];
+	float** grads = new float*[countLayers];
+	float start_lr = 1;
+	float** activate_numbers = new float*[countLayers];
+	float** delts = new float*[countLayers];
+	int* count_weights_per_lauer = new int[k];
+	float** res_weights = new float*[k];
+	float* gold_sigma = new float[3];
+	count_weights_per_lauer[0] = 6;
+	res_weights[0] = new float[6];
+	res_weights[0][0] = 0.3f;
+	res_weights[0][1] = -0.1f;
+	res_weights[0][2] = 0.7f;
+	res_weights[0][3] = 0.4f;
+	res_weights[0][4] = -0.5f;
+	res_weights[0][5] = -0.2f;
+
+	delts[0] = new float[6];
+
+	count_neuron_per_layer[0] = 3;
+	count_neuron_per_layer[1] = 2;
+
+	activate_numbers[0] = new float[3];
+	activate_numbers[0][0] = 0.3f;
+	activate_numbers[0][1] = 0.6f;
+	activate_numbers[0][2] = 0.1f;
+
+	grads[1] = new float[2];
+	grads[1][0] = 1.0f;
+	grads[1][1] = 0.2f;
+
+	sigma[0] = new float[3];
+	sigma[1] = new float[2];
+	sigma[1][0] = 1.0f;
+	sigma[1][1] = -1.0f;
+
+	backPropAlgo::tmp_(k, count_neuron_per_layer,
+		sigma, grads, start_lr,
+		activate_numbers, delts,
+		count_weights_per_lauer, res_weights);
+
+	for (int i = 0; i < 3; i++)
+	{
+		printf("%f\n", sigma[0][i]);
+	}
+
+	gold_sigma[0] = 0.22f;
+	gold_sigma[1] = 0.f;
+	gold_sigma[2] = 0.74f;
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (gold_sigma[i] != sigma[0][i])
+			printf("ERROR!!!!gold_sigma != sigma: %f != %f\n", gold_sigma[i], sigma[0][i]);
+	}
+
 	return 0;
 }
