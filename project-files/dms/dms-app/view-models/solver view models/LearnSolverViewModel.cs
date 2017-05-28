@@ -290,9 +290,17 @@ namespace dms.view_models
                     inputData[i] = new float[parameters.Count - 1];
                 }
                 int outputParam = 0;
+                for(int i = 0; i < parameters.Count; i++)
+                {
+                    if(((models.Parameter)parameters[i]).IsOutput == 1)
+                    {
+                        outputParam = parameters[i].ID;
+                    }
+                }
+
                 string[][] vals = Selection.valuesOfSelectionId(selection.ID);
                 float[][] fvals = new float[selection.RowCount][];
-                for(int i = 0; i < selection.RowCount - 1; i++)
+                for(int i = 0; i < selection.RowCount; i++)
                 {
                     fvals[i] = new float[parameters.Count];
                     for(int j = 0; j < parameters.Count - 1; j++)
