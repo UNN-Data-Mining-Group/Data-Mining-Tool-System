@@ -160,7 +160,7 @@ namespace dms.models
         private string SQLArrayToInString(Array a)
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < a.GetUpperBound(0); i++)
+            for (int i = 0; i < a.Length; i++)
                 sb.AppendFormat("'{0}',", a.GetValue(i));
             string retVal = sb.ToString();
             return retVal.Substring(0, retVal.Length - 1);
