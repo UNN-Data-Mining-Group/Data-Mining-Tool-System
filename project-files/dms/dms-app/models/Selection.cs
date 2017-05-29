@@ -154,6 +154,20 @@ namespace dms.models
             return res;
         }
 
+        public static Entity[] valueParametersOfColumn(int selectionId, int paramId)
+        {
+            Selection selection = (Selection)Selection.getById(selectionId, typeof(Selection));
+            int templateId = selection.TaskTemplateID;
+            Query query = new Query("SelectionRow").addTypeQuery(TypeQuery.select).addCondition("SelectionID", "=", selectionId.ToString());
+            List<Entity> rows = SelectionRow.where(query, typeof(SelectionRow));
+            Query valQuery = new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                .addInArray("SelectionRowID", rows.Select(x => x.ID).ToArray())
+                .addCondition("ParameterID", "=", paramId.ToString());
+            ValueParameter[] values = ValueParameter.where(valQuery, typeof(ValueParameter)).Cast<ValueParameter>().ToArray();
+
+            return values;
+        }
+
         public static string[] valuesOfColumnParameters(int selectionId, int paramId)
         {
             Selection selection = (Selection)Selection.getById(selectionId, typeof(Selection));
