@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using dms.neroNetLearningAlgoritms;
 using dms.models.kohonen_learning;
 using dms.solvers;
+using dms.solvers.decision_tree;
 
 namespace dms.iLearningAlgo
 {
@@ -73,6 +74,57 @@ namespace dms.neroNetLearningAlgoritms
     }
 }
 
+namespace dms.solvers.decision_tree
+{
+    public class DecisionTreeLearningAlgo : iLearningAlgo.ILearningAlgo
+    {
+        private DecisionTreeCARTLearningAlgo lrAlgo;
+
+        public void setUsedAlgo(string usedAlgo)
+        {
+            lrAlgo.setUsedAlgo(usedAlgo);
+        }
+
+        public DecisionTreeLearningAlgo()
+        {
+            lrAlgo = new DecisionTreeCARTLearningAlgo();
+        }
+
+        public string[] getTeacherTypesList()
+        {
+            return lrAlgo.getTeacherTypesList();
+        }
+
+        public string[] getTeacherTypesList(ISolver solver)
+        {
+            return lrAlgo.getTeacherTypesList(solver);
+        }
+
+        public float[] getParams()
+        {
+            return lrAlgo.getParams();
+        }
+        public string[] getParamsNames()
+        {
+            return lrAlgo.getParamsNames();
+        }
+        public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
+        {
+            float res;
+            try
+            {
+                res = lrAlgo.startLearn(solver, train_x, train_y);
+            }
+            catch (ArgumentException e)
+            {
+                res = -1;
+                System.Windows.MessageBox.Show(e.Message);
+            }
+
+            return res;
+        }
+    }
+}
 
 namespace dms.models
 {
@@ -81,7 +133,7 @@ namespace dms.models
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
         private iLearningAlgo.ILearningAlgo[] lrAlgo;
-        private const int countAlgoLib = 2;
+        private const int countAlgoLib = 3;
         private string[][] myTeacherTypeList;
         private iLearningAlgo.ILearningAlgo usedLrAlgo;
 
@@ -97,6 +149,7 @@ namespace dms.models
             myTeacherTypeList = new string[countAlgoLib][];
             lrAlgo[0] = new NeroNetLearningAlgoritm();
             lrAlgo[1] = new KohonenLearningAlgorithms();
+            lrAlgo[2] = new DecisionTreeLearningAlgo();
             algoParams = new AlgoParam();
             TeacherTypesList = new string[0];
             for (int i = 0; i < countAlgoLib; i++)
@@ -104,16 +157,16 @@ namespace dms.models
                 myTeacherTypeList[i] = lrAlgo[i].getTeacherTypesList();
                 TeacherTypesList = TeacherTypesList.Concat(myTeacherTypeList[i]).ToArray();
             }
-
-  //          TeacherTypesList = lrAlgo[0].getTeacherTypesList();
+            //TeacherTypesList = TeacherTypesList.Concat("Деревья решений").ToArray();
+            //          TeacherTypesList = lrAlgo[0].getTeacherTypesList();
 
 
             //new string[] { "Обучатель 1", "Обучатель 2", "Обучатель 3" };
-//            ParamsName = lrAlgo[0].getParamsNames();
-            
-//            ParamsValue = lrAlgo[0].getParams(); //new float[] { 0, 0.3f, 1f, 5f };
-            
-           
+            //            ParamsName = lrAlgo[0].getParamsNames();
+
+            //            ParamsValue = lrAlgo[0].getParams(); //new float[] { 0, 0.3f, 1f, 5f };
+
+
         }
         public float startLearn(ISolver solver,float[][] train_x,float[] train_y)
         {

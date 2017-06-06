@@ -1,6 +1,7 @@
 ﻿using dms.models;
 using dms.solvers;
 using dms.solvers.decision_tree;
+using dms.solvers.decision_tree.C4_5;
 using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.perceptron;
@@ -339,6 +340,11 @@ namespace dms.view_models
                 {
                     TreeDescription topology = Solver.Description as TreeDescription;
                     isolver = new DecisionTree(topology);                    
+                }
+                else if (Solver.Description is TreeDescriptionC4_5)
+                {
+                    TreeDescriptionC4_5 topology = Solver.Description as TreeDescriptionC4_5;
+                    isolver = new DecisionTreeC4_5(topology);
                 }
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);

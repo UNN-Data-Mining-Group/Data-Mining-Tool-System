@@ -6,15 +6,54 @@ using System.Threading.Tasks;
 
 namespace dms.solvers.decision_tree
 {
-    public class DecisionTreeLearning
+    public class DecisionTreeCARTLearningAlgo
     {
+        string usedAlgo;
+		string[] TeacherTypesList;
+
+        public DecisionTreeCARTLearningAlgo()
+	    {		
+		    TeacherTypesList = new string[1];
+            TeacherTypesList[0] = "Деревья решений";
+            usedAlgo = TeacherTypesList[0];
+	    }
+
+        public void setUsedAlgo(string used_algo)
+        {
+            usedAlgo = used_algo;
+        }
+
+
+        public string[] getTeacherTypesList()
+        {
+            return TeacherTypesList;
+        }
+
+        public string[] getTeacherTypesList(ISolver solver)
+        {
+            return TeacherTypesList;
+        }
+
+        public float[] getParams()
+        {
+            float[] res = new float[1];
+            res[0] = 0;
+            return res;
+        }
+
+        public string[] getParamsNames()
+        {
+            string[] res = new string[1];
+            res[0] = "";
+            return res;
+        }
 
         public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
         {
             if (solver.GetType() == typeof(DecisionTree))
             {
                 DecisionTree dc_solver = (DecisionTree)solver;
-                treeBuilding(new LearningTable(train_x, train_y), dc_solver.root, (int)solver.GetInputsCount(), (int)solver.GetOutputsCount());
+                LearningCART(new LearningTable(train_x, train_y), dc_solver.root, (int)solver.GetInputsCount(), (int)solver.GetOutputsCount());
                 solver = dc_solver;
             }
             return 0;
@@ -23,7 +62,7 @@ namespace dms.solvers.decision_tree
 
 
 
-        public void treeBuilding(LearningTable education_table, Node tree_node, int inputs , int outputs)
+        public void LearningCART(LearningTable education_table, Node tree_node, int inputs , int outputs)
         {
             LearningClassInfo[] thisClassInfo = education_table.ClassInfoInit(education_table, 0, education_table.LearningClasses.Length);
 
@@ -51,8 +90,8 @@ namespace dms.solvers.decision_tree
                 tree_node.right_child = new Node();
 
                 left_table.SplitLearningTable(education_table, tree_node.rule, ref left_table, ref right_table);
-                treeBuilding(left_table, tree_node.left_child ,inputs ,outputs);
-                treeBuilding(right_table, tree_node.right_child, inputs, outputs);
+                LearningCART(left_table, tree_node.left_child ,inputs ,outputs);
+                LearningCART(right_table, tree_node.right_child, inputs, outputs);
 
 
             }

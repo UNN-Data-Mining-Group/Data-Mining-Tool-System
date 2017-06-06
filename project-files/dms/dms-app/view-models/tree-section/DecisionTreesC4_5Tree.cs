@@ -7,15 +7,15 @@ using System.Collections.ObjectModel;
 
 namespace dms.view_models
 {
-    public class DecisionTreesTree : TreeSection
+    public class DecisionTreesC4_5Tree : TreeSection
     {
-        public DecisionTreesTree(models.Task task, models.TaskSolver[] trees,
-            TaskTreeViewModel vm) : base("Деревья решений", trees.Select(x => x.Name).ToArray())
+        public DecisionTreesC4_5Tree(models.Task task, models.TaskSolver[] trees,
+            TaskTreeViewModel vm) : base("Деревья решений C4.5", trees.Select(x => x.Name).ToArray())
         {
             Content = new ObservableCollection<TreeSection>();
             for (int i = 0; i < trees.Length; i++)
             {
-                Content.Add(new SolverLeaf(task, trees[i], "DecisionTree", vm));
+                Content.Add(new SolverLeaf(task, trees[i], "DecisionTreeC4_5", vm));
             }
         }
     }
