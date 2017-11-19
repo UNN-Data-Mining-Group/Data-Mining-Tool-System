@@ -45,6 +45,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\bin\x64\Release\</OutputPath>
@@ -118,6 +119,9 @@
     </ApplicationDefinition>
     <Compile Include="gui\LearnProcessPage.xaml.cs">
       <DependentUpon>LearnProcessPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\scenario view\learning algo params view\BackPropParams.xaml.cs">
+      <DependentUpon>BackPropParams.xaml</DependentUpon>
     </Compile>
     <Compile Include="gui\scenario view\learning algo params view\GeneticParams.xaml.cs">
       <DependentUpon>GeneticParams.xaml</DependentUpon>
@@ -308,6 +312,10 @@
     <Compile Include="view-models\tree-section\WardTree.cs" />
     <Compile Include="view-models\ViewmodelBase.cs" />
     <Page Include="gui\LearnProcessPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\learning algo params view\BackPropParams.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

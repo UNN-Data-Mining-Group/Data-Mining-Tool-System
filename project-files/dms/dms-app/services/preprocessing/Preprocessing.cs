@@ -73,22 +73,13 @@ namespace dms.services.preprocessing
                     break;
             }
 
-            List<string> values = new List<string>();
-            List<Entity> valueParam = new List<Entity>();
-
             List<Entity> oldSelectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", oldSelectionId.ToString()), typeof(SelectionRow));
-
-            int index = 0;
-            foreach (Entity entity in oldSelectionRows)
+            List<Entity> valueParam = Selection.valueParametersOfColumn(oldSelectionId, oldParamId).ToList();
+            List<string> values = new List<string>();
+            foreach(ValueParameter e in valueParam)
             {
-                int selectionRowId = entity.ID;
-                List<Entity> list = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
-                .addCondition("ParameterID", "=", oldParamId.ToString()).
-                addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
-                valueParam = valueParam.Concat(list).ToList();
-                values.Add(((ValueParameter)valueParam[index]).Value);
-                index++;
+                values.Add(e.Value);
             }
 
             List<Entity> valuesForParameter = new List<Entity>();

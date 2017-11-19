@@ -5,24 +5,6 @@ using namespace nnets_kohonen_learning;
 
 #define DEBUG_OUTPUT
 
-std::vector<int> Selection::getMixIndexes(float seed)
-{
-	std::srand(seed);
-	
-	std::vector<int> sel_numbers;
-	std::vector<int> mixed_sel;
-	for (int i = 0; i < rowsCount; i++)
-		sel_numbers.push_back(i);
-	for (int i = 0; i < rowsCount; i++)
-	{
-		int index = (float)std::rand() / RAND_MAX * (rowsCount - i - 1);
-		int number = sel_numbers[index];
-		mixed_sel.push_back(number);
-		sel_numbers.erase(sel_numbers.begin() + index);
-	}
-	return mixed_sel;
-}
-
 bool ClassExtracter::is_equal(float* y, int size, std::vector<float> _class)
 {
 	for (int i = 0; i < size; i++)
@@ -102,7 +84,6 @@ vector2d<float> KohonenSelfOrganizer::clasterize(void* trainedKn, Selection s, C
 	vector2d<float> classDistribution;
 	for (int i = 0; i < maxNeuronIndex; i++)
 		classDistribution.push_back(std::vector<float>(c_ext.getClasses().size(), 0.0f));
-	std::vector<int> mixSelIndexes = s.getMixIndexes(randomSeed);
 	
 	float lambda = static_cast<float>(2.0f * maxIterations) / maxNeuronIndex;
 	float* yp = new float[s.ySize];
@@ -112,8 +93,7 @@ vector2d<float> KohonenSelfOrganizer::clasterize(void* trainedKn, Selection s, C
 		float et = std::expf(static_cast<float>(-iteration) / lambda);
 		for (int row = 0; row < s.rowsCount; row++)
 		{
-			int rowIndex = mixSelIndexes[row];
-			opers.solve(s.x[rowIndex], yp, trainedKn);
+			opers.solve(s.x[row], yp, trainedKn);
 			int winner = opers.getWinner(trainedKn);
 			for (int i = 0; i < maxNeuronIndex; i++)
 			{
@@ -127,8 +107,8 @@ vector2d<float> KohonenSelfOrganizer::clasterize(void* trainedKn, Selection s, C
 
 				if (learning_rate >= minLearningRate)
 				{
-					opers.addmultWeights(curNeuron, 1.0f - l*theta, l*theta, s.x[rowIndex], trainedKn);
-					int classIndex = yToClass[rowIndex];
+					opers.addmultWeights(curNeuron, 1.0f - l*theta, l*theta, s.x[row], trainedKn);
+					int classIndex = yToClass[row];
 					classDistribution[curNeuron][classIndex] += std::expf(-2.0f * distBMU / maxNeuronIndex);
 				}
 			}
@@ -189,7 +169,6 @@ float KohonenSelfOrganizer::selfOrganize(Selection trainSel, void* trainedKn)
 	}
 
 	initRandomWeights(trainedKn);
-	std::vector<int> mixSel = trainSel.getMixIndexes(randomSeed);
 	
 	ClassExtracter c_extr(opers, eps);
 	c_extr.fit(trainSel);
@@ -306,7 +285,6 @@ float KohonenClassifier::train(Selection trainSel, void* trainedKn)
 		trainer.pretrain(trainSel, trainedKn, seed);
 	}
 
-	std::vector<int> mixSel = trainSel.getMixIndexes(seed);
 	float *yp = new float[trainSel.ySize];
 	float err;
 
@@ -315,11 +293,10 @@ float KohonenClassifier::train(Selection trainSel, void* trainedKn)
 		float stepLearn = learnA / (iter + learnB);
 		for(int row = 0; row < trainSel.rowsCount; row++)
 		{
-			int rowIndex = mixSel[row];
-			opers.solve(trainSel.x[rowIndex], yp, trainedKn);
+			opers.solve(trainSel.x[row], yp, trainedKn);
 			int winner = opers.getWinner(trainedKn);
-			float l = is_equal(yp, trainSel.y[rowIndex], trainSel.ySize) == true ? stepLearn : -stepLearn;
-			opers.addmultWeights(winner, 1.0f - l, l, trainSel.x[rowIndex], trainedKn);
+			float l = is_equal(yp, trainSel.y[row], trainSel.ySize) == true ? stepLearn : -stepLearn;
+			opers.addmultWeights(winner, 1.0f - l, l, trainSel.x[row], trainedKn);
 		}
 
 		err = 0.0f;

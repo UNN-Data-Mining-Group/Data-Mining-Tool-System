@@ -252,12 +252,12 @@ namespace dms.view_models
             }
             PreprocessingManager preprocessing = new PreprocessingManager();
             outputValues = preprocessing.getAppropriateValuesAfterInversePreprocessing(curOutputValues, SelectionID, ParameterID);
+            int i = 0;
+            // Change when there is support for multiple outputs
             foreach (var item in SolvingList)
             {
-                for (int i = 0; i < item.Y.Count; i++)
-                {
-                    item.Y[i] = outputValues[i];
-                }                
+                item.Y[0] = outputValues[i];
+                i++;
             }
         }
         public List<string> outputValues { get; set; }

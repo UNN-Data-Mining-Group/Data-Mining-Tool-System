@@ -191,7 +191,14 @@ namespace dms.view_models.solver_view_models
             }
 
             var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-            mistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
+            if (counts.ContainsKey(false))
+            {
+                mistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
+            }
+            else
+            {
+                mistakeTrain = 0;
+            }
 
             mistakeTest = 0;
             expectedOutputValues = testOutputDataset.Select(x => Convert.ToString(x)).ToList();
@@ -202,7 +209,12 @@ namespace dms.view_models.solver_view_models
             }
             comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
             counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-            mistakeTest = (float)counts[false] / (float)sizeTestDataset;
+            if (counts.ContainsKey(false))
+            {
+                mistakeTest = (float)counts[false] / (float)sizeTestDataset;
+            }
+            else
+                mistakeTest = 0;
 
             return ISolver;
         }

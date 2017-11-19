@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)GeneticAlgo;$(SolutionDir)KohonenLearning</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GeneticAlgo;$(SolutionDir)KohonenLearning;$(SolutionDir)BackProp</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>GeneticAlgo.lib;KohonenLearning.lib</AdditionalDependencies>
@@ -135,7 +135,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)GeneticAlgo;$(SolutionDir)KohonenLearning</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)GeneticAlgo;$(SolutionDir)KohonenLearning;$(SolutionDir)BackProp</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

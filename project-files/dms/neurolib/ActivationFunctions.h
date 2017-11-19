@@ -23,7 +23,7 @@ namespace nnets
 //Derivatives
 #define neurolib_bent_identity_der(x) (x / (2.0f * std::sqrt(x*x + 1.0f)) + 1.0f)
 #define neurolib_identity_der(x) (1.0f)
-#define neurolib_logistic_der(x) (1.0f - neurolib_logistic(x))
+#define neurolib_logistic_der(x) ((1.0f - neurolib_logistic(x))* neurolib_logistic(x))
 #define neurolib_soft_plus_der(x) (1.0f / (1.0f + std::exp(-x)))
 #define neurolib_tanh_der(x) (1.0f - std::pow(neurolib_tanh(x), 2))
 
