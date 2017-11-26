@@ -156,6 +156,12 @@
     <Compile Include="gui\solver view\convnn view\ConvNNParametersPage.xaml.cs">
       <DependentUpon>ConvNNParametersPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\solver view\decision tree C4.5 view\DecisionTreeC4_5InfoPage.xaml.cs">
+      <DependentUpon>DecisionTreeC4_5InfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\solver view\decision tree C4.5 view\DecisionTreeC4_5ParameterPage.xaml.cs">
+      <DependentUpon>DecisionTreeC4_5ParameterPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solver view\kohonen view\KohonenInfoPage.xaml.cs">
       <DependentUpon>KohonenInfoPage.xaml</DependentUpon>
     </Compile>
@@ -167,14 +173,14 @@
     <Compile Include="gui\solver view\LearnSolverPage.xaml.cs">
       <DependentUpon>LearnSolverPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\solver view\decision tree view\DecisionTreeInfoPage.xaml.cs">
-      <DependentUpon>DecisionTreeInfoPage.xaml</DependentUpon>
+    <Compile Include="gui\solver view\decision tree CART view\DecisionTreeCARTInfoPage.xaml.cs">
+      <DependentUpon>DecisionTreeCARTInfoPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="gui\selection view\SelectionPageCreation.xaml.cs">
       <DependentUpon>SelectionPageCreation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\solver view\decision tree view\DecisionTreeParameterPage.xaml.cs">
-      <DependentUpon>DecisionTreeParameterPage.xaml</DependentUpon>
+    <Compile Include="gui\solver view\decision tree CART view\DecisionTreeCARTParameterPage.xaml.cs">
+      <DependentUpon>DecisionTreeCARTParameterPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="gui\selection view\ParameterAddPane.xaml.cs">
       <DependentUpon>ParameterAddPane.xaml</DependentUpon>
@@ -254,11 +260,13 @@
     <Compile Include="view-models\selection view models\SelectionLearnStatisticViewModel.cs" />
     <Compile Include="view-models\solver view models\convNN view models\ConvNNInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\convNN view models\ConvNNParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\decision tree C4.5 view models\DecisionTreeC4_5InfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\decision tree C4.5 view models\DecisionTreeC4_5ParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\kohonen net view models\KohonenInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\kohonen net view models\KohonenParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\LearnSolverViewModel.cs" />
-    <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeParametersViewModel.cs" />
-    <Compile Include="view-models\solver view models\decision tree view models\DecisionTreeInfoViewModel.cs" />
+    <Compile Include="view-models\solver view models\decision tree CART view models\DecisionTreeCARTParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\decision tree CART view models\DecisionTreeCARTInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\SeparationOfDataSet.cs" />
@@ -275,7 +283,8 @@
     <Compile Include="view-models\task view models\TaskInfoViewModel.cs" />
     <Compile Include="view-models\preprocessing view models\TemplateViewModel.cs" />
     <Compile Include="view-models\tree-section\ConvNNTree.cs" />
-    <Compile Include="view-models\tree-section\DecisionTreesTree.cs" />
+    <Compile Include="view-models\tree-section\DecisionTreesC4_5Tree.cs" />
+    <Compile Include="view-models\tree-section\DecisionTreesCARTTree.cs" />
     <Compile Include="view-models\tree-section\KohonenTree.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SelectionLeaf.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SolutionLeaf.cs" />
@@ -354,6 +363,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="gui\solver view\decision tree C4.5 view\DecisionTreeC4_5InfoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="gui\solver view\decision tree C4.5 view\DecisionTreeC4_5ParameterPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="gui\solver view\kohonen view\KohonenInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -374,7 +391,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\solver view\decision tree view\DecisionTreeInfoPage.xaml">
+    <Page Include="gui\solver view\decision tree CART view\DecisionTreeCARTInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -382,7 +399,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="gui\solver view\decision tree view\DecisionTreeParameterPage.xaml">
+    <Page Include="gui\solver view\decision tree CART view\DecisionTreeCARTParameterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

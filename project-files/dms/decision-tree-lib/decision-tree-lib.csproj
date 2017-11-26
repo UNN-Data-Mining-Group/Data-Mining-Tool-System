@@ -63,14 +63,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="decision-tree\DecisionTree.cs" />
-    <Compile Include="decision-tree\DecisionTreeLearningCART.cs" />
-    <Compile Include="decision-tree\GiniCalculator.cs" />
-    <Compile Include="decision-tree\LearningClassInfo.cs" />
-    <Compile Include="decision-tree\LearningTable.cs" />
-    <Compile Include="decision-tree\Node.cs" />
-    <Compile Include="decision-tree\Rule.cs" />
-    <Compile Include="decision-tree\TreeDescription.cs" />
+    <Compile Include="decision-tree%28C 4.5%29\DecisionTreeC4_5.cs" />
+    <Compile Include="decision-tree%28C 4.5%29\DecisionTreeC4_5LearningAlgo.cs" />
+    <Compile Include="decision-tree%28C 4.5%29\EntrophyCalculator.cs" />
+    <Compile Include="decision-tree%28C 4.5%29\NodeLst.cs" />
+    <Compile Include="decision-tree%28C 4.5%29\TreeBuilder.cs" />
+    <Compile Include="decision-tree%28C 4.5%29\TreeDescriptionC4_5.cs" />
+    <Compile Include="decision-tree%28CART%29\DecisionTree.cs" />
+    <Compile Include="decision-tree%28CART%29\DecisionTreeLearningCART.cs" />
+    <Compile Include="decision-tree%28CART%29\GiniCalculator.cs" />
+    <Compile Include="decision-tree%28CART%29\LearningClassInfo.cs" />
+    <Compile Include="decision-tree%28CART%29\LearningTable.cs" />
+    <Compile Include="decision-tree%28CART%29\Node.cs" />
+    <Compile Include="decision-tree%28CART%29\Rule.cs" />
+    <Compile Include="decision-tree%28CART%29\TreeDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

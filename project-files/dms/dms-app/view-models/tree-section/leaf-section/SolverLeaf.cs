@@ -34,8 +34,10 @@ namespace dms.view_models
         {
             if (solver.TypeName.Equals("Perceptron"))
                 return new PerceptronInfoViewModel(parentTask, solver);
-            else if (solverType.Equals("DecisionTree"))
-                return new DecisionTreeInfoViewModel(parentTask, solver);
+            else if (solverType.Equals("DecisionTreeCART"))
+                return new DecisionTreeCARTInfoViewModel(parentTask, solver);
+            else if (solverType.Equals("DecisionTreeC4_5"))
+                return new DecisionTreeC4_5InfoViewModel(parentTask, solver);
             else if (solver.TypeName.Equals("WardNN"))
                 return new WardNetInfoViewModel(parentTask, solver);
             else if (solver.TypeName.Equals("ConvNN"))

@@ -13,19 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using dms.view_models;
-
 namespace dms.gui
 {
     /// <summary>
-    /// Interaction logic for DecisionTreeInfoPage.xaml
+    /// Interaction logic for DecisionTreeParameterPage.xaml
     /// </summary>
-    public partial class DecisionTreeInfoPage : UserControl
+    public partial class DecisionTreeCARTParameterPage : UserControl
     {
-        public DecisionTreeInfoPage(DecisionTreeInfoViewModel vm)
+        public DecisionTreeCARTParameterPage()
         {
             InitializeComponent();
-            DataContext = vm;
         }
     }
 }
