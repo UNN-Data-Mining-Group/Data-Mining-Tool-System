@@ -108,17 +108,17 @@ namespace dms.services.preprocessing
                 }
                 appropriateValues.Add(valuesForCurrParameter[obtainedValueID].ToString());
                 //проверка на выод за границу диапозона значений в выборке ???
-                if (appropriateValues[j].Equals(""))
+                if (appropriateValues.Count <= j)
                 {
                     float firstVal = valuesForCurrParameter[0];
                     float lastVal = valuesForCurrParameter[valuesForCurrParameter.Count - 1];
                     if (obtainedValue >= lastVal)
                     {
-                        appropriateValues[j] = lastVal.ToString();
+                        appropriateValues.Add(lastVal.ToString());
                     }
                     else if (obtainedValue <= firstVal)
                     {
-                        appropriateValues[j] = firstVal.ToString();
+                        appropriateValues.Add(firstVal.ToString());
                     }
                 }
             }
