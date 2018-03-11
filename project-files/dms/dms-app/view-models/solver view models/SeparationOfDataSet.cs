@@ -9,6 +9,7 @@ using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.kohonen;
 using dms.services.preprocessing;
 using dms.solvers.decision_tree;
+using dms.solvers.decision_tree.C4_5;
 
 namespace dms.view_models.solver_view_models
 {
@@ -155,12 +156,18 @@ namespace dms.view_models.solver_view_models
                 };
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             }
-            else if (ISolver is DecisionTree)
+            else if (ISolver is DecisionTreeC4_5)
             {
-                DecisionTreeLearning la = new DecisionTreeLearning();
+                DecisionTreeC4_5LearningAlgo la = new DecisionTreeC4_5LearningAlgo();
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             }
-
+            else if (ISolver is DecisionTree)
+            {
+                DecisionTreeCARTLearningAlgo la = new DecisionTreeCARTLearningAlgo();
+                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
+            }
+            
+            
             PreprocessingManager preprocessing = new PreprocessingManager();
             mistakeTrain = 0;
             List<string> expectedOutputValues = trainOutputDataset.Select(x => Convert.ToString(x)).ToList();
@@ -184,7 +191,14 @@ namespace dms.view_models.solver_view_models
             }
 
             var counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-            mistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
+            if (counts.ContainsKey(false))
+            {
+                mistakeTrain = (float)counts[false] / (float)sizeTrainDataset;
+            }
+            else
+            {
+                mistakeTrain = 0;
+            }
 
             mistakeTest = 0;
             expectedOutputValues = testOutputDataset.Select(x => Convert.ToString(x)).ToList();
@@ -195,7 +209,12 @@ namespace dms.view_models.solver_view_models
             }
             comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
             counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
-            mistakeTest = (float)counts[false] / (float)sizeTestDataset;
+            if (counts.ContainsKey(false))
+            {
+                mistakeTest = (float)counts[false] / (float)sizeTestDataset;
+            }
+            else
+                mistakeTest = 0;
 
             return ISolver;
         }

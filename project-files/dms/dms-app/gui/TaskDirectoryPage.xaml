@@ -53,7 +53,10 @@
             <HierarchicalDataTemplate DataType="{x:Type vm:PerceptronTree}" ItemsSource="{Binding Content}">
                 <TextBlock Text="{Binding Title}"/>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type vm:DecisionTreesTree}" ItemsSource="{Binding Content}">
+            <HierarchicalDataTemplate DataType="{x:Type vm:DecisionTreesCARTTree}" ItemsSource="{Binding Content}">
+                <TextBlock Text="{Binding Title}"/>
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type vm:DecisionTreesC4_5Tree}" ItemsSource="{Binding Content}">
                 <TextBlock Text="{Binding Title}"/>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type vm:WardTree}" ItemsSource="{Binding Content}">

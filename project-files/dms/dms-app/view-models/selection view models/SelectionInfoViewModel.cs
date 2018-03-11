@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using dms.models;
+using dms.tools;
+using System.Windows.Input;
 
 namespace dms.view_models
 {
     public class SelectionInfoViewModel : ViewmodelBase
     {
+        private ActionHandler left, right;
         public class Pair
         {
             public string Name { get; set; }
@@ -18,11 +21,35 @@ namespace dms.view_models
 
         private string[][] originalData;
         private string[] originalColumns;
+        private string page;
+        private int curPage;
+        private int maxPage;
+        private const int elementsInPage = 30;
 
         private int SelectionId { get; set; }
 
         public SelectionInfoViewModel(int taskId, int selectionId)
         {
+            Data = new string[elementsInPage][];
+            left = new ActionHandler(
+                () =>
+                {
+                    curPage--;
+                    Page = curPage + "/" + maxPage;
+                    updatePage();
+                    left.RaiseCanExecuteChanged();
+                    right.RaiseCanExecuteChanged();
+                }, (e) => { return curPage > 1; });
+            right = new ActionHandler(
+                () =>
+                {
+                    curPage++;
+                    Page = curPage + "/" + maxPage;
+                    updatePage();
+                    left.RaiseCanExecuteChanged();
+                    right.RaiseCanExecuteChanged();
+                }, (e) => { return curPage < maxPage; });
+
             Selection selection = ((Selection)services.DatabaseManager.SharedManager.entityById(selectionId, typeof(Selection)));
             SelectionId = selectionId;
             SelectionName = selection.Name;
@@ -60,19 +87,25 @@ namespace dms.view_models
             PreprocessingIdList = lstId;
             PreprocessingList = lst;
 
+            curPage = 1;
+            maxPage = selection.RowCount / elementsInPage;
+            Page = curPage + "/" + maxPage;
+
             updateTable(selection.TaskTemplateID);
             TaskTemplate taskTemplate = ((TaskTemplate)services.DatabaseManager.SharedManager.entityById(selection.TaskTemplateID, typeof(TaskTemplate)));
 
             SelectedPreprocessing = taskTemplate.Name;
-            
         }
         
+        public ICommand LeftPage { get { return left; } }
+        public ICommand RightPage { get { return right; } }
         public string TaskName { get; }
         public int TaskId { get; }
         public string SelectionName { get; }
         public int CountRows { get; }
         public string[] PreprocessingList { get; }
         public int[] PreprocessingIdList { get; }
+        public string Page { get { return page; } private set { page = value; NotifyPropertyChanged(); } }
         public string SelectedPreprocessing
         {
             get { return selectedPreprocessing; }
@@ -88,9 +121,9 @@ namespace dms.view_models
                 {
                     if (selectedPreprocessing.Equals(PreprocessingList[i]))
                     {
-                        Data = originalData;
                         DataColumns = originalColumns;
                         taskTemplateId = PreprocessingIdList[i];
+                        updatePage();
                         break;
                     }
                 }
@@ -100,6 +133,16 @@ namespace dms.view_models
         }
         public string[][] Data { get; private set; }
         public string[] DataColumns { get; private set; }
+
+        private void updatePage()
+        {
+            Data = new string[elementsInPage][];
+            for (int i = 0; i < elementsInPage; i++)
+            {
+                Data[i] = originalData[i + (curPage - 1) * elementsInPage];
+            }
+            NotifyPropertyChanged("Data");
+        }
 
         private void updateTable(int taskTemplateId)
         {
@@ -113,46 +156,13 @@ namespace dms.view_models
                 originalColumns[i] = parameter.Name;
             }
             //рисуем содержимое
-            int rows = 100;
-            if (CountRows < 100)
-            {
-                rows = CountRows;
-            }
-            originalData = new string[rows][];
-            for (int i = 0; i < rows; i++)
-            {
-                originalData[i] = new string[parameters.Count];
-            }
             List<Entity> sels = Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplateId.ToString())
                 .addCondition("Name", "=", SelectionName), typeof(Selection));
             if (sels.Count != 0)
             {
-                List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
-                .addCondition("SelectionID", "=", sels[0].ID.ToString()), typeof(SelectionRow));
-
-                int stepRow = 0;
-                foreach (Entity selRow in selectionRows)
-                {
-                    List<Entity> valueParam = new List<Entity>();
-                    int selectionRowId = selRow.ID;
-                    int stepParam = 0;
-                    foreach (Entity param in parameters)
-                    {
-                        int paramId = param.ID;
-                        List<Entity> value = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
-                            .addCondition("ParameterID", "=", paramId.ToString()).
-                            addCondition("SelectionRowID", "=", selectionRowId.ToString()), typeof(ValueParameter));
-                        originalData[stepRow][stepParam] = ((ValueParameter)value[0]).Value;
-                        stepParam++;
-                    }
-                    stepRow++;
-                    if (stepRow >= rows)
-                    {
-                        break;
-                    }
-
-                }
+                originalData = Selection.valuesOfSelectionId(sels[0].ID);
+                updatePage();
             }
         }
     }

@@ -50,6 +50,19 @@ namespace dms.models
             return this;
         }
 
+        public Query addInArray(string key, Array array)
+        {
+            if (conditionString == "")
+            {
+                conditionString = key + " IN (" + SQLArrayToInString(array) + ")";
+            }
+            else
+            {
+                conditionString += " AND " + key +  "IN (" + SQLArrayToInString(array) + ")";
+            }
+            return this;
+        }
+
         public Query addTable(string nameTable)
         {
             this.nameTable = nameTable;
@@ -142,6 +155,15 @@ namespace dms.models
                 statementForDatabase += " WHERE " + conditionString;
             }
             return statementForDatabase;
+        }
+
+        private string SQLArrayToInString(Array a)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < a.Length; i++)
+                sb.AppendFormat("'{0}',", a.GetValue(i));
+            string retVal = sb.ToString();
+            return retVal.Substring(0, retVal.Length - 1);
         }
     }
 }

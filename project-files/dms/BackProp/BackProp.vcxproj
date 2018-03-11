@@ -23,6 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>BackProp</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>BackPropAlgo</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -73,6 +74,11 @@
     <IncludePath>$(SolutionDir)mkl\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)mkl\lib\intel64_win;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)mkl\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)mkl\lib\intel64_win;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -133,15 +139,18 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>mkl_core_dll.lib;mkl_intel_lp64_dll.lib;libiomp5md.lib;mkl_intel_thread_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BackProp.h" />
+    <ClInclude Include="BackPropAlgo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BackProp.cpp" />
+    <ClCompile Include="BackPropAlgo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
