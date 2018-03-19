@@ -291,10 +291,13 @@ namespace dms.view_models
                     inputData[i] = new float[parameters.Count - 1];
                 }
                 int outputParam = 0;
+                bool inEnd = true;
                 for(int i = 0; i < parameters.Count; i++)
                 {
                     if(((models.Parameter)parameters[i]).IsOutput == 1)
                     {
+                        if (i == 0)
+                            inEnd = false;
                         outputParam = parameters[i].ID;
                     }
                 }
@@ -304,11 +307,20 @@ namespace dms.view_models
                 for(int i = 0; i < selection.RowCount; i++)
                 {
                     fvals[i] = new float[parameters.Count];
-                    for(int j = 0; j < parameters.Count - 1; j++)
+                    int count = parameters.Count - 1;
+                    int start = 0;
+                    int outputIndex = count;
+                    if (!inEnd)
                     {
-                        inputData[i][j] = float.Parse(vals[i][j].Replace(".",","));
+                        count = parameters.Count;
+                        start = 1;
+                        outputIndex = 0;
                     }
-                    outputData[i] = float.Parse(vals[i][parameters.Count - 1].Replace(".", ","));
+                    for (int j = start; j < count; j++)
+                    {
+                        inputData[i][j - start] = float.Parse(vals[i][j].Replace(".",","));
+                    }
+                    outputData[i] = float.Parse(vals[i][outputIndex].Replace(".", ","));
                 }
                 ISolver isolver = null;
                 if (Solver.Description is PerceptronTopology)

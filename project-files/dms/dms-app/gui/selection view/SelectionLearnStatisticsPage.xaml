@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:dms.gui"
              mc:Ignorable="d">
+    <ScrollViewer>
     <StackPanel>
         <GroupBox Header="Статистика обучения решателей" Margin="5">
             <ItemsControl ItemsSource="{Binding LearnedSolvers}">
@@ -93,5 +94,6 @@
                 </StackPanel>
             </ScrollViewer>
         </GroupBox>
-    </StackPanel>
+        </StackPanel>
+        </ScrollViewer>
 </UserControl>
