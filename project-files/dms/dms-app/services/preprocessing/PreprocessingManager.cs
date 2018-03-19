@@ -135,5 +135,10 @@ namespace dms.services.preprocessing
             List<string> appropriateValues = InversePreprocessing.InversePreprocessingObj.getAppropriateValues(obtainedValues, selectionId, parameterId);
             return InversePreprocessing.InversePreprocessingObj.getAppropriateValuesAfterInversePreprocessing(selectionId, parameterId, appropriateValues);
         }
+
+        public string getPreprocessingValue(int taskTemplateId, string operation, string value, int index)
+        {
+            return Preprocessing.PreprocessingObj.prepForSolver(taskTemplateId, operation, value, index);
+        }
     }
 }

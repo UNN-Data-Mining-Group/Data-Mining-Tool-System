@@ -356,6 +356,8 @@ namespace dms.view_models
                     list.prepParameters = listOfIParameters;
                     list.parametersValues = listOfValuesForParameter;
                     pp.info.Add(list);
+
+                    new DataHelper().updateTaskTemplate(newTaskTemplateId, pp);
                 }
                 if (parameters != null && types != null)
                 {
@@ -368,7 +370,6 @@ namespace dms.view_models
                     PreprocessingParameters = preprocessingParametersTemp.ToArray();
                 }
             }
-
             OnClose?.Invoke(this, null);
         }
 

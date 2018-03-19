@@ -232,6 +232,41 @@ namespace dms.services.preprocessing
             return ((ValueParameter)value).Value;
         }
 
+        public string prepForSolver(int prepTaskTemplateId, string operation, string value, int index)
+        {
+            TaskTemplate template = (TaskTemplate)TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
+                .addCondition("ID", "=", prepTaskTemplateId.ToString()), typeof(TaskTemplate)).First();
+
+            PreprocessingViewModel.PreprocessingTemplate pp = (PreprocessingViewModel.PreprocessingTemplate)
+                template.PreprocessingParameters;
+            List<services.preprocessing.normalization.IParameter> info = pp.info[0].prepParameters;
+            if (info.Count <= index)
+            {
+                return "";
+            }
+            services.preprocessing.normalization.IParameter p = info[index];
+
+            if (p != null)
+            {
+                switch (operation)
+                {
+                    case "Линейная нормализация 1 (к float)":
+                        return p.GetLinearNormalizedFloat(value).ToString();
+                    case "Нелинейная нормализация 2 (к float)":
+                        return p.GetNonlinearNormalizedFloat(value).ToString();
+                    case "нормализация 3 (к int)":
+                        return p.GetNormalizedInt(value).ToString();
+                    case "бинаризация":
+                        break;
+                    case "без предобработки":
+                        return value;
+                    default:
+                        return "";
+                }
+            }
+
+            return "";
+        }
 
     }
 }
