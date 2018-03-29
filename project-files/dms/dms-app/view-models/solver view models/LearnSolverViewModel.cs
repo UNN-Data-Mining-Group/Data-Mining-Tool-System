@@ -119,6 +119,13 @@ namespace dms.view_models
                 else return nameLearningScenarios;
             }
         }
+
+        public Dictionary<string, int> TaskTemplateIDs
+        {
+            get;
+            set;
+        }
+
         public string[] Preprocessings
         {
             get
@@ -127,6 +134,7 @@ namespace dms.view_models
                     .addCondition("Name", "=", SelectedSelection), typeof(Selection));
                 List<Entity> listTaskTemplate = Entity.all(typeof(TaskTemplate));
                 List<string> nameTaskTemplate = new List<string>();
+                Dictionary<string, int> mapIdNameTaskTEmplates = new Dictionary<string, int>();
                 int i = 0;
                 foreach (Selection selection in selections)
                 {
@@ -168,6 +176,7 @@ namespace dms.view_models
                         if (i == 0)
                             LearningScenarioID = taskTemplate.ID;
                         nameTaskTemplate.Add(taskTemplate.Name);
+                        mapIdNameTaskTEmplates.Add(taskTemplate.Name, taskTemplate.ID);
                         i++;
                     }
                 }
@@ -176,7 +185,11 @@ namespace dms.view_models
                     CanSolve = false;
                     return new string[] { "Нет созданных преобразований" };
                 }
-                else return nameTaskTemplate.ToArray();
+                else
+                {
+                    TaskTemplateIDs = mapIdNameTaskTEmplates;
+                    return nameTaskTemplate.ToArray();
+                }
             }
             set
             {
@@ -271,7 +284,7 @@ namespace dms.view_models
             foreach (LearningModel learningModel in LearningList)
             {
                 TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
-                .addCondition("Name", "=", learningModel.SelectedPreprocessing), typeof(TaskTemplate))[0];
+                .addCondition("ID", "=", learningModel.TaskTemplateIDs[learningModel.SelectedPreprocessing].ToString()), typeof(TaskTemplate))[0];
                 Selection selection = (Selection)Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplate.ID.ToString())
                 .addCondition("Name", "=", learningModel.SelectedSelection), typeof(Selection))[0];
