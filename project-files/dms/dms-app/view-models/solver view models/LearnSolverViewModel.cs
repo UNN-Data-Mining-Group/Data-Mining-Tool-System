@@ -1,8 +1,5 @@
 ﻿using dms.models;
 using dms.solvers;
-using dms.solvers.decision_tree;
-using dms.solvers.decision_tree.C4_5;
-using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets.ward_net;
@@ -15,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
+using dms.solvers.decision.tree;
 
 namespace dms.view_models
 {
@@ -361,11 +359,11 @@ namespace dms.view_models
                     TreeDescription topology = Solver.Description as TreeDescription;
                     isolver = new DecisionTree(topology);                    
                 }
-                else if (Solver.Description is TreeDescriptionC4_5)
+                /* else if (Solver.Description is TreeDescriptionC4_5)
                 {
                     TreeDescriptionC4_5 topology = Solver.Description as TreeDescriptionC4_5;
                     isolver = new DecisionTreeC4_5(topology);
-                }
+                } */
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);
                 LearnedSolver ls = new LearnedSolver()

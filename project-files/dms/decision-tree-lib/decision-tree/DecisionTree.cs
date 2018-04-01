@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using dms.solvers;
-using dms.solvers.decision_tree.C4_5;
 
-namespace dms.solvers.decision_tree
+namespace dms.solvers.decision.tree
 {
-    [Serializable()]
     public class DecisionTree : ISolver
     {
         public Int64 inputsCount;
         public Int64 outputCount;
         public Node root;
         public int maxDepth;
-        private TreeDescriptionC4_5 treeDesc;
+        private TreeDescription treeDesc;
 
         public DecisionTree(TreeDescription treeDesc) : base(treeDesc)
         {
@@ -23,11 +20,6 @@ namespace dms.solvers.decision_tree
             outputCount = treeDesc.GetOutputsCount();
             maxDepth = treeDesc.MaxDepth;
             root = new Node();
-        }
-
-        public DecisionTree(TreeDescriptionC4_5 treeDesc) : base(treeDesc)
-        {
-            this.treeDesc = treeDesc;
         }
 
         public float treeSolve(float[] x, Node curNode)

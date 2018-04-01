@@ -23,7 +23,7 @@
             <Label Content="Здесь могли быть ваши параметры"/>
         </DataTemplate>
         <DataTemplate x:Key="decisionTreeTemplate">
-            <Label Content=""/>
+            <local:DTCartParams/>
         </DataTemplate>
     </UserControl.Resources>
     <StackPanel>

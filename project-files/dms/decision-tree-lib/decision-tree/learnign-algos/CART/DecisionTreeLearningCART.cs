@@ -1,12 +1,13 @@
-﻿using System;
+﻿using dms.solvers.decision.tree;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace dms.solvers.decision_tree
+namespace dms.solvers.decision.tree.algo
 {
-    public class DecisionTreeCARTLearningAlgo
+    public class DecisionTreeCARTLearningAlgo : DTLearningAlgo
     {
         string usedAlgo;
 		string[] TeacherTypesList;

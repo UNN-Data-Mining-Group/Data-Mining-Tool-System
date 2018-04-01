@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Globalization;
+using dms.solvers.decision.tree.algo;
 
-
-namespace dms.solvers.decision_tree
+namespace dms.solvers.decision.tree
 {
     public class LearningTable
     {

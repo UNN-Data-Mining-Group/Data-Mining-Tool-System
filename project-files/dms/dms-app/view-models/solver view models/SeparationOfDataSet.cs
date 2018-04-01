@@ -8,8 +8,6 @@ using dms.solvers;
 using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.kohonen;
 using dms.services.preprocessing;
-using dms.solvers.decision_tree;
-using dms.solvers.decision_tree.C4_5;
 
 namespace dms.view_models.solver_view_models
 {
@@ -156,7 +154,7 @@ namespace dms.view_models.solver_view_models
                 };
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             }
-            else if (ISolver is DecisionTreeC4_5)
+            /* else if (ISolver is DecisionTreeC4_5)
             {
                 DecisionTreeC4_5LearningAlgo la = new DecisionTreeC4_5LearningAlgo();
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
@@ -166,7 +164,7 @@ namespace dms.view_models.solver_view_models
                 DecisionTreeCARTLearningAlgo la = new DecisionTreeCARTLearningAlgo();
                 ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             }
-            
+            */
             
             PreprocessingManager preprocessing = new PreprocessingManager();
             mistakeTrain = 0;

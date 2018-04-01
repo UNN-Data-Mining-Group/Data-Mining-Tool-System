@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace dms.solvers.decision_tree
+namespace dms.solvers.decision.tree
 {
     [Serializable()]
     public class Node

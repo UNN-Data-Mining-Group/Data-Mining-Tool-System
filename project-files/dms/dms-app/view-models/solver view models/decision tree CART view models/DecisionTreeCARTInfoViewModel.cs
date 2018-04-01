@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using dms.solvers.decision_tree;
+using dms.solvers.decision.tree;
 
 namespace dms.view_models
 {

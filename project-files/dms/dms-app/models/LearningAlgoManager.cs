@@ -7,7 +7,8 @@ using System.Runtime.InteropServices;
 using dms.neroNetLearningAlgoritms;
 using dms.models.kohonen_learning;
 using dms.solvers;
-using dms.solvers.decision_tree;
+using dms.solvers.decision.tree.algo;
+using dms.solvers.decision.tree;
 
 namespace dms.iLearningAlgo
 {
@@ -74,18 +75,19 @@ namespace dms.neroNetLearningAlgoritms
     }
 }
 
-namespace dms.solvers.decision_tree
+namespace dms.solvers.decision.tree
 {
-    public class DecisionTreeLearningAlgo : iLearningAlgo.ILearningAlgo
+    public class DecisionTreeLearningAlgos : iLearningAlgo.ILearningAlgo
     {
-        private DecisionTreeCARTLearningAlgo lrAlgo;
+        private DTLearningAlgo[] trainers;
+        private int currentTrainer;
 
         public void setUsedAlgo(string usedAlgo)
         {
             lrAlgo.setUsedAlgo(usedAlgo);
         }
 
-        public DecisionTreeLearningAlgo()
+        public DecisionTreeLearningAlgos()
         {
             lrAlgo = new DecisionTreeCARTLearningAlgo();
         }
@@ -149,7 +151,7 @@ namespace dms.models
             myTeacherTypeList = new string[countAlgoLib][];
             lrAlgo[0] = new NeroNetLearningAlgoritm();
             lrAlgo[1] = new KohonenLearningAlgorithms();
-            lrAlgo[2] = new DecisionTreeLearningAlgo();
+            lrAlgo[2] = new DecisionTreeLearningAlgos();
             algoParams = new AlgoParam();
             TeacherTypesList = new string[0];
             for (int i = 0; i < countAlgoLib; i++)
@@ -157,16 +159,6 @@ namespace dms.models
                 myTeacherTypeList[i] = lrAlgo[i].getTeacherTypesList();
                 TeacherTypesList = TeacherTypesList.Concat(myTeacherTypeList[i]).ToArray();
             }
-            //TeacherTypesList = TeacherTypesList.Concat("Деревья решений").ToArray();
-            //          TeacherTypesList = lrAlgo[0].getTeacherTypesList();
-
-
-            //new string[] { "Обучатель 1", "Обучатель 2", "Обучатель 3" };
-            //            ParamsName = lrAlgo[0].getParamsNames();
-
-            //            ParamsValue = lrAlgo[0].getParams(); //new float[] { 0, 0.3f, 1f, 5f };
-
-
         }
         public float startLearn(ISolver solver,float[][] train_x,float[] train_y)
         {

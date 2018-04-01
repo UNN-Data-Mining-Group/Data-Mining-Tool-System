@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using dms.solvers;
 
-namespace dms.solvers.decision_tree
+namespace dms.solvers.decision.tree
 {
     [Serializable()]
     public class TreeDescription : ISolverDescription
