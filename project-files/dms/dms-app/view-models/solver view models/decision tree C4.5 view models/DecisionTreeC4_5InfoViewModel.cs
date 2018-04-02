@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using dms.solvers.decision_tree.C4_5;
+using dms.solvers.decision.tree;
 
 namespace dms.view_models
 {
@@ -19,7 +19,7 @@ namespace dms.view_models
             TaskName = task.Name;
             Name = solver.Name;
 
-            TreeDescriptionC4_5 td = solver.Description as TreeDescriptionC4_5;
+            TreeDescription td = solver.Description as TreeDescription;
             MaxTreeDepth = td.MaxDepth;
         }
     }

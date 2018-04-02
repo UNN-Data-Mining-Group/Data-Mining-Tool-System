@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using dms.solvers.decision_tree.C4_5;
+using dms.solvers.decision.tree;
 using dms.models;
 
 namespace dms.view_models
@@ -28,7 +28,7 @@ namespace dms.view_models
             //WARNING!!!
             //Here must be selected task template 
             //and number of inputs and outputs in it.
-            TreeDescriptionC4_5 td = new TreeDescriptionC4_5(Inputs, Outputs, depth);
+            TreeDescription td = new TreeDescription(Inputs, Outputs, depth);
 
             TaskSolver ts = new TaskSolver()
             {

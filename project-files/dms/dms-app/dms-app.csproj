@@ -123,6 +123,9 @@
     <Compile Include="gui\scenario view\learning algo params view\BackPropParams.xaml.cs">
       <DependentUpon>BackPropParams.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\scenario view\learning algo params view\DTC45Params.xaml.cs">
+      <DependentUpon>DTC45Params.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\scenario view\learning algo params view\DTCartParams.xaml.cs">
       <DependentUpon>DTCartParams.xaml</DependentUpon>
     </Compile>
@@ -237,7 +240,6 @@
     <Compile Include="models\archive\ArchiveTask.cs" />
     <Compile Include="models\archive\ArchiveTaskSolver.cs" />
     <Compile Include="models\archive\ArchiveTemplate.cs" />
-    <Compile Include="models\DTLearningAlgo.cs" />
     <Compile Include="models\KohonenLearningAlgorithms.cs" />
     <Compile Include="models\LearningAlgoManager.cs" />
     <Compile Include="models\LearningQuality.cs" />
@@ -320,6 +322,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\scenario view\learning algo params view\BackPropParams.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\scenario view\learning algo params view\DTC45Params.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

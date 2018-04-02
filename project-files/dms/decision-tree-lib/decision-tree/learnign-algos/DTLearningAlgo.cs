@@ -11,5 +11,6 @@ namespace dms.solvers.decision.tree.algo
         float[] getParams();
         string[] getParamsNames();
         float startLearn(ISolver solver, float[][] train_x, float[] train_y);
+        string getType();
     }
 }

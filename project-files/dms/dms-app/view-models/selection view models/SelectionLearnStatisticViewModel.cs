@@ -11,7 +11,7 @@ using dms.solvers;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.ward_net;
-using dms.solvers.decision_tree;
+using dms.solvers.decision.tree;
 using dms.view_models.solver_view_models;
 using System.Globalization;
 

@@ -84,46 +84,54 @@ namespace dms.solvers.decision.tree
 
         public void setUsedAlgo(string usedAlgo)
         {
-            lrAlgo.setUsedAlgo(usedAlgo);
+            for (int i = 0; i < trainers.Length; i++)
+            {
+                if (trainers[i].getType() == usedAlgo)
+                {
+                    currentTrainer = i;
+                    break;
+                }
+            }
         }
 
         public DecisionTreeLearningAlgos()
         {
-            lrAlgo = new DecisionTreeCARTLearningAlgo();
+            trainers = new DTLearningAlgo[]
+            {
+                new DecisionTreeC4_5LearningAlgo(),
+                new DecisionTreeCARTLearningAlgo()
+            };
+            currentTrainer = 0;
         }
 
         public string[] getTeacherTypesList()
         {
-            return lrAlgo.getTeacherTypesList();
+            List<string> types = new List<string>();
+            foreach (DTLearningAlgo tr in trainers)
+                types.Add(tr.getType());
+            return types.ToArray();
         }
 
         public string[] getTeacherTypesList(ISolver solver)
         {
-            return lrAlgo.getTeacherTypesList(solver);
+            List<string> types = new List<string>();
+
+            foreach (DTLearningAlgo tr in trainers)
+                    types.Add(tr.getType());
+            return types.ToArray();
         }
 
         public float[] getParams()
         {
-            return lrAlgo.getParams();
+            return trainers[currentTrainer].getParams();
         }
         public string[] getParamsNames()
         {
-            return lrAlgo.getParamsNames();
+            return trainers[currentTrainer].getParamsNames();
         }
         public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
         {
-            float res;
-            try
-            {
-                res = lrAlgo.startLearn(solver, train_x, train_y);
-            }
-            catch (ArgumentException e)
-            {
-                res = -1;
-                System.Windows.MessageBox.Show(e.Message);
-            }
-
-            return res;
+            return trainers[currentTrainer].startLearn(solver, train_x, train_y);
         }
     }
 }

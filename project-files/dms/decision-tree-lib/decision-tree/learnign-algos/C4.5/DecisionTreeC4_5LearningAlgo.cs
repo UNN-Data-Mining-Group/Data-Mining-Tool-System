@@ -38,14 +38,14 @@ namespace dms.solvers.decision.tree.algo
         public float[] getParams()
         {
             float[] res = new float[1];
-            res[0] = 0;
+            res[0] = 10;
             return res;
         }
 
         public string[] getParamsNames()
         {
             string[] res = new string[1];
-            res[0] = "";
+            res[0] = "Максимальная глубина дерева";
             return res;
         }
 
@@ -103,6 +103,11 @@ namespace dms.solvers.decision.tree.algo
                 }
 
             }
+        }
+
+        public string getType()
+        {
+            return "C4.5";
         }
     }
 }
