@@ -49,8 +49,7 @@ namespace dms.view_models
                 var pers = new List<TaskSolver>();
                 var wards = new List<TaskSolver>();
                 var convnets = new List<TaskSolver>();
-                var dectreesCART = new List<TaskSolver>();
-                var dectreesC4_5 = new List<TaskSolver>();
+                var dectrees = new List<TaskSolver>();
                 var kohnets = new List<TaskSolver>();
 
                 foreach (TaskSolver solver in solvers)
@@ -61,10 +60,8 @@ namespace dms.view_models
                         wards.Add(solver);
                     else if (solver.TypeName.Equals("ConvNN"))
                         convnets.Add(solver);
-                    else if (solver.TypeName.Equals("DecisionTreeCART"))
-                        dectreesCART.Add(solver);
-                    else if (solver.TypeName.Equals("DecisionTreeC4_5"))
-                        dectreesC4_5.Add(solver);
+                    else if (solver.TypeName.Equals("DecisionTree"))
+                        dectrees.Add(solver);
                     else if (solver.TypeName.Equals("KohonenNet"))
                         kohnets.Add(solver);
                 }
@@ -73,8 +70,7 @@ namespace dms.view_models
                     (task,
                     selections.ToArray(),
                     pers.ToArray(),
-                    dectreesCART.ToArray(),
-                    dectreesC4_5.ToArray(),
+                    dectrees.ToArray(),
                     wards.ToArray(),
                     convnets.ToArray(),
                     kohnets.ToArray(),

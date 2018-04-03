@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace dms.solvers.decision.tree
 {
+    [Serializable()]
     public class DecisionTree : ISolver
     {
         public Int64 inputsCount;

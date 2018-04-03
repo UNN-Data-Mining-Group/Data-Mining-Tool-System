@@ -9,7 +9,7 @@ using dms.models;
 
 namespace dms.view_models
 {
-    public class DecisionTreeC4_5ParametersViewModel : ISolverParameterViewModel
+    public class DecisionTreeParametersViewModel : ISolverParameterViewModel
     {
         public event Action CanCreateChanged;
         public int MaxTreeDepth { get; set; }
@@ -33,7 +33,7 @@ namespace dms.view_models
             TaskSolver ts = new TaskSolver()
             {
                 Name = name,
-                TypeName = "DecisionTreeC4_5",
+                TypeName = "DecisionTree",
                 TaskID = task.ID,
                 Description = td
             };

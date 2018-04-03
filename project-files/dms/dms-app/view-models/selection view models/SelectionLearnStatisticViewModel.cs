@@ -375,7 +375,7 @@ namespace dms.view_models
                     else if (Solver.Description is TreeDescription)
                     {
                         TreeDescription topology = Solver.Description as TreeDescription;
-                        isolver = new DecisionTree(topology);
+                        isolver = new solvers.decision.tree.DecisionTree(topology);
                     }
                     else throw new EntryPointNotFoundException();
                     SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);

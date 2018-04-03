@@ -38,7 +38,7 @@ namespace dms.view_models
             Number = 1;
             NeuronsCount = 1;
             SelectedAF = ActivateFunctions[0];
-            IsUsingW0 = true;
+            IsUsingW0 = false;
         }
     }
     public class WardNetLayerViewModel : ViewmodelBase

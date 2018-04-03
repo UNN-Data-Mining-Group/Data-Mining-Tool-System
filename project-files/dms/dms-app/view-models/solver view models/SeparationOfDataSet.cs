@@ -143,28 +143,14 @@ namespace dms.view_models.solver_view_models
             Array.Copy(InputData, sizeTrainDataset, testInputDataset, 0, sizeTestDataset);
             Array.Copy(OutputData, trainOutputDataset, sizeTrainDataset);
             Array.Copy(OutputData, sizeTrainDataset, testOutputDataset, 0, sizeTestDataset);
+            
+            LearningAlgoManager la = new LearningAlgoManager()
+            {
+                usedAlgo = LS.LearningAlgorithmName,
+                LAParams = LS.LAParameters
 
-            if (ISolver is INeuralNetwork)
-            {
-                LearningAlgoManager la = new LearningAlgoManager()
-                {
-                    usedAlgo = LS.LearningAlgorithmName,
-                    LAParams = LS.LAParameters
-
-                };
-                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-            }
-            /* else if (ISolver is DecisionTreeC4_5)
-            {
-                DecisionTreeC4_5LearningAlgo la = new DecisionTreeC4_5LearningAlgo();
-                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-            }
-            else if (ISolver is DecisionTree)
-            {
-                DecisionTreeCARTLearningAlgo la = new DecisionTreeCARTLearningAlgo();
-                ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
-            }
-            */
+            };
+            ClosingError = la.startLearn(ISolver, trainInputDataset, trainOutputDataset);
             
             PreprocessingManager preprocessing = new PreprocessingManager();
             mistakeTrain = 0;
