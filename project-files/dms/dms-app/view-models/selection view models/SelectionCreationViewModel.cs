@@ -264,7 +264,5 @@ namespace dms.view_models
             }
             return templates;
         }
-
-
     }
 }

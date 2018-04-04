@@ -28,6 +28,7 @@ namespace dms.services.preprocessing
         public Parser()
         { }
 
+        private int deletedRows = 0;
         private int countRows;
         public int CountRows { get; set; }
         public int CountParameters { get; set; }
@@ -102,24 +103,31 @@ namespace dms.services.preprocessing
                     int index = 0;
                     foreach (string value in values)
                     {
-                        if (differentValues[index].Contains(value))
+                        string val = value;
+                        if (imputation.Imputation.isWrongValue(val))
                         {
-                            int i = differentValues[index].IndexOf(value);
+                            val = "0.0";
+                            //deletedRows = deletedRows + 1;
+                            //continue;
+                        }
+                        if (differentValues[index].Contains(val))
+                        {
+                            int i = differentValues[index].IndexOf(val);
                             counts[index][i] += 1;
                         }
                         else
                         {
-                            differentValues[index].Add(value);
+                            differentValues[index].Add(val);
                             counts[index].Add(1);//[differentValues[index].Count - 1] = 1;
                         }
-                        Type type = value.GetType();
+                        Type type = val.GetType();
                         int intValue = 0;
                         float doubleValue = 0;
-                        if (Int32.TryParse(value.Replace('.', ','), out intValue))
+                        if (Int32.TryParse(val.Replace('.', ','), out intValue))
                         {
                             type = intValue.GetType();
                         }
-                        else if (float.TryParse(value.Replace('.', ','), out doubleValue))
+                        else if (float.TryParse(val.Replace('.', ','), out doubleValue))
                         {
                             type = doubleValue.GetType();
                         }
@@ -154,7 +162,7 @@ namespace dms.services.preprocessing
                     line = sr.ReadLine();
                 }
 
-                countRows = iter + 1;
+                countRows = iter + 1 - deletedRows;
                 CountRows = countRows;
                 float percent = 5 * countRows / 100;
                 for (int i = 0; i < CountParameters; i++)
@@ -226,6 +234,16 @@ namespace dms.services.preprocessing
                     int index = -1;
                     foreach (string value in values)
                     {
+                        string val = value;
+                        if (value.Contains("'"))
+                        {
+                            val = value.Replace("'", "");
+                        }
+                        if (imputation.Imputation.isWrongValue(val))
+                        {
+                            val = "0.0";
+                            //break;
+                        }
                         index++;
                         string parameterName = parameters[index].Name;
                         string comment = parameters[index].Comment == null ? "" : parameters[index].Comment;
@@ -237,7 +255,7 @@ namespace dms.services.preprocessing
                             dms.models.Parameter parameter = helper.addParameter(parameterName, comment, taskTemplateId, index, isOutput, type);
                             listParams.Add(parameter);
                         }
-                        listValParams.Add(helper.addValueParameter(entity.ID, -1/*parameter.ID*/, value));
+                        listValParams.Add(helper.addValueParameter(entity.ID, -1/*parameter.ID*/, val));
                     }
                     
                     line = sr.ReadLine();
@@ -271,6 +289,9 @@ namespace dms.services.preprocessing
                 }
                 DatabaseManager.SharedManager.insertMultipleEntities(list);
             }
+
         }
+
+        
     }
 }

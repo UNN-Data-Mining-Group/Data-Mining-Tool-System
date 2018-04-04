@@ -79,6 +79,25 @@ namespace dms.services.preprocessing
             entity.Value = value;
             return entity;
         }
+        public void updateValueParameter(int valueParameterId, string value)
+        {
+            dms.models.ValueParameter entity = (dms.models.ValueParameter)DatabaseManager.SharedManager.entityById(valueParameterId, typeof(dms.models.ValueParameter));
+            entity.Value = value;
+            entity.save();
+        }
+
+        public void deleteSelectionRowsWithValues(List<Entity> selectionRows)
+        {
+            List<Entity> listForDelete = new List<Entity>();
+            listForDelete = listForDelete.Concat(selectionRows).ToList();
+            for (int i = 0; i < selectionRows.Count; i++)
+            {
+                List<Entity> values = ValueParameter.where(new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                        .addCondition("SelectionRowID", "=", selectionRows[i].ID.ToString()), typeof(ValueParameter));
+                listForDelete = listForDelete.Concat(values).ToList();
+            }
+            DatabaseManager.SharedManager.deleteMultipleEntities(listForDelete);
+        }
 
         public void deleteSelection(Entity selection)
         {

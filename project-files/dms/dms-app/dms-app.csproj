@@ -241,13 +241,16 @@
     <Compile Include="services\archivation\ArchivatorService.cs" />
     <Compile Include="services\archivation\ExportService.cs" />
     <Compile Include="services\archivation\ImportService.cs" />
+    <Compile Include="services\preprocessing\Analysis.cs" />
     <Compile Include="services\preprocessing\DataHelper.cs" />
+    <Compile Include="services\preprocessing\imputation\Imputation.cs" />
     <Compile Include="services\preprocessing\InversePreprocessing.cs" />
     <Compile Include="services\preprocessing\normalization\EnumeratedParameter.cs" />
     <Compile Include="services\preprocessing\normalization\IntegerParameter.cs" />
     <Compile Include="services\preprocessing\normalization\IParameter.cs" />
     <Compile Include="services\preprocessing\normalization\RealParameter.cs" />
     <Compile Include="services\preprocessing\Parser.cs" />
+    <Compile Include="services\preprocessing\PCA.cs" />
     <Compile Include="services\preprocessing\Preprocessing.cs" />
     <Compile Include="services\preprocessing\PreprocessingHelper.cs" />
     <Compile Include="services\preprocessing\PreprocessingManager.cs" />

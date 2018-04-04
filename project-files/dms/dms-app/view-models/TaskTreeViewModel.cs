@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Collections.ObjectModel;
 using dms.tools;
 using dms.models;
+using dms.services.preprocessing;
 
 namespace dms.view_models
 {
@@ -81,6 +82,7 @@ namespace dms.view_models
                     new string[] { },
                     this));
             }
+         //   new PCA().test();
         }
     }
 }
