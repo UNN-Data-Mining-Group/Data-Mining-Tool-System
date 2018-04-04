@@ -18,8 +18,7 @@ namespace dms.view_models
         public TaskTree(models.Task task,
             models.Selection[] sel, 
             models.TaskSolver[] per, 
-            models.TaskSolver[] desCART,
-            models.TaskSolver[] desC4_5,
+            models.TaskSolver[] des,
             models.TaskSolver[] wards, 
             models.TaskSolver[] convnets, 
             models.TaskSolver[] kohnets,
@@ -30,7 +29,7 @@ namespace dms.view_models
             Content = new ObservableCollection<TreeSection>
             {
                 new SelectionTree(task, sel, vm),
-                new SolverTree(task, per, desCART, desC4_5, wards, convnets, kohnets, vm),
+                new SolverTree(task, per, des, wards, convnets, kohnets, vm),
                 new SolutionsTree(Title, solv, vm)
             };
             deleteCommand = new ActionHandler(

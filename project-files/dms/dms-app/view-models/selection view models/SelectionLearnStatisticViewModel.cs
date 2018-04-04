@@ -11,7 +11,7 @@ using dms.solvers;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.ward_net;
-using dms.solvers.decision_tree;
+using dms.solvers.decision.tree;
 using dms.view_models.solver_view_models;
 using System.Globalization;
 
@@ -375,7 +375,7 @@ namespace dms.view_models
                     else if (Solver.Description is TreeDescription)
                     {
                         TreeDescription topology = Solver.Description as TreeDescription;
-                        isolver = new DecisionTree(topology);
+                        isolver = new solvers.decision.tree.DecisionTree(topology);
                     }
                     else throw new EntryPointNotFoundException();
                     SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);

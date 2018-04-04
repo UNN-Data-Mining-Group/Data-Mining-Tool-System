@@ -37,7 +37,7 @@ namespace dms.models
             return this;
         }
 
-        public Query addCondition(string key, string op, string value)
+        public Query addCondition(string key, string op, string value, string typeCond = "AND")
         {
             if (conditionString == "")
             {
@@ -45,7 +45,7 @@ namespace dms.models
             }
             else
             {
-                conditionString += " AND " + key + op + "'" + value + "'";
+                conditionString += " " + typeCond + " " + key + op + "'" + value + "'";
             }
             return this;
         }

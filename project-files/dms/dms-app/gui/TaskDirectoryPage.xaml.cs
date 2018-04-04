@@ -55,10 +55,8 @@ namespace dms.gui
                 CreateSelectionCreationPage(vm as SelectionCreationViewModel);
             else if (vm is PerceptronInfoViewModel)
                 CreatePerceptronInfoPage(vm as PerceptronInfoViewModel);
-            else if (vm is DecisionTreeCARTInfoViewModel)
-                CreateDecisionTreeCARTInfoPage(vm as DecisionTreeCARTInfoViewModel);
-            else if (vm is DecisionTreeC4_5InfoViewModel)
-                CreateDecisionTreeC4_5InfoPage(vm as DecisionTreeC4_5InfoViewModel);
+            else if (vm is DecisionTreeInfoViewModel)
+                CreateDecisionTreeInfoPage(vm as DecisionTreeInfoViewModel);
             else if (vm is WardNetInfoViewModel)
                 CreateWardNNInfoPage(vm as WardNetInfoViewModel);
             else if (vm is ConvNNInfoViewModel)
@@ -127,16 +125,10 @@ namespace dms.gui
             ConvNNInfoPage t = new ConvNNInfoPage(obj);
             OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
         }
-
-        private void CreateDecisionTreeCARTInfoPage(DecisionTreeCARTInfoViewModel obj)
+        
+        private void CreateDecisionTreeInfoPage(DecisionTreeInfoViewModel obj)
         {
-            DecisionTreeCARTInfoPage t = new DecisionTreeCARTInfoPage(obj);
-            OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
-        }
-
-        private void CreateDecisionTreeC4_5InfoPage(DecisionTreeC4_5InfoViewModel obj)
-        {
-            DecisionTreeC4_5InfoPage t = new DecisionTreeC4_5InfoPage(obj);
+            DecisionTreeInfoPage t = new DecisionTreeInfoPage(obj);
             OnShowPage?.Invoke(obj.TaskName + "/" + obj.Name + "/Информация", t);
         }
 

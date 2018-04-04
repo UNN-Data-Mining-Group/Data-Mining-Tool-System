@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="dms.gui.DecisionTreeParameterPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d" Width="326" HorizontalAlignment="Left">
+    <StackPanel HorizontalAlignment="Left" Width="325">
+        <StackPanel Orientation="Horizontal" Margin="5">
+            <Label Content="Количество входных параметров:"/>
+            <TextBox x:Name="InputsTextBox" TextWrapping="Wrap" Width="146" Text="{Binding Inputs}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="5">
+            <Label Content="Количество выходных параметров:"/>
+            <TextBox x:Name="OutputsTextBox" TextWrapping="Wrap" Width="138" Text="{Binding Outputs}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

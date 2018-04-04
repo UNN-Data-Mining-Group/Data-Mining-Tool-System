@@ -15,11 +15,8 @@
         <DataTemplate x:Key="wardNNTemplate">
             <local:WardParametersPage/>
         </DataTemplate>
-        <DataTemplate x:Key="decisionTreeCARTTemplate">
-            <local:DecisionTreeCARTParameterPage/>
-        </DataTemplate>
-        <DataTemplate x:Key="decisionTreeC4_5Template">
-            <local:DecisionTreeC4_5ParameterPage/>
+        <DataTemplate x:Key="decisionTreeTemplate">
+            <local:DecisionTreeParameterPage/>
         </DataTemplate>
         <DataTemplate x:Key="convNNTemplate">
             <local:ConvNNParametersPage/>
@@ -51,14 +48,11 @@
                         <DataTrigger Binding="{Binding SelectedType}" Value="Персептрон">
                             <Setter Property="ContentTemplate" Value="{StaticResource perceptronTemplate}" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectedType}" Value="Сеть Ворда">
-                            <Setter Property="ContentTemplate" Value="{StaticResource wardNNTemplate}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений CART">
-                            <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeCARTTemplate}" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений C4.5">
-                            <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeC4_5Template}" />
+                            <DataTrigger Binding="{Binding SelectedType}" Value="Сеть Ворда">
+                                <Setter Property="ContentTemplate" Value="{StaticResource wardNNTemplate}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений">
+                            <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeTemplate}" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding SelectedType}" Value="Сверточная нейронная сеть">
                             <Setter Property="ContentTemplate" Value="{StaticResource convNNTemplate}" />
