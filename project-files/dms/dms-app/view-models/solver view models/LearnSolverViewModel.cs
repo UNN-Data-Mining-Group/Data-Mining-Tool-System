@@ -1,8 +1,5 @@
 ﻿using dms.models;
 using dms.solvers;
-using dms.solvers.decision_tree;
-using dms.solvers.decision_tree.C4_5;
-using dms.solvers.neural_nets;
 using dms.solvers.neural_nets.conv_net;
 using dms.solvers.neural_nets.perceptron;
 using dms.solvers.neural_nets.ward_net;
@@ -15,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
+using dms.solvers.decision.tree;
 
 namespace dms.view_models
 {
@@ -88,20 +86,34 @@ namespace dms.view_models
             {
                 List<Entity> listLearningScenarios = null;
                 string typeSolver = CurTaskSolver.TypeName;
-                // Не убирать!!!!!!
-
-                /* if (typeSolver.Equals("DecisionTree"))
+                if (typeSolver.Equals("DecisionTree"))
                 {
                     listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
-                    .addCondition("LearningAlgorithmName", "=", "Деревья решений"), typeof(LearningScenario));
+                    .addCondition("LearningAlgorithmName", "=", "CART")
+                    .addCondition("LearningAlgorithmName", "=", "C4.5", "OR"), typeof(LearningScenario));
                 }
-                else
+                else if (typeSolver.Equals("Perceptron"))
                 {
                     listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
-                    .addCondition("LearningAlgorithmName", "!=", "Деревья решений"), typeof(LearningScenario));
+                    .addCondition("LearningAlgorithmName", "=", "Генетический алгоритм")
+                    .addCondition("LearningAlgorithmName", "=", "Обратное распространение ошибки", "OR"), typeof(LearningScenario));
                 }
-                */
-                listLearningScenarios = Entity.all(typeof(LearningScenario));
+                else if (typeSolver.Equals("WardNN"))
+                {
+                    listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                    .addCondition("LearningAlgorithmName", "=", "Генетический алгоритм")
+                    .addCondition("LearningAlgorithmName", "=", "Обратное распространение ошибки", "OR"), typeof(LearningScenario));
+                }
+                else if (typeSolver.Equals("ConvNN"))
+                {
+                    listLearningScenarios = Entity.all(typeof(LearningScenario));
+                }
+                else if (typeSolver.Equals("KohonenNet"))
+                {
+                    listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                    .addCondition("LearningAlgorithmName", "=", "Самоорганизация Кохонена")
+                    .addCondition("LearningAlgorithmName", "=", "Векторное квантование", "OR"), typeof(LearningScenario));
+                }
                 string[] nameLearningScenarios = new string[listLearningScenarios.Count];
                 int i = 0;
                 foreach (LearningScenario ls in listLearningScenarios)
@@ -119,6 +131,13 @@ namespace dms.view_models
                 else return nameLearningScenarios;
             }
         }
+
+        public Dictionary<string, int> TaskTemplateIDs
+        {
+            get;
+            set;
+        }
+
         public string[] Preprocessings
         {
             get
@@ -127,6 +146,7 @@ namespace dms.view_models
                     .addCondition("Name", "=", SelectedSelection), typeof(Selection));
                 List<Entity> listTaskTemplate = Entity.all(typeof(TaskTemplate));
                 List<string> nameTaskTemplate = new List<string>();
+                Dictionary<string, int> mapIdNameTaskTEmplates = new Dictionary<string, int>();
                 int i = 0;
                 foreach (Selection selection in selections)
                 {
@@ -168,6 +188,7 @@ namespace dms.view_models
                         if (i == 0)
                             LearningScenarioID = taskTemplate.ID;
                         nameTaskTemplate.Add(taskTemplate.Name);
+                        mapIdNameTaskTEmplates.Add(taskTemplate.Name, taskTemplate.ID);
                         i++;
                     }
                 }
@@ -176,7 +197,11 @@ namespace dms.view_models
                     CanSolve = false;
                     return new string[] { "Нет созданных преобразований" };
                 }
-                else return nameTaskTemplate.ToArray();
+                else
+                {
+                    TaskTemplateIDs = mapIdNameTaskTEmplates;
+                    return nameTaskTemplate.ToArray();
+                }
             }
             set
             {
@@ -271,7 +296,7 @@ namespace dms.view_models
             foreach (LearningModel learningModel in LearningList)
             {
                 TaskTemplate taskTemplate = (TaskTemplate)TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
-                .addCondition("Name", "=", learningModel.SelectedPreprocessing), typeof(TaskTemplate))[0];
+                .addCondition("ID", "=", learningModel.TaskTemplateIDs[learningModel.SelectedPreprocessing].ToString()), typeof(TaskTemplate))[0];
                 Selection selection = (Selection)Selection.where(new Query("Selection").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskTemplateID", "=", taskTemplate.ID.ToString())
                 .addCondition("Name", "=", learningModel.SelectedSelection), typeof(Selection))[0];
@@ -346,12 +371,7 @@ namespace dms.view_models
                 else if (Solver.Description is TreeDescription)
                 {
                     TreeDescription topology = Solver.Description as TreeDescription;
-                    isolver = new DecisionTree(topology);                    
-                }
-                else if (Solver.Description is TreeDescriptionC4_5)
-                {
-                    TreeDescriptionC4_5 topology = Solver.Description as TreeDescriptionC4_5;
-                    isolver = new DecisionTreeC4_5(topology);
+                    isolver = new solvers.decision.tree.DecisionTree(topology);                    
                 }
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);

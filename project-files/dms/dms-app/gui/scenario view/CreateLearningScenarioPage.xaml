@@ -22,8 +22,11 @@
         <DataTemplate x:Key="undefined">
             <Label Content="Здесь могли быть ваши параметры"/>
         </DataTemplate>
-        <DataTemplate x:Key="decisionTreeTemplate">
-            <Label Content=""/>
+        <DataTemplate x:Key="decisionTreeCartTemplate">
+            <local:DTCartParams x:Name="DTCartParams"/>
+        </DataTemplate>
+        <DataTemplate x:Key="decisionTreeC45Template">
+            <local:DTCartParams x:Name="DTC45Params"/>
         </DataTemplate>
     </UserControl.Resources>
     <StackPanel>
@@ -66,8 +69,11 @@
                             <DataTrigger Binding="{Binding TeacherType}" Value="Самоорганизация Кохонена">
                                 <Setter Property="ContentTemplate" Value="{StaticResource selfOrganize}" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding TeacherType}" Value="Деревья решений">
-                                <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeTemplate}" />
+                            <DataTrigger Binding="{Binding TeacherType}" Value="CART">
+                                <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeCartTemplate}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TeacherType}" Value="C4.5">
+                                <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeC45Template}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

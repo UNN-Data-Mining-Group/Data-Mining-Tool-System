@@ -25,7 +25,7 @@ namespace dms.view_models
             NeuronsCount = 1;
             ActivateFunctions = ActivationFunctionTypes.TypeNames;
             SelectedAF = ActivateFunctions[0];
-            IsUsingW0 = true;
+            IsUsingW0 = false;
         }
 
         public int Number { get { return number; } set { number = value; NotifyPropertyChanged(); } }
