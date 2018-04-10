@@ -56,7 +56,7 @@ namespace dms.services.preprocessing.normalization
             {
                 if (Math.Abs(val - temp) < 1e-10)
                 {
-                    return (float)(step / 2.0 + i * step);
+                    return (float) (xLeft + (xRight - xLeft) * step / 2.0 + i * step * (xRight - xLeft));
                 }
                 temp++;
             }
@@ -81,16 +81,16 @@ namespace dms.services.preprocessing.normalization
 
         public string GetFromLinearNormalized(float value)
         {
-            float step = (float)1.0 / (2 * countClasses);
+            float step = (float)((xRight - xLeft) * 1.0 / (2 * countClasses));
 
-            if (value <= 0.0)
-                value = step;
-            else if (value >= 1.0)
-                value = 1 - step;
-
+            if (value <= xLeft)
+                value = xLeft + step;
+            else if (value >= xRight)
+                value = xRight - step;
+            value -= xLeft;
             value -= step;
-            value = value * countClasses;
-            return classes[Convert.ToInt32(value)];
+            value = value * countClasses / (xRight - xLeft);
+            return classes[Convert.ToInt32(Math.Truncate(value))];
         }
 
         public string GetFromNonlinearNormalized(float value)
@@ -104,10 +104,17 @@ namespace dms.services.preprocessing.normalization
             return classes[Convert.ToInt32(output)];
         }
 
+        public void setRange(float left, float right)
+        {
+            xLeft = left;
+            xRight = right;
+        }
+
         private float centerValue;
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
         private readonly int countClasses;
         private int countNumbers;
         private readonly List<string> classes;
+        private float xLeft = 0, xRight = 1;
     }
 }

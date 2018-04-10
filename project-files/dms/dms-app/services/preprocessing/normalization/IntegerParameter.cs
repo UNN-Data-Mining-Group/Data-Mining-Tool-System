@@ -57,7 +57,7 @@ namespace dms.services.preprocessing.normalization
         public float GetLinearNormalizedFloat(string value)
         {
             float val = GetInt(value);
-            return (float)(val - minValue) / (maxValue - minValue);
+            return (float)((val - minValue) / (maxValue - minValue) * (xRight - xLeft) + xLeft);
         }
 
         public float GetNonlinearNormalizedFloat(string value)
@@ -68,6 +68,8 @@ namespace dms.services.preprocessing.normalization
 
         public int GetNormalizedInt(string value)
         {
+            xLeft = 0;
+            xRight = 1;
             double val = GetLinearNormalizedFloat(value);
             return Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
@@ -85,7 +87,8 @@ namespace dms.services.preprocessing.normalization
                 value = 1.0f;
 
             float size = maxValue - minValue;
-            return Convert.ToString(minValue + value * size);
+            float res = (value - xLeft) / (xRight - xLeft) * size + minValue;
+            return Convert.ToString(res);
         }
 
         public string GetFromNonlinearNormalized(float value)
@@ -99,7 +102,13 @@ namespace dms.services.preprocessing.normalization
             return Convert.ToString(output);
         }
 
+        public void setRange(float left, float right)
+        {
+            xLeft = left;
+            xRight = right;
+        }
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
         private int minValue, maxValue, countValues, countNumbers, centerValue;
+        private float xLeft = 0, xRight = 1;
     }
 }

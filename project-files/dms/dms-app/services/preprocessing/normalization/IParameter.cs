@@ -20,5 +20,7 @@ namespace dms.services.preprocessing.normalization
         string GetFromNormalized(int value);
         string GetFromLinearNormalized(float value);
         string GetFromNonlinearNormalized(float value);
+
+        void setRange(float left, float right);
     }
 }

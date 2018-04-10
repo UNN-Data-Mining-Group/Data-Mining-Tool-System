@@ -47,7 +47,7 @@ namespace dms.services.preprocessing
         }
 
         private List<int> pars = new List<int>();
-        public Dictionary<List<Entity>, IParameter> executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId)
+        public Dictionary<List<Entity>, IParameter> executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId, float left, float right)
         {
             models.Parameter oldParam = ((models.Parameter)DatabaseManager.SharedManager.entityById(oldParamId, typeof(models.Parameter)));
             TypeParameter type;
@@ -93,21 +93,24 @@ namespace dms.services.preprocessing
                     if (oldParam.Type == TypeParameter.Real)
                     {
                         p = new RealParameter(values);
+                        p.setRange(left, right);
                         valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     else if (oldParam.Type == TypeParameter.Int)
                     {
                         p = new IntegerParameter(values);
+                        p.setRange(left, right);
                         valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     else if (oldParam.Type == TypeParameter.Enum)
                     {
                         p = new EnumeratedParameter(values);
+                        p.setRange(left, right);
                         valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
                     break;
                 case "бинаризация":
-                    valuesForParameter = binarizationValues(valueParam, newParamId, newSelectionId, parameterPosition);
+                    valuesForParameter = binarizationValues(valueParam, newParamId, newSelectionId, parameterPosition, left, right);
                     break;
                 case "без предобработки":
                     valuesForParameter = processWithoutPreprocessing(valueParam, newParamId, newSelectionId);
@@ -136,7 +139,7 @@ namespace dms.services.preprocessing
             return listValues;
         }
 
-        private List<Entity> binarizationValues(List<Entity> values, int paramId, int newSelectionId, int parameterPosition)
+        private List<Entity> binarizationValues(List<Entity> values, int paramId, int newSelectionId, int parameterPosition, float left, float right)
         {
             DataHelper helper = new DataHelper();
             List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
@@ -150,6 +153,7 @@ namespace dms.services.preprocessing
                 valueStr.Add(((ValueParameter)value).Value);
             }
             EnumeratedParameter p = new EnumeratedParameter(valueStr);
+            p.setRange(left, right);
 
             int index = 0;
             foreach (string value in valueStr)
