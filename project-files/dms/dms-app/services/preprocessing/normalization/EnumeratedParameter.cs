@@ -66,7 +66,7 @@ namespace dms.services.preprocessing.normalization
         public float GetNonlinearNormalizedFloat(string value)
         {
             float val = GetInt(value);
-            return (float)(1 / (Math.Exp(-a * (val - centerValue)) + 1));
+            return (float)((xRight - xLeft) / (Math.Exp(-a * (val - centerValue)) + 1) + xLeft);
         }
 
         public int GetNormalizedInt(string value)
@@ -95,12 +95,12 @@ namespace dms.services.preprocessing.normalization
 
         public string GetFromNonlinearNormalized(float value)
         {
-            if (value < 0.0f)
-                value = 0.0f;
-            else if (value > 1.0f)
-                value = 1.0f;
+            if (value < xLeft)
+                value = xLeft;
+            else if (value > xRight)
+                value = xRight;
 
-            float output = (float)(centerValue - 1 / a * Math.Log(1 / value - 1));
+            float output = (float)(centerValue - 1 / a * Math.Log((xRight - xLeft) / (value - xLeft) - 1));
             return classes[Convert.ToInt32(output)];
         }
 
@@ -108,6 +108,11 @@ namespace dms.services.preprocessing.normalization
         {
             xLeft = left;
             xRight = right;
+        }
+
+        public void setParam(float param)
+        {
+            a = param;
         }
 
         private float centerValue;

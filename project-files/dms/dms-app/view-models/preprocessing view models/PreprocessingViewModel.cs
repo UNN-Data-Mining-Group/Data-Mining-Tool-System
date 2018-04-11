@@ -101,6 +101,8 @@ namespace dms.view_models
         {
             IntervalNameA = "A = ";
             IntervalNameB = "B = ";
+            //Параметр влияет на степень нелинейности изменения переменной в нормализуемом интервале
+            AName = "(Параметр нормализации) a = ";
             Task = task;
             List<Entity> taskTemplates = TaskTemplate.where(new Query("TaskTemplate").addTypeQuery(TypeQuery.select)
                 .addCondition("TaskID", "=", task.ID.ToString()), typeof(TaskTemplate));
@@ -197,11 +199,15 @@ namespace dms.view_models
 
         public void Create()
         {
-            float left = 0, right = 1;
+            float left = 0, right = 1, a = 0;
             if (IntervalValueA != null && IntervalValueB != null)
             {
                 left = float.Parse(IntervalValueA);
                 right = float.Parse(IntervalValueB);
+            }
+            if (AValue != null)
+            {
+                a = float.Parse(AValue);
             }
             
             if (PerformedTemplate != null)
@@ -316,7 +322,8 @@ namespace dms.view_models
                                                                                                                                                                          i - 1,
                                                                                                                                                                          entity.ID,
                                                                                                                                                                          left,
-                                                                                                                                                                         right);
+                                                                                                                                                                         right,
+                                                                                                                                                                         a);
                                 services.preprocessing.normalization.IParameter p = output.Values.ElementAt(0);
                                 List<Entity> valuesForParameter = output.Keys.ElementAt(0);
                                 continue;
@@ -362,7 +369,8 @@ namespace dms.view_models
                                                                                                                                                                      prepParam.Position, 
                                                                                                                                                                      newParamId, 
                                                                                                                                                                      left, 
-                                                                                                                                                                     right);
+                                                                                                                                                                     right,
+                                                                                                                                                                     a);
                             services.preprocessing.normalization.IParameter p = output.Values.ElementAt(0);
                             List<Entity> valuesForParameter = output.Keys.ElementAt(0);
                             //->
@@ -516,6 +524,34 @@ namespace dms.view_models
             {
                 intervalValueB = value;
                 NotifyPropertyChanged("IntervalValueB");
+            }
+        }
+
+        private string aName;
+        private string aValue;
+        public string AName
+        {
+            get
+            {
+                return aName;
+            }
+            set
+            {
+                aName = value;
+                NotifyPropertyChanged("AName");
+            }
+        }
+
+        public string AValue
+        {
+            get
+            {
+                return aValue;
+            }
+            set
+            {
+                aValue = value;
+                NotifyPropertyChanged("AValue");
             }
         }
     }

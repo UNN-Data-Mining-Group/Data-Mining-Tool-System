@@ -73,19 +73,20 @@ namespace dms.services.preprocessing.normalization
         public float GetNonlinearNormalizedFloat(string value)
         {
             float val = GetFloat(value);
-            return (float)(1 / (Math.Exp(-a * (val - centerValue)) + 1));
+            float res = (float)((xRight - xLeft) / (Math.Exp(-a * (val - centerValue)) + 1) + xLeft);
+            return res;
         }
 
         public int GetNormalizedInt(string value)
         {
-            xLeft = 0;
-            xRight = 1;
+            setRange(0, 1);
             float val = GetLinearNormalizedFloat(value);
             return Convert.ToInt32(val * Math.Pow(10, countNumbers));
         }
 
         public string GetFromNormalized(int value)
         {
+            setRange(0, 1);
             float dval = (float)(value / Math.Pow(10, countNumbers));
             return GetFromLinearNormalized(dval);
         }
@@ -104,12 +105,12 @@ namespace dms.services.preprocessing.normalization
 
         public string GetFromNonlinearNormalized(float value)
         {
-            if (value < 0.0f)
-                value = 0.0f;
-            else if (value > 1.0f)
-                value = 1.0f;
+            if (value < xLeft)
+                value = xLeft;
+            else if (value > xRight)
+                value = xRight;
 
-            float output = (float)(centerValue - 1 / a * Math.Log(1 / value - 1));
+            float output = (float)(centerValue - 1 / a * Math.Log((xRight - xLeft) / (value - xLeft) - 1));
             return Convert.ToString(output);
         }
 
@@ -118,6 +119,12 @@ namespace dms.services.preprocessing.normalization
             xLeft = left;
             xRight = right;
         }
+
+        public void setParam(float param)
+        {
+            a = param;
+        }
+
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
         private float minValue, maxValue, centerValue;
         private float xLeft = 0, xRight = 1;
