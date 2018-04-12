@@ -73,9 +73,10 @@ namespace dms.services.preprocessing
             return Preprocessing.PreprocessingObj.addNewEntitiesForPreprocessing(selectionName, countRows, taskTemplateId);
         }
 
-        public Dictionary<List<Entity>, IParameter> executePreprocessing(int newSelectionId, int oldSelectionId, int oldParamId, string prepType, int parameterPosition, int newParamId, float left, float right)
+        public Dictionary<List<Entity>, IParameter> executePreprocessing(int newSelectionId, int oldSelectionId, 
+            int oldParamId, string prepType, int parameterPosition, int newParamId, float left, float right, float a)
         {
-            return Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId, left, right);
+            return Preprocessing.PreprocessingObj.executePreprocessing(newSelectionId, oldSelectionId, oldParamId, prepType, parameterPosition, newParamId, left, right, a);
         }
 
         public List<Entity> getNewParametersForBinarizationType(int oldSelectionId, int newTemplateId, int oldParamId)

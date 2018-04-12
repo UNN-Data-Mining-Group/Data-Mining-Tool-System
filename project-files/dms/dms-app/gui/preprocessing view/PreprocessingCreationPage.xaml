@@ -42,6 +42,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -51,6 +52,8 @@
                     <TextBox Text="{Binding IntervalValueA}" Grid.Column="1" Grid.Row="0" Margin="5"/>
                     <Label Content="{Binding IntervalNameB}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right"/>
                     <TextBox Text="{Binding IntervalValueB}" Grid.Column="1" Grid.Row="1" Margin="5"/>
+                    <Label Content="{Binding AName}" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right"/>
+                    <TextBox Text="{Binding AValue}" Grid.Column="1" Grid.Row="2" Margin="5"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="Преобразование параметров:">
