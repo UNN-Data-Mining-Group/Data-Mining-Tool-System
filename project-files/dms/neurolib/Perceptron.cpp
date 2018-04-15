@@ -99,7 +99,7 @@ size_t nnets_perceptron::getIterationDerivatives(float* dest, int iterationIndex
 		return 0;
 
 	nnets::calc_activation_derivatives(p->temp_res[2 * iterationIndex - 1],
-		p->neurons[iterationIndex], p->aftypes[iterationIndex - 1], dest);
+		p->neurons[iterationIndex], p->aftypes[iterationIndex - 1], dest,p->StartInterval,p->EndInterval);
 	return p->neurons[iterationIndex];
 }
 
@@ -133,17 +133,23 @@ Perceptron::Perceptron(Perceptron& p)
 {
 	init(p.neurons, p.has_delay, p.aftypes, p.layers);
 	setWeights(p.w);
+	this->EndInterval = p.EndInterval;
+	this->StartInterval = p.StartInterval;
 }
 
 Perceptron::Perceptron(const int* neuronsCount, 
-	const ActivationFunctionType* types, int layersCount)
+	const ActivationFunctionType* types, int layersCount, int StartInterval, int EndInterval)
 {
+	this->StartInterval = StartInterval;
+	this->EndInterval = EndInterval;
 	init(neuronsCount, nullptr, types, layersCount);
 }
 
 Perceptron::Perceptron(const int* neuronsCount, 
-	const bool* isDelayOnLayer, const ActivationFunctionType* types, int layersCount)
+	const bool* isDelayOnLayer, const ActivationFunctionType* types, int layersCount, int StartInterval, int EndInterval)
 {	
+	this->StartInterval = StartInterval;
+	this->EndInterval = EndInterval;
 	init(neuronsCount, isDelayOnLayer, types, layersCount);
 }
 
@@ -160,7 +166,7 @@ size_t Perceptron::solve(const float* x, float* y)
 	{
 		cblas_sgemv(CblasRowMajor, CblasNoTrans, neurons[i], neurons[i - 1] + has_delay[i - 1], 1.0f, w[i-1], neurons[i - 1] + has_delay[i - 1], temp_res[temp_index], 1, 0.0f, temp_res[temp_index + 1], 1);
 		const int n = neurons[i];
-		calc_activation_function(temp_res[temp_index + 1], n, aftypes[i - 1], temp_res[temp_index + 2]);
+		calc_activation_function(temp_res[temp_index + 1], n, aftypes[i - 1], temp_res[temp_index + 2],StartInterval,EndInterval);
 		temp_index += 2;
 	}
 

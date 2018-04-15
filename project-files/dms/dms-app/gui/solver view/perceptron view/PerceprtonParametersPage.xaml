@@ -10,6 +10,9 @@
         <StackPanel Orientation="Horizontal" Margin="5">
             <Label Content="Входной слой:"/>
             <exToolkit:IntegerUpDown Minimum="1" Maximum="9999" Value="{Binding InputNeuronsCount}"/>
+            <Label Content="Интервал:"/>
+            <exToolkit:IntegerUpDown Minimum="-100" Maximum="100" Value="{Binding StartInterval}"/>
+            <exToolkit:IntegerUpDown Minimum="-100" Maximum="100" Value="{Binding EndInterval}"/>
         </StackPanel>
         <GroupBox Header="Скрытые слои">
             <StackPanel>
