@@ -56,6 +56,8 @@ namespace dms.view_models
         }
         public ObservableCollection<LayerViewModel> HiddenLayers { get; private set; }
         public LayerViewModel OutputLayer { get; }
+        public int StartInterval { get; set; }
+        public int EndInterval { get; set; }
         public int InputNeuronsCount { get; set; }
         public ICommand AddLayer { get { return addLayerHandler; } }
         public void DeleteHiddenLayer(LayerViewModel l)
@@ -73,11 +75,12 @@ namespace dms.view_models
 
         public void CreateSolver(string name, models.Task task)
         {
+            int startinterval = StartInterval;
+            int endinterval = EndInterval;
             int layers = 2 + HiddenLayers.Count;
             int[] neurons = new int[layers];
             bool[] delays = new bool[layers - 1];
-            string[] afs = new string[layers - 1];
-
+            string[] afs = new string[layers - 1];         
             neurons[0] = InputNeuronsCount;
             for (int i = 1; i < layers - 1; i++)
                 neurons[i] = HiddenLayers[i-1].NeuronsCount;
@@ -91,7 +94,7 @@ namespace dms.view_models
             delays[layers - 2] = OutputLayer.IsUsingW0;
             afs[layers - 2] = OutputLayer.SelectedAF;
 
-            PerceptronTopology t = new PerceptronTopology(layers, neurons, delays, afs);
+            PerceptronTopology t = new PerceptronTopology(layers, neurons, delays, afs, StartInterval, EndInterval);
 
             TaskSolver ts = new TaskSolver()
             {

@@ -4,8 +4,10 @@
 namespace dms::solvers::neural_nets::perceptron
 {
 	PerceptronTopology::PerceptronTopology(int layers, array<int>^ neurons,
-		array<bool>^ delays, array<System::String^>^ afs)
+		array<bool>^ delays, array<System::String^>^ afs, int start, int end)
 	{
+		this->start = start;
+		this->end = end;
 		layersCount = layers;
 		if ((neurons->Length != layers) ||
 			(delays->Length != (layers - 1)) ||
@@ -91,7 +93,7 @@ namespace dms::solvers::neural_nets::perceptron
 		}
 
 		nnets_perceptron::Perceptron* psolver =
-			new nnets_perceptron::Perceptron(neurons, delays, afs, layersCount);
+			new nnets_perceptron::Perceptron(neurons, delays, afs, layersCount, start, end);
 
 		delete[] neurons;
 		delete[] delays;

@@ -29,9 +29,11 @@ namespace nnets_perceptron
 	class Perceptron : public nnets::NeuralNetwork
 	{
 	public:
+		int StartInterval;
+		int EndInterval;
 		Perceptron(Perceptron& p);
 		Perceptron(const int* neuronsCount, 
-			const nnets::ActivationFunctionType* types, int layersCount);
+			const nnets::ActivationFunctionType* types, int layersCount, int StartInterval, int EndInterval);
 		/*
 		neuronsCount : array [0..layersCount) - number of neurons in layer
 		isDelayOnLayer : array [0..layersCount-1) - does neurons in layer have bias-neuron connection or not
@@ -39,7 +41,7 @@ namespace nnets_perceptron
 		layersCount : from 2 to inf - number of layers in net
 		*/
 		Perceptron(const int* neuronsCount, const bool* isDelayOnLayer, 
-			const nnets::ActivationFunctionType* types, int layersCount);
+			const nnets::ActivationFunctionType* types, int layersCount, int StartInterval, int EndInterval);
 
 		/*
 		x: array[0..inputs count) - allocated vector of inputs.
