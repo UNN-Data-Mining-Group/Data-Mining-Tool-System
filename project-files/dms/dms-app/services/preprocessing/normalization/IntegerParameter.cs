@@ -81,10 +81,10 @@ namespace dms.services.preprocessing.normalization
 
         public string GetFromLinearNormalized(float value)
         {
-            if (value < 0.0f)
-                value = 0.0f;
-            else if (value > 1.0f)
-                value = 1.0f;
+            if (value < xLeft)
+                value = xLeft;
+            else if (value > xRight)
+                value = xRight;
 
             float size = maxValue - minValue;
             float res = (value - xLeft) / (xRight - xLeft) * size + minValue;
