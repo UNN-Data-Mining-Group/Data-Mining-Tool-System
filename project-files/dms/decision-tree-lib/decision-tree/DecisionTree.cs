@@ -51,7 +51,7 @@ namespace dms.solvers.decision.tree
         {
             TreeDescription dtDescr = new TreeDescription(this.GetInputsCount(), this.GetOutputsCount(), this.maxDepth);
             DecisionTree newDT = new DecisionTree(dtDescr);
-            newDT.root = this.root.Copy();
+            //newDT.root = this.root.Copy();
             return newDT;
         }
     }
