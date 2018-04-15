@@ -202,8 +202,8 @@ namespace dms.view_models
             float left = 0, right = 1, a = 0;
             if (IntervalValueA != null && IntervalValueB != null)
             {
-                left = float.Parse(IntervalValueA);
-                right = float.Parse(IntervalValueB);
+                left = float.Parse(IntervalValueA.Replace(".", ","));
+                right = float.Parse(IntervalValueB.Replace(".", ","));
             }
             if (AValue != null)
             {

@@ -90,7 +90,7 @@ namespace dms.services.preprocessing.normalization
             value -= xLeft;
             value -= step;
             value = value * countClasses / (xRight - xLeft);
-            return classes[Convert.ToInt32(Math.Truncate(value))];
+            return classes[Convert.ToInt32(value)];
         }
 
         public string GetFromNonlinearNormalized(float value)
