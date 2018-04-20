@@ -175,7 +175,7 @@ size_t ConvNN::solve(const float* x, float* y)
 				auto av = static_cast<VolumeActivation*>(curVolume);
 				size_t size = static_cast<size_t>(prevVolume->Width) * prevVolume->Height * prevVolume->Depth;
 				DEBUG_STATEMENT(tact.start());
-				calc_activation_function(prevVolume->Values, size, av->ActivationFunction, av->Values);
+				calc_activation_function(prevVolume->Values, size, av->ActivationFunction, av->Values,1,1);
 				DEBUG_STATEMENT(tact.stop());
 				break;
 			}

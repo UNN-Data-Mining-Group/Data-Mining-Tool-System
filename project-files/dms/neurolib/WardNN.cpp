@@ -231,7 +231,7 @@ size_t WardNN::solve(const float* x, float* y)
 				bias_weights += group->NeuronsCount;
 			}
 			nnets::calc_activation_function(group_wsums, 
-				group->NeuronsCount, group->ActivationFunction, group_values);
+				group->NeuronsCount, group->ActivationFunction, group_values,1,1);
 			group_values += group->NeuronsCount;
 			group_wsums += group->NeuronsCount;
 		}
