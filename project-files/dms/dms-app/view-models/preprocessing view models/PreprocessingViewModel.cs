@@ -207,7 +207,7 @@ namespace dms.view_models
             }
             if (AValue != null)
             {
-                a = float.Parse(AValue);
+                a = float.Parse(AValue.Replace(".", ","));
             }
             
             if (PerformedTemplate != null)

@@ -97,7 +97,7 @@ namespace dms.services.preprocessing
                         p.setRange(left, right);
                         if (a != 0)
                         {
-                            p.setParam(a);
+                            p.setParam(a, prepType);
                         }
                         valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
@@ -107,7 +107,7 @@ namespace dms.services.preprocessing
                         p.setRange(left, right);
                         if (a != 0)
                         {
-                            p.setParam(a);
+                            p.setParam(a, prepType);
                         }
                         valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
@@ -117,7 +117,7 @@ namespace dms.services.preprocessing
                         p.setRange(left, right);
                         if (a != 0)
                         {
-                            p.setParam(a);
+                            p.setParam(a, prepType);
                         }
                         valuesForParameter = normalizeValues(valueParam, p, newParamId, newSelectionId, prepType);
                     }
@@ -154,6 +154,7 @@ namespace dms.services.preprocessing
 
         private List<Entity> binarizationValues(List<Entity> values, int paramId, int newSelectionId, int parameterPosition, float left, float right, float a)
         {
+            string typePreprocessing = "бинаризация";
             DataHelper helper = new DataHelper();
             List<Entity> selectionRows = SelectionRow.where(new Query("SelectionRow").addTypeQuery(TypeQuery.select)
                 .addCondition("SelectionID", "=", newSelectionId.ToString()), typeof(SelectionRow));
@@ -169,7 +170,7 @@ namespace dms.services.preprocessing
             p.setRange(left, right);
             if (a != 0)
             {
-                p.setParam(a);
+                p.setParam(a, typePreprocessing);
             }
 
             int index = 0;

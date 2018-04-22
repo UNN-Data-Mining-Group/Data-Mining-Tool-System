@@ -120,9 +120,21 @@ namespace dms.services.preprocessing.normalization
             xRight = right;
         }
 
-        public void setParam(float param)
+        public void setParam(float param, string typePreprocessing)
         {
-            a = param;
+            if ("Линейная нормализация 1 (к float)".Equals(typePreprocessing))
+            {
+                float min = (param + 1) * minValue - param * maxValue;
+                float max = (param + 1) * maxValue - param * minValue;
+                
+                minValue = min;
+                maxValue = max;
+            }
+            else if ("Нелинейная нормализация 2 (к float)".Equals(typePreprocessing))
+            {
+                a = param;
+            }
+
         }
 
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
