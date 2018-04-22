@@ -1,6 +1,8 @@
 
 
 #include "NeroNetLearningAlgoritms.h"
+#include "..\neurolib\Perceptron.h"
+
 float get_res_(void* solver, float* in)
 {
 	return 0;
@@ -32,10 +34,10 @@ namespace dms::neroNetLearningAlgoritms
 		ParamsNames[2] = "Процент особей для скрещивания";
 		ParamsNames[3] = "Коэффициент мутации";
 		params = gcnew array< float >(4);
-		params[0] = 100.0f;
-		params[1] = 100.0f;
+		params[0] = 200.0f;
+		params[1] = 500.0f;
 		params[2] = 50.0f;
-		params[3] = 0.2f;
+		params[3] = 20.0f;
 	}
 	void NeroNetLearningAlgoritms::setBackPropParams()
 	{
@@ -54,6 +56,9 @@ namespace dms::neroNetLearningAlgoritms
 		int a = 0;
 		std::map<std::string, void*>* operations = (std::map<std::string, void*>*)solver->getOperations();
 		parent_Solver = solver->getNativeSolver();
+
+		nnets_perceptron::Perceptron* perc = dynamic_cast<nnets_perceptron::Perceptron*>((nnets::NeuralNetwork*)parent_Solver);	
+		float interval_start = perc->StartInterval, interval_end = perc->EndInterval;
 
 		typedef size_t(*GetWeightsCount)(void*);
 		GetWeightsCount getWeightsCount = (GetWeightsCount)(*operations)["getWeightsCount"];
@@ -127,7 +132,7 @@ namespace dms::neroNetLearningAlgoritms
 
 		float res = startGeneticAlgo(solvers, inputs, outputs, train_y->Length, train_x[0]->Length,
 			get_res, set_weights, count_weights, count_person, count_epochs,
-			count_bests, mutation_percent, res_weights);
+			count_bests, mutation_percent, res_weights, interval_start, interval_end);
 
 		set_weights(res_weights, parent_Solver);
 
