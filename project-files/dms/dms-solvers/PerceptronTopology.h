@@ -9,7 +9,7 @@ namespace dms::solvers::neural_nets::perceptron
 	{
 	public:
 		PerceptronTopology(int layers, array<int>^ neurons,
-			array<bool>^ delays, array<System::String^>^ afs);
+			array<bool>^ delays, array<System::String^>^ afsint,int start, int end);
 		int GetLayersCount();
 		array<int>^ GetNeuronsInLayersCount();
 		array<bool>^ HasLayersDelayWeight();
@@ -20,6 +20,8 @@ namespace dms::solvers::neural_nets::perceptron
 		virtual System::Int64 GetOutputsCount();
 		virtual nnets::NeuralNetwork * createNativeSolver();
 	private:
+		int start;
+		int end;
 		int layersCount;
 		bool hasSmoothAfs;
 		array<int>^ neuronsInLayers;
