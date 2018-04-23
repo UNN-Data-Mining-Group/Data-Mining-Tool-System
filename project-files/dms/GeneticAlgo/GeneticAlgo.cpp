@@ -11,11 +11,17 @@ using namespace std;
 namespace geneticAlgo
 {
 
-	void Mut(float* w, int count_weights)
+	float getRandWeight(float interval_start, float interval_end)
+	{
+		//return (((float)(rand() % 20001)) / 1000) - 10;    // от -10.000 до 10.000
+		return (interval_end - interval_start) * (((float)rand()) / RAND_MAX) + interval_start;    //
+	}
+
+	void Mut(float* w, int count_weights, float interval_start, float interval_end)
 	{
 		for (int i = 0; i < count_weights; i++)
 		{
-			if (rand() % 2 == 1) w[i] = (((float)(rand() % 20001)) / 1000) - 10; //((float)rand()) / RAND_MAX;
+			if (rand() % 4 == 1) w[i] = getRandWeight(interval_start, interval_end);
 		}
 	}
 
@@ -62,12 +68,11 @@ namespace geneticAlgo
 		return maxError;
 	}
 
-
 	float startGeneticAlgo(void** solvers, float** inputs, float* outputs, int count_row, int count_col,
 		size_t(*get_res)(float* in, float* out, void* solver), void(*set_weights)(float* weights, void* solver),
 		int count_weights,
 		int count_person, int count_epochs, int count_bests, float mutation_percent,
-		float* res_weights)
+		float* res_weights, float interval_start, float interval_end)
 	{
 		srand(time(0));
 
@@ -80,7 +85,7 @@ namespace geneticAlgo
 		for (int i = 0; i < count_person; i++)
 		{
 			generation[i] = new float[count_weights];
-			for (int j = 0; j < count_weights; j++) generation[i][j] = (((float)(rand() % 20001)) / 1000) - 10; //((float)rand()) / RAND_MAX;
+			for (int j = 0; j < count_weights; j++) generation[i][j] = getRandWeight(interval_start, interval_end);
 
 			child_generation[i] = new float[count_weights];
 		}
@@ -130,7 +135,7 @@ namespace geneticAlgo
 			//часть детей мутировать
 			for (int j = 0; j < count_person; j++)
 			{
-				if (((float)rand()) / RAND_MAX < mutation_percent) Mut(child_generation[j], count_weights);
+				if (((float)rand()) / RAND_MAX < mutation_percent) Mut(child_generation[j], count_weights, interval_start, interval_end);
 			}
 
 			//перейти на след итерацию

@@ -110,7 +110,7 @@ namespace dms.services.preprocessing.normalization
             xRight = right;
         }
 
-        public void setParam(float param)
+        public void setParam(float param, string typePreprocessing)
         {
             a = param;
         }

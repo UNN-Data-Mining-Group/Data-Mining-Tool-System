@@ -38,10 +38,10 @@ namespace dms.services.preprocessing.normalization
                 maxValue = Math.Max(maxValue, val);
             }
 
-            countValues = (maxValue - minValue) + 1;
+            countValues = (int)(maxValue - minValue) + 1;
             countNumbers = Convert.ToInt32(Math.Log10(2 * countValues)) + 1;
 
-            centerValue = (minValue + maxValue) / 2;
+            centerValue = (int)(minValue + maxValue) / 2;
         }
 
         public int GetInt(string value)
@@ -108,13 +108,25 @@ namespace dms.services.preprocessing.normalization
             xRight = right;
         }
 
-        public void setParam(float param)
+        public void setParam(float param, string typePreprocessing)
         {
-            a = param;
+            if("Линейная нормализация 1 (к float)".Equals(typePreprocessing))
+            {
+                float min = (param + 1) * minValue - param * maxValue;
+                float max = (param + 1) * maxValue - param * minValue;
+
+                minValue = min;
+                maxValue = max;
+            } else if ("Нелинейная нормализация 2 (к float)".Equals(typePreprocessing))
+            {
+                a = param;
+            }
+            
         }
 
         private float a = 1.0f; //Параметр aвлияет на степень нелинейности изменения переменной в нормализуемом интервале.
-        private int minValue, maxValue, countValues, countNumbers, centerValue;
+        private int countValues, countNumbers, centerValue;
+        private float minValue, maxValue;
         private float xLeft = 0, xRight = 1;
     }
 }
