@@ -100,6 +100,8 @@ namespace dms.view_models
         public PreprocessingViewModel(models.Task task, int templateId)
         {
             IntervalNameA = "A = ";
+            IntervalValueA = "-1";
+            IntervalValueB = "1";
             IntervalNameB = "B = ";
             //Параметр влияет на степень нелинейности изменения переменной в нормализуемом интервале
             AName = "(Параметр нормализации) a = ";
@@ -178,7 +180,7 @@ namespace dms.view_models
                     PreprocessingParameters[index].Position = ((models.Parameter)entity).Index;
                     if (template == null)
                     {
-                        PreprocessingParameters[index].Type = "без предобработки";
+                        PreprocessingParameters[index].Type = "Линейная нормализация 1 (к float)";
                     }
                     else
                     {

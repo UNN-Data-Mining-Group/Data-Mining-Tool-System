@@ -138,6 +138,12 @@
     <Compile Include="gui\scenario view\learning algo params view\VectorQvantum.xaml.cs">
       <DependentUpon>VectorQvantum.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\selection view\SelectionInfoPage.xaml.cs">
+      <DependentUpon>SelectionInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="gui\SelectionAnalysisPage.xaml.cs">
+      <DependentUpon>SelectionAnalysisPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solution view\CreateSolutionPage.xaml.cs">
       <DependentUpon>CreateSolutionPage.xaml</DependentUpon>
     </Compile>
@@ -197,9 +203,6 @@
     <Compile Include="gui\selection view\SelectionAddPane.xaml.cs">
       <DependentUpon>SelectionAddPane.xaml</DependentUpon>
     </Compile>
-    <Compile Include="gui\selection view\SelectionInfoPage.xaml.cs">
-      <DependentUpon>SelectionInfoPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="gui\solver view\SolvePage.xaml.cs">
       <DependentUpon>SolvePage.xaml</DependentUpon>
     </Compile>
@@ -258,6 +261,7 @@
     <Compile Include="tools\EventArgs.cs" />
     <Compile Include="tools\IDocumentContent.cs" />
     <Compile Include="view-models\LearningProcessViewModel.cs" />
+    <Compile Include="view-models\selection view models\SelectionAnalysisViewModel.cs" />
     <Compile Include="view-models\solution view models\CreateSolutionViewModel.cs" />
     <Compile Include="view-models\scenario view model\LearningScenarioManagerViewModel.cs" />
     <Compile Include="view-models\selection view models\SelectionLearnStatisticViewModel.cs" />
@@ -336,6 +340,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\scenario view\learning algo params view\VectorQvantum.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="gui\selection view\SelectionInfoPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="gui\SelectionAnalysisPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -432,10 +444,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\selection view\SelectionAddPane.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="gui\selection view\SelectionInfoPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
