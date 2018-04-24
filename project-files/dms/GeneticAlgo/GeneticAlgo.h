@@ -9,5 +9,5 @@ namespace geneticAlgo
 		size_t(*get_res)( float* in, float* out, void* solver),
 		void(*set_weights)(float* weights,void* solver),
 		int count_weights, int count_person, int count_epochs,
-		int count_bests, float mutation_percent, float* res_weights);
+		int count_bests, float mutation_percent, float* res_weights, float interval_start, float interval_end);
 }
