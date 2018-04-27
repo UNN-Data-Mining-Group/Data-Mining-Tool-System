@@ -15,7 +15,7 @@ namespace nnets
 	//Activation functions
 #define neurolib_bent_identity(x) ((std::sqrt(x*x + 1.0f) - 1.0f) / 2.0f + x)
 #define neurolib_binary_step(x) (x >= 0.0f ? 1.0f : 0.0f)
-#define neurolib_identity(x) (x)
+#define neurolib_identity(x) (x >= intervalend ? intervalend : x<= intervalstart ? intervalstart : x)
 #define neurolib_logistic(x) (intervalend-intervalstart)*(1.0f / (1.0f + std::exp(-x)))+intervalstart
 #define neurolib_soft_plus(x) (std::log(1.0f + std::exp(x)))
 #define neurolib_tanh(x) (2.0f / (1.0f + std::exp(-2.0f*x)) - 1.0f)
