@@ -19,7 +19,6 @@ namespace dms.solvers.decision.tree
         {
             inputsCount = treeDesc.GetInputsCount();
             outputCount = treeDesc.GetOutputsCount();
-            maxDepth = treeDesc.MaxDepth;
             root = new Node();
         }
 

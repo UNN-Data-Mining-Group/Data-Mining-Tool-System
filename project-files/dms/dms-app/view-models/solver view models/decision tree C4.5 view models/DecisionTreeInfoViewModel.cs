@@ -20,7 +20,6 @@ namespace dms.view_models
             Name = solver.Name;
 
             TreeDescription td = solver.Description as TreeDescription;
-            MaxTreeDepth = td.MaxDepth;
         }
     }
 }

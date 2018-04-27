@@ -24,6 +24,9 @@
         <DataTemplate x:Key="kohNNTemplate">
             <local:KohonenParametersPage/>
         </DataTemplate>
+        <DataTemplate x:Key="randomForestTemplate">
+            <local:RandomForestPage/>
+        </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
@@ -48,11 +51,14 @@
                         <DataTrigger Binding="{Binding SelectedType}" Value="Персептрон">
                             <Setter Property="ContentTemplate" Value="{StaticResource perceptronTemplate}" />
                         </DataTrigger>
-                            <DataTrigger Binding="{Binding SelectedType}" Value="Сеть Ворда">
-                                <Setter Property="ContentTemplate" Value="{StaticResource wardNNTemplate}" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений">
+                        <DataTrigger Binding="{Binding SelectedType}" Value="Сеть Ворда">
+                            <Setter Property="ContentTemplate" Value="{StaticResource wardNNTemplate}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectedType}" Value="Дерево решений">
                             <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeTemplate}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectedType}" Value="Случайный лес">
+                            <Setter Property="ContentTemplate" Value="{StaticResource randomForestTemplate}" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding SelectedType}" Value="Сверточная нейронная сеть">
                             <Setter Property="ContentTemplate" Value="{StaticResource convNNTemplate}" />

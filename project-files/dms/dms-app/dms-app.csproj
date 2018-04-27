@@ -168,6 +168,9 @@
     <Compile Include="gui\solver view\decision tree view\DecisionTreeParameterPage.xaml.cs">
       <DependentUpon>DecisionTreeParameterPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\solver view\forest view\RandomForestPage.xaml.cs">
+      <DependentUpon>RandomForestPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\solver view\kohonen view\KohonenInfoPage.xaml.cs">
       <DependentUpon>KohonenInfoPage.xaml</DependentUpon>
     </Compile>
@@ -270,6 +273,7 @@
     <Compile Include="view-models\solver view models\LearnSolverViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronInfoViewModel.cs" />
     <Compile Include="view-models\solver view models\perceptron view models\PerceptronParametersViewModel.cs" />
+    <Compile Include="view-models\solver view models\random forest view models\RandomForestParametersViewModel.cs" />
     <Compile Include="view-models\solver view models\SeparationOfDataSet.cs" />
     <Compile Include="view-models\solver view models\SolverCreationViewModel.cs" />
     <Compile Include="view-models\MainWindowViewModel.cs" />
@@ -290,6 +294,7 @@
     <Compile Include="view-models\tree-section\leaf-section\SolutionLeaf.cs" />
     <Compile Include="view-models\tree-section\leaf-section\SolverLeaf.cs" />
     <Compile Include="view-models\tree-section\PerseptronTree.cs" />
+    <Compile Include="view-models\tree-section\RandomForestTree.cs" />
     <Compile Include="view-models\tree-section\SelectionTree.cs" />
     <Compile Include="view-models\tree-section\SolutionsTree.cs" />
     <Compile Include="view-models\tree-section\SolverTree.cs" />
@@ -378,6 +383,10 @@
     <Page Include="gui\solver view\decision tree view\DecisionTreeParameterPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="gui\solver view\forest view\RandomForestPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\solver view\kohonen view\KohonenInfoPage.xaml">
       <SubType>Designer</SubType>

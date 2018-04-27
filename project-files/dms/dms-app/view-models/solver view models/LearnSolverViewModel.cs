@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Input;
 using dms.solvers.decision.tree;
+using dms.solvers.decision.tree.random_forest.model;
 
 namespace dms.view_models
 {
@@ -91,6 +92,11 @@ namespace dms.view_models
                     listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
                     .addCondition("LearningAlgorithmName", "=", "CART")
                     .addCondition("LearningAlgorithmName", "=", "C4.5", "OR"), typeof(LearningScenario));
+                }
+                else if (typeSolver.Equals("RandomForest"))
+                {
+                    listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
+                    .addCondition("LearningAlgorithmName", "=", "CART"), typeof(LearningScenario));
                 }
                 else if (typeSolver.Equals("Perceptron"))
                 {
@@ -372,6 +378,11 @@ namespace dms.view_models
                 {
                     TreeDescription topology = Solver.Description as TreeDescription;
                     isolver = new solvers.decision.tree.DecisionTree(topology);                    
+                }
+                else if (Solver.Description is RandomForestDescription)
+                {
+                    RandomForestDescription topology = Solver.Description as RandomForestDescription;
+                    isolver = new solvers.decision.tree.random_forest.model.ClassificationForestModel(topology);
                 }
                 else throw new EntryPointNotFoundException();
                 SeparationOfDataSet s = new SeparationOfDataSet(isolver, learningScenario, inputData, outputData);

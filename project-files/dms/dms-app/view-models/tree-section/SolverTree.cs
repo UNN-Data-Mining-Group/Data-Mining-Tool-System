@@ -20,6 +20,7 @@ namespace dms.view_models
             models.TaskSolver[] wards, 
             models.TaskSolver[] convnets,
             models.TaskSolver[] kohnets,
+            models.TaskSolver[] forest,
             TaskTreeViewModel vm) : base("Решатели")
         {
             ParentTask = task.Name;
@@ -29,7 +30,8 @@ namespace dms.view_models
                 new DecisionTree(task, des, vm),
                 new WardTree(task, wards, vm),
                 new ConvNNTree(task, convnets, vm),
-                new KohonenTree(task, kohnets, vm)
+                new KohonenTree(task, kohnets, vm),
+                new RandomForestTree(task, forest, vm)
             };
             createSolverCommand = new ActionHandler(() => 
             {
