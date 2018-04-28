@@ -75,6 +75,8 @@ namespace dms.gui
                 CreateSolveStatisticPage(vm as SolveStatisticViewModel);
             else if (vm is KohonenInfoViewModel)
                 CreateKohonenInfoPage(vm as KohonenInfoViewModel);
+            else if (vm is SelectionAnalysisViewModel)
+                CreateSelectionAnalysisPage(vm as SelectionAnalysisViewModel);
         }
 
         private void CreateSolverCreationPage(SolverCreationViewModel obj)
@@ -86,6 +88,12 @@ namespace dms.gui
         private void CreateSelectionInfoPage(SelectionInfoViewModel obj)
         {
             SelectionInfoPage t = new SelectionInfoPage(obj);
+            OnShowPage?.Invoke(obj.TaskName + "/" + obj.SelectionName + "/Информация", t);
+        }
+
+        private void CreateSelectionAnalysisPage(SelectionAnalysisViewModel obj)
+        {
+            SelectionAnalysisPage t = new SelectionAnalysisPage(obj);
             OnShowPage?.Invoke(obj.TaskName + "/" + obj.SelectionName + "/Информация", t);
         }
 

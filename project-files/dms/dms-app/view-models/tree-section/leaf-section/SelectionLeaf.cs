@@ -14,7 +14,9 @@ namespace dms.view_models
         private ActionHandler deleteHandler;
         private ActionHandler showSelectionInfoHandler;
         private ActionHandler showSelectionLearnHandler;
-        
+        private ActionHandler showSelectionAnalysisHandler;
+
+
         public SelectionLeaf(models.Task task, models.Selection selection, TaskTreeViewModel vm)
         {
             Title = selection.Name;
@@ -37,11 +39,18 @@ namespace dms.view_models
                     var t = new SelectionLearnStatisticViewModel(selection, task.Name);
                     vm.SendRequestCreateView(t);
                 }, e => true);
+            showSelectionAnalysisHandler = new ActionHandler(
+                () =>
+                {
+                    SelectionAnalysisViewModel t = new SelectionAnalysisViewModel(task.ID, selection.ID);
+                    vm.SendRequestCreateView(t);
+                }, e => true);
         }
 
         public ICommand DeleteCommand { get { return deleteHandler; } }
         public ICommand ShowSelectionInfoDialog { get { return showSelectionInfoHandler; } }
         public ICommand ShowSelectionLearnDialog { get { return showSelectionLearnHandler; } }
+        public ICommand ShowSelectionAnalysisDialog { get { return showSelectionAnalysisHandler; } }
     }
 }
 

@@ -209,5 +209,70 @@ namespace dms.models
 
             return res;
         }
+
+        public static List<string> valuesByParmeterId(int selectionId, int paramId)
+        {
+            List<Entity> rows = getRows(selectionId);
+            ValueParameter[] values = getValues(paramId, rows);
+            int[] ids = rows.Select(x => x.ID).ToArray();
+            List<string> res = new List<string>(ids.Length);
+            var index = 0;
+            foreach (int id in ids)
+            {
+                ValueParameter[] vals = values.Where(x => x.SelectionRowID == id).ToArray();
+                
+                if (vals.Length > 0)
+                {
+                    res.Add(vals[0].Value);
+                }else
+                {
+                    res.Add("");
+                }
+                index++;
+            }
+
+            return res;
+        }
+        public static List<services.preprocessing.Pair> pairValuesByParmeterId(int selectionId, int paramId)
+        {
+            List<Entity> rows = getRows(selectionId);
+            ValueParameter[] values = getValues(paramId, rows);
+            int[] ids = rows.Select(x => x.ID).ToArray();
+            List<services.preprocessing.Pair> res = new List<services.preprocessing.Pair>(ids.Length);
+            var index = 0;
+            foreach (int id in ids)
+            {
+                ValueParameter[] vals = values.Where(x => x.SelectionRowID == id).ToArray();
+                services.preprocessing.Pair pair = new services.preprocessing.Pair();
+                if (vals.Length > 0)
+                {
+                    pair.oldValue = vals[0].Value;
+                    pair.oldPosition = index + 1;
+                    res.Add(pair);
+                }
+                else
+                {
+                    res.Add(new services.preprocessing.Pair());
+                }
+                index++;
+            }
+
+            return res;
+        }
+
+        private static List<Entity> getRows(int selectionId)
+        {
+            Selection selection = (Selection)Selection.getById(selectionId, typeof(Selection));
+            int templateId = selection.TaskTemplateID;
+            Query query = new Query("SelectionRow").addTypeQuery(TypeQuery.select).addCondition("SelectionID", "=", selectionId.ToString());
+            return SelectionRow.where(query, typeof(SelectionRow));
+        }
+        private static ValueParameter[] getValues(int paramId, List<Entity> rows)
+        {
+            Query valQuery = new Query("ValueParameter").addTypeQuery(TypeQuery.select)
+                .addInArray("SelectionRowID", rows.Select(x => x.ID).ToArray())
+                .addCondition("ParameterID", "=", paramId.ToString());
+            return ValueParameter.where(valQuery, typeof(ValueParameter)).Cast<ValueParameter>().ToArray();
+        }
     }
 }
