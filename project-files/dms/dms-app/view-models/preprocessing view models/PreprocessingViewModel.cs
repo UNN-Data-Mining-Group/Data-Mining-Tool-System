@@ -202,7 +202,7 @@ namespace dms.view_models
         public void Create()
         {
             float left = 0, right = 1, a = 0;
-            if (IntervalValueA != null && IntervalValueB != null)
+            if (!"".Equals(IntervalValueA) && !"".Equals(IntervalValueB))
             {
                 left = float.Parse(IntervalValueA.Replace(".", ","));
                 right = float.Parse(IntervalValueB.Replace(".", ","));
