@@ -99,8 +99,7 @@ namespace dms.solvers.decision.tree.random_forest.learning_algos
         {
             trainers = new DTLearningAlgo[]
             {
-                new DecisionTreeC4_5LearningAlgo(),
-                new DecisionTreeCARTLearningAlgo()
+                new ClassificationRandomForestLearner()
             };
             currentTrainer = 0;
         }
@@ -160,7 +159,8 @@ namespace dms.solvers.decision.tree
         {
             trainers = new DTLearningAlgo[]
             {
-                new ClassificationRandomForestLearner()
+                new DecisionTreeC4_5LearningAlgo(),
+                new DecisionTreeCARTLearningAlgo()
             };
             currentTrainer = 0;
         }

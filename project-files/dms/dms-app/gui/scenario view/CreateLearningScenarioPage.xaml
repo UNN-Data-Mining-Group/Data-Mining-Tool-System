@@ -28,6 +28,9 @@
         <DataTemplate x:Key="decisionTreeC45Template">
             <local:DTCartParams x:Name="DTC45Params"/>
         </DataTemplate>
+        <DataTemplate x:Key="randomForestTemplate">
+            <local:DTCartParams x:Name="RandomForestParams"/>
+        </DataTemplate>
     </UserControl.Resources>
     <StackPanel>
         <Grid Height="163">
@@ -74,6 +77,9 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding TeacherType}" Value="C4.5">
                                 <Setter Property="ContentTemplate" Value="{StaticResource decisionTreeC45Template}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding TeacherType}" Value="Random Forest">
+                                <Setter Property="ContentTemplate" Value="{StaticResource randomForestTemplate}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

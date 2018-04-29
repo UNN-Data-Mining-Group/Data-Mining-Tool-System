@@ -96,7 +96,7 @@ namespace dms.view_models
                 else if (typeSolver.Equals("RandomForest"))
                 {
                     listLearningScenarios = LearningScenario.where(new Query("LearningScenario").addTypeQuery(TypeQuery.select)
-                    .addCondition("LearningAlgorithmName", "=", "CART"), typeof(LearningScenario));
+                    .addCondition("LearningAlgorithmName", "=", "Random Forest"), typeof(LearningScenario));
                 }
                 else if (typeSolver.Equals("Perceptron"))
                 {

@@ -14,6 +14,11 @@ namespace dms.solvers.decision.tree.random_forest.model
         {
             this.randomForestDescription = randomForestDescription;
             m_models = new DecisionTree[randomForestDescription.GetNumberTrees()];
+            for (int i = 0; i < m_models.Length; i++)
+                m_models[i] = new DecisionTree(new TreeDescription(randomForestDescription.GetInputsCount(),
+                                                                    randomForestDescription.GetOutputsCount(),
+                                                                    10));
+
         }
         public override float[] Solve(float[] observation)
         {
@@ -42,6 +47,11 @@ namespace dms.solvers.decision.tree.random_forest.model
         public DecisionTree[] GetDecisionTrees()
         {
             return m_models;
+        }
+
+        public RandomForestDescription GetRandomForestDescription()
+        {
+            return randomForestDescription;
         }
 
         public override ISolver Copy() {

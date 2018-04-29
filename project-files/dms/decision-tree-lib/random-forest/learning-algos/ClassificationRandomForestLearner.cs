@@ -9,6 +9,8 @@ namespace dms.solvers.decision.tree.random_forest.learning_algos
 {
     public sealed class ClassificationRandomForestLearner : DTLearningAlgo
     {
+        string usedAlgo;
+        string[] TeacherTypesList;
         readonly int m_trees;
         int m_featuresPrSplit;
         readonly int m_minimumSplitSize;
@@ -18,30 +20,33 @@ namespace dms.solvers.decision.tree.random_forest.learning_algos
         readonly Random m_random;
         readonly bool m_runParallel;
 
-        public ClassificationRandomForestLearner(int trees = 100, int minimumSplitSize = 1, int maximumTreeDepth = 2000,
-            int featuresPrSplit = 0, double minimumInformationGain = .000001, double subSampleRatio = 1.0, int seed = 42, bool runParallel = true)
+        public ClassificationRandomForestLearner()
         {
-            if (trees < 1) { throw new ArgumentException("trees must be at least 1"); }
-            if (featuresPrSplit < 0) { throw new ArgumentException("features pr split must be at least 1"); }
-            if (minimumSplitSize <= 0) { throw new ArgumentException("minimum split size must be larger than 0"); }
-            if (maximumTreeDepth <= 0) { throw new ArgumentException("maximum tree depth must be larger than 0"); }
-            if (minimumInformationGain <= 0) { throw new ArgumentException("minimum information gain must be larger than 0"); }
-            if (subSampleRatio <= 0.0 || subSampleRatio > 1.0) { throw new ArgumentException("subSampleRatio must be larger than 0.0 and at max 1.0"); }
+            TeacherTypesList = new string[1];
+            TeacherTypesList[0] = "Случайный лес";
+            usedAlgo = TeacherTypesList[0];
+        }
 
-            m_trees = trees;
-            m_minimumSplitSize = minimumSplitSize;
-            m_maximumTreeDepth = maximumTreeDepth;
-            m_featuresPrSplit = featuresPrSplit;
-            m_minimumInformationGain = minimumInformationGain;
-            m_subSampleRatio = subSampleRatio;
-            m_runParallel = runParallel;
+        public void setUsedAlgo(string used_algo)
+        {
+            usedAlgo = used_algo;
+        }
 
-            m_random = new Random(seed);
+
+        public string[] getTeacherTypesList()
+        {
+            return TeacherTypesList;
+        }
+
+        public string[] getTeacherTypesList(ISolver solver)
+        {
+            return TeacherTypesList;
         }
         public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
         {
             ClassificationForestModel dc_solver = (ClassificationForestModel)solver;
             DecisionTree[] trees = dc_solver.GetDecisionTrees();
+            RandomForestDescription rfd = dc_solver.GetRandomForestDescription();
             foreach (DecisionTree dt in trees)
             {
                 DecisionTreeCARTLearningAlgo algo = new DecisionTreeCARTLearningAlgo();
@@ -110,16 +115,16 @@ namespace dms.solvers.decision.tree.random_forest.learning_algos
 
         public float[] getParams()
         {
-            throw new NotImplementedException();
+            return new float[0];
         }
 
         public string[] getParamsNames()
         {
-            throw new NotImplementedException();
+            return new string[1] { "Алгоритм обучения дерева решений" };
         }
         public string getType()
         {
-            return "RandomForest";
+            return "Random Forest";
         }
     }
 }
