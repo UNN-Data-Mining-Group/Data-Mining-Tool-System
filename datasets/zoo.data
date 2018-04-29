@@ -1,3 +1,4 @@
+animal name,hair,feathers,eggs,milk,airborne,aquatic,predator,toothed,backbone,breathes,venomous,fins,legs,tail,domestic,catsize,type
 aardvark,1,0,0,1,0,0,1,1,1,1,0,0,4,0,0,1,1
 antelope,1,0,0,1,0,0,0,1,1,1,0,0,4,1,0,1,1
 bass,0,0,1,0,0,1,1,1,1,0,0,1,0,1,0,0,4

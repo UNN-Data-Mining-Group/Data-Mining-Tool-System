@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="dms.gui.SelectionAnalysisPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dms.gui"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Row="0">
+                <Label Content="{Binding TaskName}" ContentStringFormat="Задача: {0}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="{Binding SelectionName}"/>
+                    <Label Content="{Binding CountRows}" ContentStringFormat="Объем выборки: {0}" />
+                </StackPanel>
+                
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Тип анализа:"/>
+                    <ComboBox ItemsSource="{Binding AnalysisList}" SelectedItem="{Binding Analysis}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="&lt;&lt;" Command="{Binding LeftPage}" Margin="5" Width="35"/>
+                    <Label Content="{Binding Page}"/>
+                    <Button Content="&gt;&gt;" Command="{Binding RightPage}" Margin="5" Width="35"/>
+                </StackPanel>
+                <DataGrid Margin="0,5,0,0" Name="dataTable" AutoGenerateColumns="False" ItemsSource="{Binding Data}" IsReadOnly="True" RowDetailsVisibilityMode="Visible"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

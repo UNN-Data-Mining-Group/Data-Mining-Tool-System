@@ -76,6 +76,7 @@
                     <TextBlock.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Информация" Command="{Binding ShowSelectionInfoDialog}" />
+                            <MenuItem Header="Провести анализ выборки" Command="{Binding ShowSelectionAnalysisDialog}" />
                             <MenuItem Header="Качество обучения" Command="{Binding ShowSelectionLearnDialog}" />
                             <MenuItem Header="Удалить" Command="{Binding DeleteCommand}"/>
                         </ContextMenu>
