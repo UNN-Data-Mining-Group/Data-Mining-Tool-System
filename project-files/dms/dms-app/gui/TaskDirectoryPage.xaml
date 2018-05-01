@@ -65,6 +65,9 @@
             <HierarchicalDataTemplate DataType="{x:Type vm:KohonenTree}" ItemsSource="{Binding Content}">
                 <TextBlock Text="{Binding Title}"/>
             </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type vm:RandomForestTree}" ItemsSource="{Binding Content}">
+                <TextBlock Text="{Binding Title}"/>
+            </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type vm:TreeSection}" ItemsSource="{Binding Content}">
                 <TextBlock Text="{Binding Title}" FontStyle="Italic"/>
             </HierarchicalDataTemplate>

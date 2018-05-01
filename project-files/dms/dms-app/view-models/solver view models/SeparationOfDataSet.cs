@@ -66,7 +66,7 @@ namespace dms.view_models.solver_view_models
         private ISolver crossValidation(int folds)
         {
             ISolver curSolver = ISolver.Copy();
-            List<float> listOfTestMistakes = new List<float>();
+            List<float> listOfTestMistakes = new List<float>() { 1 };
             for (int k = 0; k < folds; k++)
             {
                 float kMistakeTrain = 0;
@@ -118,7 +118,7 @@ namespace dms.view_models.solver_view_models
                 comparisonOfResult = preprocessing.compareExAndObValues(expectedOutputValues, obtainedOutputValues, SelectionID, ParameterID);
                 counts = comparisonOfResult.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
                 kMistakeTest = (float)counts[false] / (float)sizeTestDataset;
-                if (k != 0 && kMistakeTest < listOfTestMistakes.Min())
+                if (kMistakeTest <= listOfTestMistakes.Min())
                 {
                     curSolver = ISolver.Copy();
                     mistakeTest = kMistakeTest;
@@ -126,7 +126,7 @@ namespace dms.view_models.solver_view_models
                 }
                 listOfTestMistakes.Add(kMistakeTest);
             }
-            ISolver = curSolver.Copy() as INeuralNetwork;
+            ISolver = curSolver.Copy();
 
             return ISolver;
         }

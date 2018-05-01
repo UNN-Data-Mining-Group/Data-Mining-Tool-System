@@ -22,6 +22,7 @@ namespace dms.view_models
             models.TaskSolver[] wards, 
             models.TaskSolver[] convnets, 
             models.TaskSolver[] kohnets,
+            models.TaskSolver[] forest,
             string[] solv, 
             TaskTreeViewModel vm)
         {
@@ -29,7 +30,7 @@ namespace dms.view_models
             Content = new ObservableCollection<TreeSection>
             {
                 new SelectionTree(task, sel, vm),
-                new SolverTree(task, per, des, wards, convnets, kohnets, vm),
+                new SolverTree(task, per, des, wards, convnets, kohnets, forest, vm),
                 new SolutionsTree(Title, solv, vm)
             };
             deleteCommand = new ActionHandler(

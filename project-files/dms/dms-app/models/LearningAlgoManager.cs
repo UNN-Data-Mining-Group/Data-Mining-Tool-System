@@ -9,6 +9,7 @@ using dms.models.kohonen_learning;
 using dms.solvers;
 using dms.solvers.decision.tree.algo;
 using dms.solvers.decision.tree;
+using dms.solvers.decision.tree.random_forest.learning_algos;
 
 namespace dms.iLearningAlgo
 {
@@ -75,6 +76,66 @@ namespace dms.neroNetLearningAlgoritms
     }
 }
 
+namespace dms.solvers.decision.tree.random_forest.learning_algos
+{
+    public class RandomForestLearningAlgos : iLearningAlgo.ILearningAlgo
+    {
+        private DTLearningAlgo[] trainers;
+        private int currentTrainer;
+
+        public void setUsedAlgo(string usedAlgo)
+        {
+            for (int i = 0; i < trainers.Length; i++)
+            {
+                if (trainers[i].getType() == usedAlgo)
+                {
+                    currentTrainer = i;
+                    break;
+                }
+            }
+        }
+
+        public RandomForestLearningAlgos()
+        {
+            trainers = new DTLearningAlgo[]
+            {
+                new ClassificationRandomForestLearner() 
+            };
+            currentTrainer = 0;
+        }
+
+        public string[] getTeacherTypesList()
+        {
+            List<string> types = new List<string>();
+            foreach (DTLearningAlgo tr in trainers)
+                types.Add(tr.getType());
+            return types.ToArray();
+        }
+
+        public string[] getTeacherTypesList(ISolver solver)
+        {
+            List<string> types = new List<string>();
+
+            foreach (DTLearningAlgo tr in trainers)
+                    types.Add(tr.getType());
+            return types.ToArray();
+        }
+
+        public float[] getParams()
+        {
+            return trainers[currentTrainer].getParams();
+        }
+        public string[] getParamsNames()
+        {
+            return trainers[currentTrainer].getParamsNames();
+        }
+        public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
+        {
+            return trainers[currentTrainer].startLearn(solver, train_x, train_y);
+        }
+    }
+}
+
 namespace dms.solvers.decision.tree
 {
     public class DecisionTreeLearningAlgos : iLearningAlgo.ILearningAlgo
@@ -117,7 +178,7 @@ namespace dms.solvers.decision.tree
             List<string> types = new List<string>();
 
             foreach (DTLearningAlgo tr in trainers)
-                    types.Add(tr.getType());
+                types.Add(tr.getType());
             return types.ToArray();
         }
 
@@ -143,7 +204,7 @@ namespace dms.models
         //     [DllImport("dms-learning-algo.dll")]
         //     private static extern float genom();
         private iLearningAlgo.ILearningAlgo[] lrAlgo;
-        private const int countAlgoLib = 3;
+        private const int countAlgoLib = 4;
         private string[][] myTeacherTypeList;
         private iLearningAlgo.ILearningAlgo usedLrAlgo;
 
@@ -160,6 +221,7 @@ namespace dms.models
             lrAlgo[0] = new NeroNetLearningAlgoritm();
             lrAlgo[1] = new KohonenLearningAlgorithms();
             lrAlgo[2] = new DecisionTreeLearningAlgos();
+            lrAlgo[3] = new RandomForestLearningAlgos();
             algoParams = new AlgoParam();
             TeacherTypesList = new string[0];
             for (int i = 0; i < countAlgoLib; i++)

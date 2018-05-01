@@ -72,11 +72,14 @@
     <Compile Include="decision-tree\LearningClassInfo.cs" />
     <Compile Include="decision-tree\LearningTable.cs" />
     <Compile Include="decision-tree\DecisionTree.cs" />
-    <Compile Include="decision-tree\learnign-algos\DTLearningAlgo.cs" />
+    <Compile Include="DTLearningAlgo.cs" />
     <Compile Include="decision-tree\Node.cs" />
     <Compile Include="decision-tree\Rule.cs" />
     <Compile Include="decision-tree\TreeDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="random-forest\learning-algos\ClassificationRandomForestLearner.cs" />
+    <Compile Include="random-forest\model\ClassificationForestModel.cs" />
+    <Compile Include="random-forest\model\RandomForestDescription.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\" />

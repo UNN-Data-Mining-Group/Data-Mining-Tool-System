@@ -10,24 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace dms.gui
+namespace dms.gui.scenario_view
 {
     /// <summary>
-    /// Interaction logic for DecisionTreeParameterPage.xaml
+    /// Логика взаимодействия для RandomForestParams.xaml
     /// </summary>
-    public partial class DecisionTreeParameterPage : UserControl
+    public partial class RandomForestParamsInfo : UserControl
     {
-        public DecisionTreeParameterPage()
+        public RandomForestParamsInfo()
         {
             InitializeComponent();
-        }
-
-        private void InputsTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }

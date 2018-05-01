@@ -51,12 +51,9 @@ namespace dms.solvers.decision.tree.algo
 
         public float startLearn(ISolver solver, float[][] train_x, float[] train_y)
         {
-            if (solver.GetType() == typeof(DecisionTree))
-            {
-                DecisionTree dc_solver = (DecisionTree)solver;
-                LearningCART(new LearningTable(train_x, train_y), dc_solver.root, (int)solver.GetInputsCount(), (int)solver.GetOutputsCount());
-                solver = dc_solver;
-            }
+            DecisionTree dc_solver = (DecisionTree)solver;
+            LearningCART(new LearningTable(train_x, train_y), dc_solver.root, (int)solver.GetInputsCount(), (int)solver.GetOutputsCount());
+            solver = dc_solver;
             return 0;
         }
 
