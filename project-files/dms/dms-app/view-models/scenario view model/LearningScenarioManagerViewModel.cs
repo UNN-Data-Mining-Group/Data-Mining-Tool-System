@@ -100,6 +100,46 @@ namespace dms.view_models
         }
     }
 
+
+    public class RandomForestParamsViewModel : LearningAlgoParamsViewModel
+    {
+        private string algoType;
+        public RandomForestParamsViewModel(string[] parNames, float[] parValues)
+            : base(parNames, parValues)
+        {
+            AlgoType = AlgosTypesList[0];
+        }
+
+        public string[] AlgosTypesList { get { return new string[] { "CART", "C4.5" }; } }
+
+        public string AlgoType
+        {
+            get
+            {
+                return algoType;
+            }
+            set
+            {
+                algoType = value;
+                if (algoType.Equals(AlgosTypesList[0]))
+                {
+                    ParamsValue[0] = 0;
+                }
+                else
+                {
+                    ParamsValue[0] = 1;
+                }
+                NotifyPropertyChanged("AlgoType");
+
+            }
+        }
+        public float PartOfSel
+        {
+            get { return ParamsValue[1]; }
+            set { ParamsValue[1] = value; }
+        }
+    }
+
     public class LearningScenarioViewModel : ViewmodelBase
     {
         private ActionHandler createHandler;
@@ -150,6 +190,8 @@ namespace dms.view_models
                     ParamsViewModel = new VectorQuantumParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
                 else if (learningAlgo.usedAlgo == "Самоорганизация Кохонена")
                     ParamsViewModel = new SelfOrganizerParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
+                else if (learningAlgo.usedAlgo == "Random Forest")
+                    ParamsViewModel = new RandomForestParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
                 else
                     ParamsViewModel = new LearningAlgoParamsViewModel(learningAlgo.paramsName, learningAlgo.paramsValue);
                 NotifyPropertyChanged();

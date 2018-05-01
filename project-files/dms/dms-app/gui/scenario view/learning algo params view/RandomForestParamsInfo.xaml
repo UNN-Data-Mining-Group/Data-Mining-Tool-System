@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="dms.gui.scenario_view.RandomForestParams"
+﻿<UserControl x:Class="dms.gui.scenario_view.RandomForestParamsInfo"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -17,8 +17,8 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="{Binding ParamsName[0]}"/>
-        <ComboBox ItemsSource="{Binding AlgosTypesList}" SelectedItem="{Binding AlgoType}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,10"/>
+        <Label Content="{Binding AlgoType}" Grid.Row="0" Grid.Column="1"/>
         <Label Grid.Row="1" Grid.Column="0" Content="{Binding ParamsName[1]}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PartOfSel}" Margin="0,0,0,10"/>
+        <Label Content="{Binding PartOfSel}" Grid.Row="1" Grid.Column="1" RenderTransformOrigin="0.498,0.583" Margin="0,0,0,-3"/>
     </Grid>
 </UserControl>

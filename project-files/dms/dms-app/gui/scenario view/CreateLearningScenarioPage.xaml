@@ -29,7 +29,7 @@
             <local:DTCartParams x:Name="DTC45Params"/>
         </DataTemplate>
         <DataTemplate x:Key="randomForestTemplate">
-            <local:DTCartParams x:Name="RandomForestParams"/>
+            <local:RandomForestParams x:Name="RandomForestParams"/>
         </DataTemplate>
     </UserControl.Resources>
     <StackPanel>

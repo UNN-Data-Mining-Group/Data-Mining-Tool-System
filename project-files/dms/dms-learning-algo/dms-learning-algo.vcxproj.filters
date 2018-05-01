@@ -32,10 +32,10 @@
     <ClCompile Include="AssemblyInfo.cpp">
       <Filter>Common\Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="NeroNetLearningAlgoritms.cpp">
+    <ClCompile Include="KohonenLearningAlgorithms.cpp">
       <Filter>Common\Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="KohonenLearningAlgorithms.cpp">
+    <ClCompile Include="NeroNetLearningAlgoritms.cpp">
       <Filter>Common\Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

@@ -99,7 +99,7 @@ namespace dms.solvers.decision.tree.random_forest.learning_algos
         {
             trainers = new DTLearningAlgo[]
             {
-                new ClassificationRandomForestLearner()
+                new ClassificationRandomForestLearner() 
             };
             currentTrainer = 0;
         }

@@ -132,6 +132,9 @@
     <Compile Include="gui\scenario view\learning algo params view\GeneticParams.xaml.cs">
       <DependentUpon>GeneticParams.xaml</DependentUpon>
     </Compile>
+    <Compile Include="gui\scenario view\learning algo params view\RandomForestParamsInfo.xaml.cs">
+      <DependentUpon>RandomForestParamsInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="gui\scenario view\learning algo params view\RandomForestParams.xaml.cs">
       <DependentUpon>RandomForestParams.xaml</DependentUpon>
     </Compile>
@@ -340,6 +343,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="gui\scenario view\learning algo params view\GeneticParams.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="gui\scenario view\learning algo params view\RandomForestParamsInfo.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

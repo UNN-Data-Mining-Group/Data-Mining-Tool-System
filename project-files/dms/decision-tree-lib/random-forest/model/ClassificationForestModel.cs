@@ -23,8 +23,7 @@ namespace dms.solvers.decision.tree.random_forest.model
         public override float[] Solve(float[] observation)
         {
             var prediction = m_models.Select(m => m.Solve(observation))
-                .GroupBy(p => p).OrderByDescending(g => g.Count())
-                .First().Key;
+                .GroupBy(p => p).OrderByDescending(g => g.Count()).First().Key;
             return prediction;
         }
         public Dictionary<string, double> GetVariableImportance(Dictionary<string, int> featureNameToIndex)
